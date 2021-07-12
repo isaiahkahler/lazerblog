@@ -7,7 +7,7 @@ import Head from 'next/head'
 import { useRouter } from 'next/router';
 import Input from '../components/input'
 import { useEffect, useState } from "react";
-import firebase from '../firebase/clientApp'
+import firebase from '../firebase'
 import { useAuthState } from 'react-firebase-hooks/auth';
 import buttonStyle from '../components/button/button.module.css'
 
@@ -142,6 +142,7 @@ export default function CreateBlog() {
                                                     blogDescription: blogDescription,
                                                     brandImage: ''
                                                 });
+                                                // add blog to user 
                                                 router.push('/' + blogURL);
                                             }
                                         }

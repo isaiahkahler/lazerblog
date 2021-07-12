@@ -10,6 +10,7 @@ interface InputProps {
     invalidMessage?: string,
 }
 
+// code review: turn warning colors into global constants? (used over multiple components as text)
 export default function Input(props: InputProps) {
     const borderStyle = props.isValid === false ? {border: '2px solid #cc0f35'} : {};
     return(
