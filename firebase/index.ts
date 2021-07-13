@@ -2,6 +2,7 @@ import firebase from 'firebase/app'
 import "firebase/auth"
 import "firebase/firestore"
 import "firebase/analytics"
+import { useStoreActions } from '../components/store'
 
 const clientCredentials = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -19,5 +20,7 @@ if(!firebase.apps.length) {
     // firebase.analytics();
     console.log('firebase initialized')
 }
+
+
 
 export default firebase;

@@ -5,10 +5,9 @@ import { useRouter } from 'next/router'
 import firebase from '../firebase'
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
 import * as firebaseui from 'firebaseui';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { useDocument, useDocumentData } from 'react-firebase-hooks/firestore';
 import { useEffect, useState } from 'react'
 import useUsername from '../components/username'
+import { useStoreState } from '../components/store'
 
 
 const uiConfig: firebaseui.auth.Config = {
@@ -23,31 +22,27 @@ const uiConfig: firebaseui.auth.Config = {
 }
 
 export default function Login() {
-    const [user, userLoading, userError] = useAuthState(firebase.auth());
-    const username = useUsername(user, userLoading, userError);
-    const [blogs, setBlogs] = useState<string[] | undefined>();
-    const [firebaseError, setFirebaseError] = useState<Error | undefined>(undefined);
+
     const router = useRouter();
+    const user = useStoreState(state => state.user);
+    const username = useStoreState(state => state.username);
+    const blogs = useStoreState(state => state.blogs);
 
-    // if username, get blogs
     useEffect(() => {
-        (async () => {
-            try {
-                if(username) {
-                    // user is registered, do they have a blog?
-                    const userDoc = await firebase.firestore().collection('users').doc(username).get();
-                    const userData = userDoc.data();
-                    if(userDoc.exists && userData) {
-                        setBlogs(userData.blogs);
-                    }
-                }
-            } catch (error) {
-
+        if(user) {
+            // user is already signed up, are they registered?
+            if(username) {
+                // user is registered, send to their page
+                router.push(`/users/${username}`)
+            } else {
+                // user is not registered, send to /create-user
+                router.push('/create-user')
             }
-        })();
-    }, [username]);
+        } 
+        // else user is not logged in, stay here 
+    }, [user, username, blogs]);
 
-    // if blogs, redirect 
+    // if blogs exist, redirect 
     useEffect(() => {
         if(blogs) {
             if(blogs.length === 0) {
@@ -69,16 +64,8 @@ export default function Login() {
             </Head>
             <Layout style={{ minHeight: "100vh", display: 'flex' }}>
                 <Container style={{ alignItems: 'center' }}>
-                    {(userError || firebaseError) ? <div>
-                        <h1>An error occurred.</h1>
-                        <p>{userError ? userError.message : firebaseError && firebaseError.message}</p>
-                        <p>{userError ? userError.code : firebaseError && firebaseError.stack}</p>
-
-                    </div> 
-                    : <>
-                        <h1 style={{ textAlign: 'center' }}>Sign in to continue to Lazer Blog.</h1>
-                        <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
-                    </>}
+                    <h1 style={{ textAlign: 'center' }}>Sign in to continue to Lazer Blog.</h1>
+                    <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
                 </Container>
             </Layout>
 

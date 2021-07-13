@@ -8,8 +8,8 @@ import { useRouter } from 'next/router';
 import Input from '../components/input'
 import { useEffect, useState } from "react";
 import firebase from '../firebase'
-import { useAuthState } from 'react-firebase-hooks/auth';
 import buttonStyle from '../components/button/button.module.css'
+import { useStoreState } from "../components/store"
 
 export default function CreateBlog() {
     const router = useRouter();
@@ -18,32 +18,37 @@ export default function CreateBlog() {
     const [backupBlogSlug, setBackupBlogSlug] = useState('');
     const [blogDescription, setBlogDescription] = useState('');
     const [formSubmitted, setFormSubmitted] = useState(false);
-    const [user, userLoading, userError] = useAuthState(firebase.auth());
     const [blogSlugTaken, setBlogSlugTaken] = useState<boolean | undefined>();
-
+    const user = useStoreState(state => state.user);
+    const username = useStoreState(state => state.username);
 
     // redirect the user if necessary to avoid nav crashes 
     useEffect(() => {
-        (async () => {
-            try {
-                if (user && !userLoading) {
-                    const usernameDoc = await firebase.firestore().collection('usernames').doc(user.uid).get();
-                    const usernameData = usernameDoc.data();
-                    if (usernameDoc.exists && usernameData) {
-                        // user is registered, may have other blogs
-                    } else {
-                        // user is not registered yet, send to /create-user
-                        router.push('/create-user');
-                    }
-                }
-                if (!user && !userLoading) {
-                    router.push('/');
-                }
-            } catch (error) {
+        // if(user && !username) {
+        //     // user is not registered, send to /create-user
+        //     router.push('/create-user');
+        // } else {
+        //     // no user, send to /login
+        //     router.push('/login')
+        // }
 
-            }
-        })();
-    }, [user, userLoading, userError]);
+        if(user) {
+            console.log('user')
+        } else {
+            // nobody is logged in
+            // router.push('/')
+            console.log('no user')
+        }
+
+        if(!username) {
+            // user is not registered, send to /create-user
+            router.push('/create-user')
+            console.log('no username')
+        } else {
+            console.log('username');
+        }
+    }, [user, username]);
+
 
     // convert the blog name to a URL-friendly slug
     useEffect(() => {

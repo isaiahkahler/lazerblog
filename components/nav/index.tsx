@@ -1,8 +1,8 @@
 import styles from './nav.module.css'
 import firebase from '../../firebase'
 import Button from '../button'
-import { useAuthState } from 'react-firebase-hooks/auth'
 import {useRouter} from 'next/router'
+import { useStoreState } from '../store'
 
 
 interface NavProps {
@@ -10,7 +10,7 @@ interface NavProps {
 }
 
 export default function Nav(props: NavProps) {
-    const [user, userLoading, userError] = useAuthState(firebase.auth());
+    const user = useStoreState(state => state.user);
     const router = useRouter();
 
     return (
