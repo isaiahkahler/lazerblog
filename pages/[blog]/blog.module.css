@@ -1,0 +1,17 @@
+.banner {
+    height: 284px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.banner h1 {
+    font-size: 80px;
+}
+
+
+@media screen and (max-width: 768px) {
+    .banner h1 {
+        font-size: 27px;
+    }
+}
