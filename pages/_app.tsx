@@ -17,17 +17,13 @@ function MyAppWrapper(props: { children?: React.ReactNode }) {
     const setBlogs = useStoreActions(actions => actions.setBlogs);
     const setUserLoading = useStoreActions(actions => actions.setUserLoading)
 
-    
-
     useEffect(() => {
         // when auth state changes, update user, username, and blog
         console.log('use effect', firebase.auth().currentUser);
         const unsub = firebase.auth().onAuthStateChanged(async (user) => {
-            console.log('auth state change');
 
             if (user) {
                 setUser(user);
-                    console.log('am i running?')
                     try {
                         const usernameRef = await firebase.firestore().collection('usernames').doc(user.uid).get();
                         const usernameData = usernameRef.data();
@@ -45,7 +41,6 @@ function MyAppWrapper(props: { children?: React.ReactNode }) {
                             setBlogs(undefined);
                         }
 
-                        setUserLoading(false);
                     } catch (error) {
 
                     }
@@ -53,8 +48,9 @@ function MyAppWrapper(props: { children?: React.ReactNode }) {
                 setUser(undefined);
                 setUsername(undefined);
                 setBlogs(undefined);
-                setUserLoading(false); //??
             }
+
+            setUserLoading(false);
 
         }, (error) => {
 

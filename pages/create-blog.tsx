@@ -10,8 +10,9 @@ import { useEffect, useState } from "react";
 import firebase from '../firebase'
 import buttonStyle from '../components/button/button.module.css'
 import { useStoreState } from "../components/store"
+import { UserBoundary } from "../components/userBoundary"
 
-export default function CreateBlog() {
+function CreateBlog() {
     const router = useRouter();
     const [blogName, setBlogName] = useState('');
     const [blogSlug, setBlogSlug] = useState('');
@@ -21,34 +22,6 @@ export default function CreateBlog() {
     const [blogSlugTaken, setBlogSlugTaken] = useState<boolean | undefined>();
     const user = useStoreState(state => state.user);
     const username = useStoreState(state => state.username);
-
-    // redirect the user if necessary to avoid nav crashes 
-    useEffect(() => {
-        // if(user && !username) {
-        //     // user is not registered, send to /create-user
-        //     router.push('/create-user');
-        // } else {
-        //     // no user, send to /login
-        //     router.push('/login')
-        // }
-
-        if(user) {
-            console.log('user')
-        } else {
-            // nobody is logged in
-            // router.push('/')
-            console.log('no user')
-        }
-
-        if(!username) {
-            // user is not registered, send to /create-user
-            router.push('/create-user')
-            console.log('no username')
-        } else {
-            console.log('username');
-        }
-    }, [user, username]);
-
 
     // convert the blog name to a URL-friendly slug
     useEffect(() => {
@@ -143,7 +116,7 @@ export default function CreateBlog() {
                                             if(!blogURLDoc.exists) {
                                                 await firebase.firestore().collection('blogs').doc(blogURL).set({
                                                     name: blogName,
-                                                    author: user.uid,
+                                                    author: username,
                                                     blogDescription: blogDescription,
                                                     brandImage: ''
                                                 });
@@ -161,5 +134,25 @@ export default function CreateBlog() {
                 </Container>
             </Layout>
         </div>
+    );
+}
+
+
+export default function BlogWrapper() {
+    const router = useRouter();
+    return (
+        <UserBoundary onUserLoaded={(user, username) => {
+            if(user && username) return; // logged in and registered
+            if(!user) { // needs to log in
+                router.push('/login')
+                return;
+            }
+            if(!username) { // needs to register
+                router.push('/create-user');
+                return; 
+            }
+        }}>
+            <CreateBlog/>
+        </UserBoundary>
     );
 }

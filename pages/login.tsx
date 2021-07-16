@@ -8,6 +8,7 @@ import * as firebaseui from 'firebaseui';
 import { useEffect, useState } from 'react'
 import useUsername from '../components/username'
 import { useStoreState } from '../components/store'
+import { UserBoundary } from '../components/userBoundary'
 
 
 const uiConfig: firebaseui.auth.Config = {
@@ -21,40 +22,8 @@ const uiConfig: firebaseui.auth.Config = {
     }
 }
 
-export default function Login() {
-
-    const router = useRouter();
-    const user = useStoreState(state => state.user);
-    const username = useStoreState(state => state.username);
-    const blogs = useStoreState(state => state.blogs);
-
-    useEffect(() => {
-        if(user) {
-            // user is already signed up, are they registered?
-            if(username) {
-                // user is registered, send to their page
-                router.push(`/users/${username}`)
-            } else {
-                // user is not registered, send to /create-user
-                router.push('/create-user')
-            }
-        } 
-        // else user is not logged in, stay here 
-    }, [user, username, blogs]);
-
-    // if blogs exist, redirect 
-    useEffect(() => {
-        if(blogs) {
-            if(blogs.length === 0) {
-                // needs to create a blog, send to /create-blog
-                router.push('/create-blog')
-            } else {
-                // has blogs already, send to user page
-                router.push(`/users/${username}`)
-            }
-        }
-    }, [blogs]);
-
+function Login() {
+    
     return (
         <div>
             <Head>
@@ -71,4 +40,27 @@ export default function Login() {
 
         </div>
     )
+}
+
+
+export default function LoginWrapper() {
+    const router = useRouter();
+    const blogs = useStoreState(state => state.blogs);
+    return(
+        <UserBoundary onUserLoaded={(user, username) => {
+            if(!user) return; // stay to log in
+            if(!username) { // needs to register
+                router.push('/create-user');
+                return;
+            }
+            if(blogs && blogs.length === 0) { // needs to create first blog
+                router.push('/create-blog');
+                return;
+            }
+            // has blogs, go to user page
+            router.push(`/users/${username}`);
+        }}>
+            <Login />
+        </UserBoundary>
+    );
 }
