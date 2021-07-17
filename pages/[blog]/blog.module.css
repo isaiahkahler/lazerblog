@@ -1,16 +1,38 @@
 .banner {
-    height: 284px;
+    min-height: 284px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: 0 64px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-blend-mode: overlay;
 }
 
 .banner h1 {
-    font-size: 80px;
+    font-size: 60px;
+    text-align: center;
+    margin-top: 1rem;
+    margin-bottom: 0;
+}
+
+.links {
+    display: flex;
+    flex-direction: row;
+}
+
+.links * {
+    margin: 0px 10px;
 }
 
 
 @media screen and (max-width: 768px) {
+    .banner {
+        min-height: 160px;
+        padding: 0 2.5vw;
+    }
     .banner h1 {
         font-size: 27px;
     }

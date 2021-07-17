@@ -15,14 +15,14 @@ export default function Nav(props: NavProps) {
 
     return (
         <div className={styles.nav}>
-            <h2>Lazer Blog</h2>
+            <h2 style={{margin: '10px 0'}}>Lazer Blog</h2>
             {user ? <span><Button onClick={() => {
                 firebase.auth().signOut().then(() => {
                     // code review: does this cause problems when a page controls its own navigation?
                     // e.g. will the page get redirected and then be reloaded unnecessarily? 
                     location.reload();
                 });
-            }}><h3>sign out</h3></Button></span> : undefined}
+            }}><p style={{margin: '10px 0'}}>sign out</p></Button></span> : undefined}
         </div>
     );
 }
