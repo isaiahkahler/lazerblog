@@ -9,6 +9,7 @@ import firebase from '../firebase'
 import buttonStyle from '../components/button/button.module.css'
 import { useStoreActions, useStoreState } from "../components/store";
 import { UserBoundary } from "../components/userBoundary";
+import useRedirect from "../components/useRedirect";
 
 
 
@@ -25,6 +26,7 @@ function CreateUser() {
     const username = useStoreState(state => state.username);
     const setUsername = useStoreActions(actions => actions.setUsername);
     const blogs = useStoreState(state => state.blogs);
+    const redirect = useRedirect();
 
     // parse first and last name from sign up
     useEffect(() => {
@@ -101,7 +103,10 @@ function CreateUser() {
                                                     profilePicture: '',
                                                     blogs: []
                                                 });
-                                                router.push('/create-blog');
+                                                
+                                                redirect(() => {
+                                                    router.push('/create-blog');
+                                                });
                                             }
                                         }
                                     } catch (error) {

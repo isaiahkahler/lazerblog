@@ -10,7 +10,7 @@ interface ButtonProps {
 
 export default function Button(props: ButtonProps) {
     return (
-        <a className={styles.button} onClick={props.onClick} style={{...props.style}}>
+        <a className={styles.button} onClick={props.onClick} style={{...props.style, color: 'inherit'}}>
             {props.children}
         </a>
     );
@@ -19,7 +19,7 @@ export default function Button(props: ButtonProps) {
 export function LinkButton({ children, ...props }: PropsWithChildren<LinkProps>) {
     return (
         <Link {...props}>
-            <a className={styles.button}>
+            <a className={styles.button} style={{color: 'inherit'}}>
                 {children}
             </a>
         </Link>
@@ -28,7 +28,7 @@ export function LinkButton({ children, ...props }: PropsWithChildren<LinkProps>)
 
 export function TransparentButton(props: ButtonProps) {
     return (
-        <a className={styles.button} onClick={props.onClick} style={{...props.style, backgroundColor: 'transparent', border: '2px solid #000'}}>
+        <a className={styles.button} onClick={props.onClick} style={{...props.style, backgroundColor: 'transparent', border: '2px solid #000', color: 'inherit'}}>
             {props.children}
         </a>
     );

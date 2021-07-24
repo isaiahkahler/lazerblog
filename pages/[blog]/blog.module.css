@@ -27,6 +27,28 @@
     margin: 0px 10px;
 }
 
+.previewContainer {
+    margin-bottom: 4rem;
+}
+
+.previewTitle {
+    margin-bottom: 5px;
+}
+
+.previewSubtitle {
+    margin: 5px 0;
+    font-weight: normal;
+}
+.previewMeta {
+    padding: 5px 0 10px 0;
+}
+.previewMeta span {
+    margin: 0 10px 0 0;
+}
+.previewImage {
+    max-height: 600px;
+    width: 100%;
+}
 
 @media screen and (max-width: 768px) {
     .banner {

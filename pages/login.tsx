@@ -6,9 +6,9 @@ import firebase from '../firebase'
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
 import * as firebaseui from 'firebaseui';
 import { useEffect, useState } from 'react'
-import useUsername from '../components/username'
 import { useStoreState } from '../components/store'
 import { UserBoundary } from '../components/userBoundary'
+import useRedirect from '../components/useRedirect'
 
 
 const uiConfig: firebaseui.auth.Config = {
@@ -45,9 +45,9 @@ function Login() {
 
 export default function LoginWrapper() {
     const router = useRouter();
-    const blogs = useStoreState(state => state.blogs);
+    const redirect = useRedirect();
     return(
-        <UserBoundary onUserLoaded={(user, username) => {
+        <UserBoundary onUserLoaded={(user, username, blogs) => {
             if(!user) return; // stay to log in
             if(!username) { // needs to register
                 router.push('/create-user');
@@ -57,8 +57,11 @@ export default function LoginWrapper() {
                 router.push('/create-blog');
                 return;
             }
-            // has blogs, go to user page
-            router.push(`/users/${username}`);
+            // redirect will redirect if the URL contains ?redirect=[new-route]
+            // else, has blogs, go to user page
+            redirect(() => {
+                router.push(`/users/${username}`);
+            });
         }}>
             <Login />
         </UserBoundary>

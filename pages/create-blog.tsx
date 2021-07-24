@@ -11,6 +11,7 @@ import firebase from '../firebase'
 import buttonStyle from '../components/button/button.module.css'
 import { useStoreState } from "../components/store"
 import { UserBoundary } from "../components/userBoundary"
+import useRedirect from "../components/useRedirect"
 
 function CreateBlog() {
     const router = useRouter();
@@ -22,6 +23,13 @@ function CreateBlog() {
     const [blogSlugTaken, setBlogSlugTaken] = useState<boolean | undefined>();
     const user = useStoreState(state => state.user);
     const username = useStoreState(state => state.username);
+    const blogs = useStoreState(state => state.blogs);
+    const redirect = useRedirect();
+    
+    // delete: for testing
+    useEffect(() => {
+        console.log('blog update:', blogs)
+    }, [blogs])
 
     // convert the blog name to a URL-friendly slug
     useEffect(() => {
@@ -114,14 +122,23 @@ function CreateBlog() {
                                             const blogURL = blogSlugTaken ? backupBlogSlug : blogSlug;
                                             const blogURLDoc = await firebase.firestore().collection('blogs').doc(blogURL).get();
                                             if(!blogURLDoc.exists) {
+                                                // add blog to 'blogs'
                                                 await firebase.firestore().collection('blogs').doc(blogURL).set({
                                                     name: blogName,
                                                     author: username,
                                                     blogDescription: blogDescription,
                                                     brandImage: ''
                                                 });
-                                                // add blog to user 
-                                                router.push('/' + blogURL);
+                                                // add blog to user     
+                                                await firebase.firestore().collection('users').doc(username).set({
+                                                    blogs: blogs ? [...blogs, blogSlug] : [blogSlug]
+                                                }, {merge: true});
+
+                                                // redirects if URL has ?redirect=[new-route]
+                                                // else goes to /[blog]
+                                                redirect(() => {
+                                                    router.push('/' + blogURL);
+                                                })
                                             }
                                         }
                                     } catch (error) {
@@ -144,6 +161,7 @@ export default function BlogWrapper() {
         <UserBoundary onUserLoaded={(user, username) => {
             if(user && username) return; // logged in and registered
             if(!user) { // needs to log in
+                console.log('no user')
                 router.push('/login')
                 return;
             }

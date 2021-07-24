@@ -23,6 +23,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
             const posts = postQuery.docs.map((doc) => {
                 const data = doc.data();
+                data.slug = doc.id;
                 return data;
             });
 
@@ -44,7 +45,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 }
 
 interface Post {
-    title: string
+    title: string, 
+    slug: string,
     date: number,
     description: string | undefined,
     image: string | undefined,
@@ -65,13 +67,26 @@ interface BlogWrapperProps {
 }
 
 function PostPreview({post}: {post: Post}) {
+    const router = useRouter();
+    const { blog } = router.query;
+
     return (
-        <div style={{marginBottom: '4rem'}}>
-            <h1 style={{marginBottom: '5px'}}>{post.title}</h1>
-            <h2 style={{margin: '10px 0', fontWeight: 'normal'}}>{post.description}</h2>
-            <span>{moment(post.date).calendar()}</span>
-            <span>{post.tags.map(tag => `#${tag}`)}</span>
-            {post.image ? <img src={post.image} style={{maxHeight: '800px', width: '100%',}} /> : null}
+        <div className={styles.previewContainer}>
+            <Link href={`/${blog}/${post.slug}`}>
+                <a style={{color: 'inherit'}}>
+                    <h1 className={styles.previewTitle}>{post.title}</h1>
+                    <h2 className={styles.previewSubtitle}>{post.description}</h2>
+                </a>
+            </Link>
+            <div className={styles.previewMeta}>
+                <span>{moment(post.date).calendar()}</span>
+                {post.tags.map((tag, index) => <span key={index}><Link href={`/tags/${tag}`}><a>#{tag}</a></Link></span>)}
+            </div>
+            <Link href={`/${blog}/${post.slug}`}>
+                <a>
+                {post.image ? <img src={post.image} className={styles.previewImage} /> : null}
+                </a>
+            </Link>
         </div>
     );
 }
@@ -87,14 +102,14 @@ function Blog(props: BlogProps) {
         <div>
             <div className={styles.banner} style={{ backgroundColor: props.brandImage ? 'rgba(255, 255, 255, 0.3)' : '#eee', backgroundImage: props.brandImage ? `url(${props.brandImage})` : 'none' }}>
                 <h1>{props.name}</h1>
-                <div className={styles.links}>
                     <Link href={`/${blog}`}>
-                        <a>/{blog}</a>
+                        <a style={{color: "#000"}}>/{blog}</a>
                     </Link>
                     <Link href={`/users/${props.author}`}>
-                        <a>@{props.author}</a>
+                        <a style={{color: "#000"}}>@{props.author}</a>
                     </Link>
-                </div>
+                {/* <div className={styles.links}>
+                </div> */}
                 <p style={{ maxWidth: '680px' }}>{props.description}</p>
                 <TransparentButton style={{ marginBottom: '1rem' }}>
                     <p>follow</p> {/* change to say 'following' or 'edit' depending on user */}

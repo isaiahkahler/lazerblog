@@ -1,0 +1,10 @@
+.titleInput {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border: 0;
+    background-color: #eee;
+    border-radius: 10px;
+    font-size: 2rem;
+    font-weight: bold;
+    transition: 200ms;
+}
