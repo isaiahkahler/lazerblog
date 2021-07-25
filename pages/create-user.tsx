@@ -101,7 +101,8 @@ function CreateUser() {
                                                     firstName: firstName,
                                                     lastName: lastName,
                                                     profilePicture: '',
-                                                    blogs: []
+                                                    blogs: [],
+                                                    following: []
                                                 });
                                                 
                                                 redirect(() => {

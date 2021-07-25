@@ -9,6 +9,7 @@ import Button, { TransparentButton } from '../../components/button'
 import styles from './blog.module.css'
 import Link from 'next/link'
 import moment from 'moment'
+import { useStoreState, useStoreActions } from '../../components/store'
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     console.log('params', context.params);
@@ -45,7 +46,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 }
 
 interface Post {
-    title: string, 
+    title: string,
     slug: string,
     date: number,
     description: string | undefined,
@@ -66,27 +67,27 @@ interface BlogWrapperProps {
     posts: Post[]
 }
 
-function PostPreview({post}: {post: Post}) {
+function PostPreview({ post }: { post: Post }) {
     const router = useRouter();
     const { blog } = router.query;
 
     return (
         <div className={styles.previewContainer}>
             <Link href={`/${blog}/${post.slug}`}>
-                <a style={{color: 'inherit'}}>
+                <a style={{ color: 'inherit' }}>
                     <h1 className={styles.previewTitle}>{post.title}</h1>
-                    <h2 className={styles.previewSubtitle}>{post.description}</h2>
+                    {post.description ? <h2 className={styles.previewSubtitle}>{post.description}</h2> : null}
                 </a>
             </Link>
             <div className={styles.previewMeta}>
                 <span>{moment(post.date).calendar()}</span>
                 {post.tags.length > 0 ? post.tags.map((tag, index) => <span key={index}><Link href={`/tags/${tag}`}><a>#{tag}</a></Link></span>) : null}
             </div>
-            <Link href={`/${blog}/${post.slug}`}>
+            {post.image ? <Link href={`/${blog}/${post.slug}`}>
                 <a>
-                {post.image ? <img src={post.image} className={styles.previewImage} /> : null}
+                    <img src={post.image} className={styles.previewImage} />
                 </a>
-            </Link>
+            </Link> : null}
         </div>
     );
 }
@@ -94,6 +95,15 @@ function PostPreview({post}: {post: Post}) {
 function Blog(props: BlogProps) {
     const router = useRouter();
     const { blog } = router.query;
+    const username = useStoreState(state => state.username);
+    const following = useStoreState(state => state.following);
+    const doFollow = useStoreActions(actions => actions.doFollow);
+    const doUnfollow = useStoreActions(actions => actions.doUnfollow);
+    
+    useEffect(() => {
+        console.log('following:' , following)
+    }, [following]);
+
 
     const centered: CSSProperties = { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' };
     const postUI = props.posts ? props.posts.map((post, index) => { return <PostPreview post={post} key={index} /> }) : <div style={centered}><p>This page is empty.</p></div>;
@@ -102,15 +112,36 @@ function Blog(props: BlogProps) {
         <div>
             <div className={styles.banner} style={{ backgroundColor: props.brandImage ? 'rgba(255, 255, 255, 0.3)' : '#eee', backgroundImage: props.brandImage ? `url(${props.brandImage})` : 'none' }}>
                 <h1>{props.name}</h1>
-                    <Link href={`/${blog}`}>
-                        <a style={{color: "#000"}}>/{blog}</a>
-                    </Link>
-                    <Link href={`/users/${props.author}`}>
-                        <a style={{color: "#000"}}>@{props.author}</a>
-                    </Link>
+                <Link href={`/${blog}`}>
+                    <a style={{ color: "#000" }}>/{blog}</a>
+                </Link>
+                <Link href={`/users/${props.author}`}>
+                    <a style={{ color: "#000" }}>@{props.author}</a>
+                </Link>
                 <p style={{ maxWidth: '680px' }}>{props.description}</p>
-                <TransparentButton style={{ marginBottom: '1rem' }}>
-                    <p>follow</p> {/* change to say 'following' or 'edit' depending on user */}
+                <TransparentButton style={{ marginBottom: '1rem' }} onClick={() => {
+                    // do they want to follow, unfollow, or edit? 
+                    if(username === props.author) {
+                        // edit profile
+                        router.push('/edit-profile')
+                        return;
+                    }
+                    if(following && typeof(blog) === 'string' && following.includes(blog)) {
+                        // unfollow
+                        doUnfollow(blog);
+                        console.log('unfollow', blog)
+                        return;
+                    } else {
+                        if(following && typeof(blog) === 'string') {
+                            // follow
+                            doFollow(blog);
+                        console.log('follow', blog)
+
+                            return;
+                        }
+                    }
+                }}>
+                    {username === props.author ? <p>edit profile</p> : following && typeof(blog) === 'string' && following.includes(blog) ? <p>unfollow</p> : <p>follow</p>} {/* change to say 'following' or 'edit' depending on user */}
                 </TransparentButton>
             </div>
             <Layout>

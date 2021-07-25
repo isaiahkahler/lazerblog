@@ -1,5 +1,6 @@
 import moment from "moment"
 import { GetServerSideProps } from "next"
+import Link from "next/link"
 import Container from "../../components/container"
 import Layout from "../../components/layout"
 import firebase from '../../firebase'
@@ -50,8 +51,9 @@ export default function Post({post}: {post: Post}) {
             <Layout>
                 <Container>
                     <h1>{post.title}</h1>
-                    <h2>{post.description}</h2>
+                    {post.description ? <h2>{post.description}</h2> : null}
                     <p>{moment(post.date).calendar()}</p>
+                    {post.tags.length > 0 ? post.tags.map((tag, index) => <span key={index}><Link href={`/tags/${tag}`}><a style={{margin: '0px 10px 0px 0px'}}>#{tag}</a></Link></span>) : null}
                     <div dangerouslySetInnerHTML={{__html: post.content}}></div>
                 </Container>
             </Layout>

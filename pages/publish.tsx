@@ -61,6 +61,7 @@ function Publish() {
                                         await firebase.firestore().collection('blogs').doc(blogSlug).collection('posts').doc(postSlug).set({
                                             date: Date.now(),
                                             description: description,
+                                            author: username,
                                             image: '',
                                             tags: !!tag ? tag.split(',').map(str => str.trim()) : [],
                                             title: title,
