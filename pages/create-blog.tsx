@@ -20,6 +20,7 @@ function CreateBlog() {
     const [blogName, setBlogName] = useState('');
     const [blogSlug, setBlogSlug] = useSlug();
     const [backupBlogSlug, blogSlugTaken] = useBackupSlug(blogSlug, async (newSlug) => {
+        // code review: add wait time before searching, this will query firestore every key stroke
         const blogSlugDoc = await firebase.firestore().collection('blogs').doc(newSlug).get();
         return blogSlugDoc.exists;
     });
@@ -77,7 +78,7 @@ function CreateBlog() {
                                             }
                                         }
                                     } catch (error) {
-
+                                        // code review: handle
                                     }
                                 })();
                             }} />

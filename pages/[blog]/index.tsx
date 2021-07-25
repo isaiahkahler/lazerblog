@@ -80,7 +80,7 @@ function PostPreview({post}: {post: Post}) {
             </Link>
             <div className={styles.previewMeta}>
                 <span>{moment(post.date).calendar()}</span>
-                {post.tags.map((tag, index) => <span key={index}><Link href={`/tags/${tag}`}><a>#{tag}</a></Link></span>)}
+                {post.tags.length > 0 ? post.tags.map((tag, index) => <span key={index}><Link href={`/tags/${tag}`}><a>#{tag}</a></Link></span>) : null}
             </div>
             <Link href={`/${blog}/${post.slug}`}>
                 <a>
@@ -108,8 +108,6 @@ function Blog(props: BlogProps) {
                     <Link href={`/users/${props.author}`}>
                         <a style={{color: "#000"}}>@{props.author}</a>
                     </Link>
-                {/* <div className={styles.links}>
-                </div> */}
                 <p style={{ maxWidth: '680px' }}>{props.description}</p>
                 <TransparentButton style={{ marginBottom: '1rem' }}>
                     <p>follow</p> {/* change to say 'following' or 'edit' depending on user */}
