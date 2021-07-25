@@ -12,88 +12,23 @@ import buttonStyle from '../components/button/button.module.css'
 import { useStoreState } from "../components/store"
 import { UserBoundary } from "../components/userBoundary"
 import useRedirect from "../components/useRedirect"
+import { URL } from "../components/constants"
+import useSlug, { useBackupSlug } from "../components/useSlug"
 
 function CreateBlog() {
     const router = useRouter();
     const [blogName, setBlogName] = useState('');
-    const [blogSlug, setBlogSlug] = useState('');
-    const [backupBlogSlug, setBackupBlogSlug] = useState('');
+    const [blogSlug, setBlogSlug] = useSlug();
+    const [backupBlogSlug, blogSlugTaken] = useBackupSlug(blogSlug, async (newSlug) => {
+        const blogSlugDoc = await firebase.firestore().collection('blogs').doc(newSlug).get();
+        return blogSlugDoc.exists;
+    });
     const [blogDescription, setBlogDescription] = useState('');
     const [formSubmitted, setFormSubmitted] = useState(false);
-    const [blogSlugTaken, setBlogSlugTaken] = useState<boolean | undefined>();
     const user = useStoreState(state => state.user);
     const username = useStoreState(state => state.username);
     const blogs = useStoreState(state => state.blogs);
     const redirect = useRedirect();
-    
-    // delete: for testing
-    useEffect(() => {
-        console.log('blog update:', blogs)
-    }, [blogs])
-
-    // convert the blog name to a URL-friendly slug
-    useEffect(() => {
-        let str = blogName;
-        str = str.replace(/^\s+|\s+$/g, ''); // trim
-        str = str.toLowerCase();
-
-        // remove accents, swap ñ for n, etc
-        var from = "àáäãâèéëêìíïîòóöôùúüûñç·/_,:;";
-        var to = "aaaaaeeeeiiiioooouuuunc------";
-        for (var i = 0, l = from.length; i < l; i++) {
-            str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
-        }
-
-        str = str.replace(/[^a-z0-9 -]/g, '') // remove invalid chars
-            .replace(/\s+/g, '-') // collapse whitespace and replace by -
-            .replace(/-+/g, '-'); // collapse dashes
-
-        setBlogSlug(str);
-    }, [blogName])
-
-    // check if blog slug is taken 
-    useEffect(() => {
-        (async () => {
-            try {
-                if (blogSlug.length > 0) {
-                    const blogSlugDoc = await firebase.firestore().collection('blogs').doc(blogSlug).get();
-                    if (blogSlugDoc.exists) {
-                        setBlogSlugTaken(true);
-                    } else {
-                        setBlogSlugTaken(false);
-                    }
-                }
-            } catch (error) {
-
-            }
-        })();
-    }, [blogSlug]);
-
-    // if the blog slug is taken, create a backup slug
-    useEffect(() => {
-        (async () => {
-            try {
-                if(blogSlug && blogSlugTaken) {
-                    // add a number to the blog slug, then check if that is available
-                    // if not, increase the number and try again 
-                    // if it is available, set it as the backup
-                    let found = false;
-                    let index = 1;
-                    while(!found) {
-                        const backupSlugDoc = await firebase.firestore().collection('blogs').doc(blogSlug + index).get();
-                        if(backupSlugDoc.exists) {
-                            index++;
-                        } else {
-                            found = true;
-                        }
-                    }
-                    setBackupBlogSlug(blogSlug + index);
-                }
-            } catch (error) {
-
-            }
-        })();
-    }, [blogSlug, blogSlugTaken]);
 
     return (
         <div>
@@ -107,8 +42,8 @@ function CreateBlog() {
                 <Container>
                     <h1>Create your new blog.</h1>
                     <form>
-                        <Input value={blogName} setValue={setBlogName} id='blogname' label='Blog Name' isValid={!formSubmitted || blogSlug.length !== 0} invalidMessage={"Please enter your blog name."} />
-                        {blogSlug && <p>Your blog will appear as https://lazerblog.com/{blogSlugTaken ? backupBlogSlug : blogSlug}</p>}
+                        <Input value={blogName} setValue={value => {setBlogName(value); setBlogSlug(value)}} id='blogname' label='Blog Name' isValid={!formSubmitted || blogSlug.length !== 0} invalidMessage={"Please enter your blog name."} />
+                        {blogSlug && <p>Your blog will appear as {URL}/{blogSlugTaken ? backupBlogSlug : blogSlug}</p>}
                         {blogSlugTaken ? <Box style={{backgroundColor: "#f8a0b2", border: '2px solid #cc0f35'}}>The URL for this blog name is taken. To get a matching blog URL, change the blog name.</Box> : undefined}
                         <TextArea value={blogDescription} setValue={setBlogDescription} id='blogdescriiption' label="Blog Description" placeholder="optional" />
                         <div style={{ display: 'flex', justifyContent: 'center', margin: '1rem 0' }}>
