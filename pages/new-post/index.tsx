@@ -107,15 +107,14 @@ function MenuBar({ editor }: { editor: Editor | null }) {
 function NewPost() {
 
     const redirect = useRedirect();
-    const blogs = useStoreState(state => state.blogs);
     const [postSlug, setPostSlug] = useSlugUID();
-    const username = useStoreState(state => state.username)
     const [submitted, setSubmitted] = useState(false);
+    const user = useStoreState(state => state.user);
 
     // code review: 
 
     // if there's only one blog, auto select it
-    const [postToBlog, setPostToBlog] = useState(blogs && blogs.length === 1 ? blogs[0] : undefined)
+    const [postToBlog, setPostToBlog] = useState(user && user.blogs && user.blogs.length === 1 ? user.blogs[0] : undefined)
     const [title, setTitle] = useState('');
     const editor = useEditor({
         extensions: [
@@ -132,12 +131,12 @@ function NewPost() {
     // grab the saved draft, if there is one
     useEffect(() => {
         if (!editor) return;
-        if (!username) return;
+        if (!user) return;
 
         (async () => {
             try {
                 console.log('grab draft')
-                const userRef = await firebase.firestore().collection('users').doc(username).get();
+                const userRef = await firebase.firestore().collection('users').doc(user.username).get();
                 const userData = userRef.data();
                 if (userRef.exists && userData) {
                     if (userData.draft && userData.draft.title && userData.draft.content && userData.draft.postTo && userData.draft.slug) {
@@ -154,15 +153,10 @@ function NewPost() {
                 console.error(error)
             }
         })();
-    }, [editor, username, setPostSlug]);
+    }, [editor, user, setPostSlug]);
 
     
-        //delete 
-        useEffect(() => {
-            console.log('submitted:', submitted, !submitted || title.length === 0);
-        }, [submitted]);
-
-    if(!blogs) return <p>an error occured</p>;
+    if(!user) return <p>an error occured</p>;
 
 
     const setDraft = async () => {
@@ -172,7 +166,7 @@ function NewPost() {
                 setSubmitted(true);
                 return false;
             }
-            await firebase.firestore().collection('users').doc(username).set({
+            await firebase.firestore().collection('users').doc(user.username).set({
                 draft: {
                     postTo: postToBlog,
                     title: title,
@@ -200,7 +194,7 @@ function NewPost() {
                 <Layout>
                     <Container>
                         <h1>Choose a blog to post to.</h1>
-                        {blogs.map((blog, index) => <a key={index} onClick={() => { setPostToBlog(blog) }}><h1>{blog}</h1></a>)}
+                        {user.blogs.map((blog, index) => <a key={index} onClick={() => { setPostToBlog(blog) }}><h1>{blog}</h1></a>)}
                     </Container>
                 </Layout>
             </div>
@@ -246,7 +240,7 @@ function NewPost() {
                             editor.commands.clearContent();
                             setTitle('');
                             setPostSlug('');
-                            firebase.firestore().collection('users').doc(username).update({
+                            firebase.firestore().collection('users').doc(user.username).update({
                                 draft: firebase.firestore.FieldValue.delete()
                             });
                         }}>
@@ -269,23 +263,21 @@ function NewPost() {
 
 export default function NewPostWrapper() {
     const router = useRouter();
-    const blogs = useStoreState(state => state.blogs);
 
-    return (<UserBoundary onUserLoaded={(user, username) => {
-        if (!user) { // nobody is logged in
+    return (<UserBoundary onUserLoaded={(userAuth, user) => {
+        if (!userAuth) { // nobody is logged in
             console.log('nobody is logged in')
             router.push({ pathname: '/login', query: { redirect: 'new-post' } });
             return;
         }
-        if (!username) { // user is not registered
+        if (!user) { // user is not registered
             console.log('user is not registered')
 
             router.push({ pathname: '/create-user', query: { redirect: 'new-post' } });
             return;
         }
-        if (!blogs) {
+        if (!user.blogs) {
             console.log('no blog(s) to post to');
-
             router.push({ pathname: '/create-blog', query: { redirect: 'new-post' } });
             return;
         }

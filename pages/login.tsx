@@ -46,24 +46,23 @@ function Login() {
 export default function LoginWrapper() {
     const router = useRouter();
     const redirect = useRedirect();
-    const blogs = useStoreState(state => state.blogs);
     return (
-        <UserBoundary onUserLoaded={(user, username) => {
-            console.log('user loaded in login', user, username)
-            if (!user) return; // stay to log in
-            if (!username) { // needs to register
+        <UserBoundary onUserLoaded={(userAuth, user) => {
+            // console.log('user loaded in login', user, username)
+            if (!userAuth) return; // stay to log in
+            if (!user) { // needs to register
                 router.push('/create-user');
                 return;
             }
             // code review: may want to send to /home instead
-            if (blogs && blogs.length === 0) { // needs to create first blog
+            if (user.blogs && user.blogs.length === 0) { // needs to create first blog
                 router.push('/create-blog');
                 return;
             }
             // redirect will redirect if the URL contains ?redirect=[new-route]
             // else, has blogs, go to user page
             redirect(() => {
-                router.push(`/users/${username}`);
+                router.push(`/users/${user.username}`);
             });
         }}>
             <Login />

@@ -4,6 +4,7 @@ import { StoreProvider } from 'easy-peasy'
 import { store, useStoreActions, useStoreState } from '../components/store'
 import firebase from '../firebase'
 import React, { useEffect } from 'react'
+import { User } from '../components/types'
 
 function MyApp({ Component, pageProps }: AppProps) {
     return <StoreProvider store={store}><MyAppWrapper><Component {...pageProps} /></MyAppWrapper></StoreProvider>
@@ -11,41 +12,32 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 function MyAppWrapper(props: { children?: React.ReactNode }) {
 
-    // const username = useStoreState(state => state.username);
+    const setUserAuth = useStoreActions(actions => actions.setUserAuth);
     const setUser = useStoreActions(actions => actions.setUser);
-    const setUsername = useStoreActions(actions => actions.setUsername);
-    const setBlogs = useStoreActions(actions => actions.setBlogs);
-    const setFollowing = useStoreActions(actions => actions.setFollowing);
     const setUserLoading = useStoreActions(actions => actions.setUserLoading);
 
     useEffect(() => {
         // when auth state changes, update user, username, and blog
         let unsubDocListeners = () => { };
-        const unsub = firebase.auth().onAuthStateChanged(async (user) => {
+        let unsubOtherListener = () => {};
+        const unsub = firebase.auth().onAuthStateChanged(async (userAuth) => {
             console.log('auth state changed')
-            if (!user) {
+            if (!userAuth) {
+                setUserAuth(undefined);
                 setUser(undefined);
-                setUsername(undefined);
-                setBlogs(undefined);
                 setUserLoading(false);
                 return;
             }
 
-            setUser(user);
+            setUserAuth(userAuth);
             try {
                 // set username
-                const usernameRef = await firebase.firestore().collection('usernames').doc(user.uid).get();
+                const usernameRef = await firebase.firestore().collection('usernames').doc(userAuth.uid).get();
                 const usernameData = usernameRef.data();
-                if (usernameRef.exists && usernameData) {
-                    setUsername(usernameData.username);
-                } else {
-                    setUsername(undefined);
-                }
                 const _username: string | undefined = usernameRef.exists && usernameData ? usernameData.username : undefined;
-
+                
                 if (!_username) {
-                    setFollowing(undefined);
-                    setBlogs(undefined);
+                    setUser(undefined);
                     setUserLoading(false);
                     return;
                 }
@@ -54,22 +46,13 @@ function MyAppWrapper(props: { children?: React.ReactNode }) {
                 unsubDocListeners = firebase.firestore().collection('users').doc(_username).onSnapshot((doc) => {
                     const docData = doc.data();
                     if (doc.exists && docData) {
-                        if (docData.following) {
-                            setFollowing(docData.following);
-                        } else {
-                            setFollowing(undefined);
-                        }
-                        if (docData.blogs) { 
-                            setBlogs(docData.blogs);
-                        } else {
-                            setBlogs(undefined);
-                        }
+                        setUser({username: _username, ...docData} as User);
                     }
                     setUserLoading(false);
                 }, (error) => {
                     //code review: handle
                     console.error(error);
-                })
+                });
 
             } catch (error) {
                 // code review:

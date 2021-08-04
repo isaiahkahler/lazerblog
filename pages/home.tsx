@@ -17,8 +17,6 @@ interface HomeProps {
 }
 
 function Home(props: HomeProps) {
-    const username = useStoreState(state => state.username);
-    const following = useStoreState(state => state.following);
 
     return (
         <div>
@@ -39,16 +37,17 @@ function Home(props: HomeProps) {
 
 export default function HomeWrapper() {
     const router = useRouter();
-    const following = useStoreState(state => state.following);
+    const user = useStoreState(state => state.user);
     const [posts, setPosts] = useState<Post[]>();
 
 
     useEffect(() => {
-        if(!following || following.length === 0) return;
+        // code review: does this fire unnecessarily if user is updated?
+        if(!user || user.following.length === 0) return;
         (async () => {
             try {
-                console.log('following', following);
-                const postsRef = await firebase.firestore().collectionGroup('posts').where('blog', 'in', following).orderBy('date', 'desc').limit(10).get();
+                console.log('following', user.following);
+                const postsRef = await firebase.firestore().collectionGroup('posts').where('blog', 'in', user.following).orderBy('date', 'desc').limit(10).get();
                 console.log('postsRef', postsRef.docs);
                 if(!postsRef.docs || postsRef.docs.length === 0) {
                     setPosts(undefined);
@@ -63,7 +62,7 @@ export default function HomeWrapper() {
                 console.error(error);
             }
         })();
-    }, [following])
+    }, [user])
 
     return (<UserBoundary onUserLoaded={(user, username) => {
         if (!user) {

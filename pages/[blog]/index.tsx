@@ -64,8 +64,7 @@ interface BlogWrapperProps {
 function Blog(props: BlogProps) {
     const router = useRouter();
     const { blog } = router.query;
-    const username = useStoreState(state => state.username);
-    const following = useStoreState(state => state.following);
+    const user = useStoreState(state => state.user);
     const doFollow = useStoreActions(actions => actions.doFollow);
     const doUnfollow = useStoreActions(actions => actions.doUnfollow);
 
@@ -86,18 +85,18 @@ function Blog(props: BlogProps) {
                 <p style={{ maxWidth: '680px' }}>{props.description}</p>
                 <TransparentButton style={{ marginBottom: '1rem' }} onClick={() => {
                     // do they want to follow, unfollow, or edit? 
-                    if(username === props.author) {
+                    if(user && user.username === props.author) {
                         // edit profile
                         router.push('/edit-profile')
                         return;
                     }
-                    if(following && typeof(blog) === 'string' && following.includes(blog)) {
+                    if(user && typeof(blog) === 'string' && user.following.includes(blog)) {
                         // unfollow
                         doUnfollow(blog);
                         console.log('unfollow', blog)
                         return;
                     } else {
-                        if(following && typeof(blog) === 'string') {
+                        if(user && user.following && typeof(blog) === 'string') {
                             // follow
                             doFollow(blog);
                         console.log('follow', blog)
@@ -106,7 +105,7 @@ function Blog(props: BlogProps) {
                         }
                     }
                 }}>
-                    {username === props.author ? <p>edit profile</p> : following && typeof(blog) === 'string' && following.includes(blog) ? <p>unfollow</p> : <p>follow</p>} {/* change to say 'following' or 'edit' depending on user */}
+                    {user && user.username === props.author ? <p>edit profile</p> : user && typeof(blog) === 'string' && user.following.includes(blog) ? <p>unfollow</p> : <p>follow</p>} 
                 </TransparentButton>
             </div>
             <Layout>

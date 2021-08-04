@@ -26,9 +26,8 @@ function CreateBlog() {
     });
     const [blogDescription, setBlogDescription] = useState('');
     const [formSubmitted, setFormSubmitted] = useState(false);
+    const userAuth = useStoreState(state => state.userAuth);
     const user = useStoreState(state => state.user);
-    const username = useStoreState(state => state.username);
-    const blogs = useStoreState(state => state.blogs);
     const redirect = useRedirect();
 
     return (
@@ -54,20 +53,20 @@ function CreateBlog() {
 
                                 (async () => {
                                     try {
-                                        if (blogSlug && user) {
+                                        if (blogSlug && userAuth && user) {
                                             const blogURL = blogSlugTaken ? backupBlogSlug : blogSlug;
                                             const blogURLDoc = await firebase.firestore().collection('blogs').doc(blogURL).get();
                                             if(!blogURLDoc.exists) {
                                                 // add blog to 'blogs'
                                                 await firebase.firestore().collection('blogs').doc(blogURL).set({
                                                     name: blogName,
-                                                    author: username,
+                                                    author: user.username,
                                                     blogDescription: blogDescription,
                                                     brandImage: ''
                                                 });
                                                 // add blog to user     
-                                                await firebase.firestore().collection('users').doc(username).set({
-                                                    blogs: blogs ? [...blogs, blogSlug] : [blogSlug]
+                                                await firebase.firestore().collection('users').doc(user.username).set({
+                                                    blogs: user.blogs ? [...user.blogs, blogSlug] : [blogSlug]
                                                 }, {merge: true});
 
                                                 // redirects if URL has ?redirect=[new-route]

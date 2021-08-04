@@ -18,25 +18,34 @@ function Publish() {
     const [content, setContent] = useState<any>();
     const [blogSlug, setBlogSlug] = useState('');
     const [postSlug, setPostSlug] = useState('');
-    const username = useStoreState(state => state.username);
+    const user = useStoreState(state => state.user);
     const router = useRouter();
 
     useEffect(() => {
         (async () => {
-            if (!username) return;
-            const userRef = await firebase.firestore().collection('users').doc(username).get();
-            const userData = userRef.data();
-            if (userRef.exists && userData && userData.draft) {
-                setTitle(userData.draft.title);
-                setBlogSlug(userData.draft.postTo);
-                setPostSlug(userData.draft.slug);
-                setContent(userData.draft.content);
-            } else {
-                // error code review: 
-                router.push('/new-post');
+            if (!user) return;
+
+            if(user.draft) {
+                setTitle(user.draft.title);
+                setBlogSlug(user.draft.postTo);
+                setPostSlug(user.draft.slug);
+                setContent(user.draft.content);
             }
+
+            // code review: try catch? 
+            // const userRef = await firebase.firestore().collection('users').doc(user.username).get();
+            // const userData = userRef.data();
+            // if (userRef.exists && userData && userData.draft) {
+            //     setTitle(userData.draft.title);
+            //     setBlogSlug(userData.draft.postTo);
+            //     setPostSlug(userData.draft.slug);
+            //     setContent(userData.draft.content);
+            // } else {
+            //     // error code review: 
+            //     router.push('/new-post');
+            // }
         })();
-    }, [username]);
+    }, [user]);
 
     return (
         <div>
@@ -55,7 +64,7 @@ function Publish() {
                         <Button onClick={async () => {
                             try {
                                 console.log('title,', !!title, 'content', !!content, 'blog', !!blogSlug, 'post', !!postSlug)
-                                if(title && content && blogSlug && postSlug) {
+                                if(title && content && blogSlug && postSlug && user) {
                                     const postRef = await firebase.firestore().collection('blogs').doc(blogSlug).collection('posts').doc(postSlug).get();
                                     if(!postRef.exists) {
                                         await firebase.firestore().collection('blogs').doc(blogSlug).collection('posts').doc(postSlug).set({
@@ -66,10 +75,10 @@ function Publish() {
                                             content: content,
                                             image: '',
                                             tags: !!tag ? tag.split(',').map(str => str.trim()) : [],
-                                            author: username,
+                                            author: user.username,
                                             blog: blogSlug,
                                         });
-                                        await firebase.firestore().collection('users').doc(username).update({
+                                        await firebase.firestore().collection('users').doc(user.username).update({
                                             draft: firebase.firestore.FieldValue.delete()
                                         });
 
