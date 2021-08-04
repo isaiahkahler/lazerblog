@@ -12,6 +12,7 @@ import { useEffect, useState } from "react"
 import { useStoreState } from "../../components/store"
 import useRedirect from "../../components/useRedirect"
 import { useSlugUID } from "../../components/useSlug"
+import Input from '../../components/input'
 import firebase from '../../firebase'
 import { URL } from "../../components/constants"
 import CodeBlock from '@tiptap/extension-code-block'
@@ -109,11 +110,12 @@ function NewPost() {
     const blogs = useStoreState(state => state.blogs);
     const [postSlug, setPostSlug] = useSlugUID();
     const username = useStoreState(state => state.username)
+    const [submitted, setSubmitted] = useState(false);
 
     // code review: 
-    if (!blogs) return <p>something is wrong</p>;
 
-    const [postToBlog, setPostToBlog] = useState(blogs.length > 1 ? undefined : blogs[0])
+    // if there's only one blog, auto select it
+    const [postToBlog, setPostToBlog] = useState(blogs && blogs.length === 1 ? blogs[0] : undefined)
     const [title, setTitle] = useState('');
     const editor = useEditor({
         extensions: [
@@ -134,6 +136,7 @@ function NewPost() {
 
         (async () => {
             try {
+                console.log('grab draft')
                 const userRef = await firebase.firestore().collection('users').doc(username).get();
                 const userData = userRef.data();
                 if (userRef.exists && userData) {
@@ -142,13 +145,47 @@ function NewPost() {
                         setTitle(userData.draft.title);
                         setPostSlug(userData.draft.slug);
                         editor.commands.setContent(userData.draft.content);
+                    } else {
+                        console.log('cou;dnt grab')
                     }
                 }
             } catch (error) {
-
+                // code review: handle
+                console.error(error)
             }
         })();
-    }, [editor, username]);
+    }, [editor, username, setPostSlug]);
+
+    
+        //delete 
+        useEffect(() => {
+            console.log('submitted:', submitted, !submitted || title.length === 0);
+        }, [submitted]);
+
+    if(!blogs) return <p>an error occured</p>;
+
+
+    const setDraft = async () => {
+        try {
+            if (!editor) return;
+            if(!postToBlog || !title || editor.isEmpty || !postSlug) {
+                setSubmitted(true);
+                return false;
+            }
+            await firebase.firestore().collection('users').doc(username).set({
+                draft: {
+                    postTo: postToBlog,
+                    title: title,
+                    content: editor.getHTML(),
+                    slug: postSlug,
+                }
+            }, { merge: true });
+            return true;
+        } catch (error) {
+            // code review: handle
+            console.error(error);
+        }
+    }
 
 
     if (!postToBlog) {
@@ -170,6 +207,7 @@ function NewPost() {
         );
     }
 
+
     return (
         <div>
             <Head>
@@ -183,50 +221,42 @@ function NewPost() {
                 <Container>
 
                     <h1>Create a new post at <a onClick={() => { setPostToBlog(undefined) }}>/{postToBlog}</a></h1>
-                    <input type="text" placeholder="Title" value={title} onChange={(event) => {
-                        setTitle(event.target.value);
-                        setPostSlug(event.target.value);
-                    }} className={styles.titleInput} />
+                    <Input value={title} setValue={(value) => {
+                        setTitle(value);
+                        setPostSlug(value);
+                    }} isValid={!submitted || title.length !== 0} placeholder="Title" invalidMessage='Please enter a title.' className={styles.titleInput}></Input>
                     <MenuBar editor={editor} />
-                    <EditorContent editor={editor} placeholder='Start writing...' />
+                    {/* code review: fix this invalid editor thing */}
+                    <EditorContent className={(submitted && (editor && editor.isEmpty)) ? styles.invalidEditor : '' } editor={editor} placeholder='Start writing...' />
                     <div style={{ display: 'flex', justifyContent: 'center', margin: '2rem' }}>
                         <Button style={{ marginRight: '2rem' }} onClick={async () => {
-                            // code review: remove duplicated code in both buttons & add try catch
-                            if (!editor) return;
-                            await firebase.firestore().collection('users').doc(username).set({
-                                draft: {
-                                    postTo: postToBlog,
-                                    title: title,
-                                    content: editor.getHTML()
-                                }
-                            }, { merge: true });
+                            const success = await setDraft();
 
-                            // code review: should this page support ?redirect=[page]
-                            redirect(() => {
-                                router.push(`/home`);
-                            });
+                            if(success) {
+                                // code review: should this page support ?redirect=[page]
+                                redirect(() => {
+                                    router.push(`/home`);
+                                });
+                            }
                         }}>
                             <h2>save draft</h2>
                         </Button>
+                        {editor && !editor.isEmpty && <Button style={{marginRight: '2rem', backgroundColor: "#f14668", color: "#fff"}} onClick={() => {
+                            // code review: add an 'are you sure?' popup 
+                            editor.commands.clearContent();
+                            setTitle('');
+                            setPostSlug('');
+                            firebase.firestore().collection('users').doc(username).update({
+                                draft: firebase.firestore.FieldValue.delete()
+                            });
+                        }}>
+                            <h2>delete draft</h2>
+                        </Button>}
                         <Button onClick={async () => {
-
-                            if (!editor) return;
-                            await firebase.firestore().collection('users').doc(username).set({
-                                draft: {
-                                    postTo: postToBlog,
-                                    title: title,
-                                    slug: postSlug,
-                                    content: editor.getHTML()
-                                }
-                            }, { merge: true });
-
-                            router.push(`/publish`);
-                            // const postRef = await firebase.firestore().collection('blogs').doc(postToBlog).collection('posts').doc(postSlug).get();
-                            // if (!postRef.exists) {
-                            //     await firebase.firestore().collection('blogs').doc(postToBlog).collection('posts').doc(postSlug).set({
-
-                            //     })
-                            // }
+                            const success = await setDraft();
+                            if(success){
+                                router.push(`/publish`);
+                            }
                         }}>
                             <h2>finalize</h2>
                         </Button>
@@ -239,19 +269,25 @@ function NewPost() {
 
 export default function NewPostWrapper() {
     const router = useRouter();
+    const blogs = useStoreState(state => state.blogs);
 
-    return (<UserBoundary onUserLoaded={(user, username, blogs) => {
+    return (<UserBoundary onUserLoaded={(user, username) => {
         if (!user) { // nobody is logged in
+            console.log('nobody is logged in')
             router.push({ pathname: '/login', query: { redirect: 'new-post' } });
             return;
         }
         if (!username) { // user is not registered
+            console.log('user is not registered')
+
             router.push({ pathname: '/create-user', query: { redirect: 'new-post' } });
             return;
         }
         if (!blogs) {
-            router.push({ pathname: '/create-blog', query: { redirect: 'new-post' } });
+            console.log('no blog(s) to post to');
 
+            router.push({ pathname: '/create-blog', query: { redirect: 'new-post' } });
+            return;
         }
     }}><NewPost /></UserBoundary>);
 }

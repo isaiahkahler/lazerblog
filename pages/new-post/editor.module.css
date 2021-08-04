@@ -3,7 +3,7 @@
     padding: 1rem;
     border: 1px solid #000;
     border-radius: 10px;
-    font-size: 2rem;
+    font-size: 2rem !important;
     font-weight: bold;
     transition: 200ms;
 }
@@ -37,3 +37,7 @@
     background-color: #ccc;
 }
 
+.invalidEditor {
+    border: 2px solid #cc0f35;
+    border-radius: 12px;
+}

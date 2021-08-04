@@ -23,7 +23,7 @@ const uiConfig: firebaseui.auth.Config = {
 }
 
 function Login() {
-    
+
     return (
         <div>
             <Head>
@@ -46,14 +46,17 @@ function Login() {
 export default function LoginWrapper() {
     const router = useRouter();
     const redirect = useRedirect();
-    return(
-        <UserBoundary onUserLoaded={(user, username, blogs) => {
-            if(!user) return; // stay to log in
-            if(!username) { // needs to register
+    const blogs = useStoreState(state => state.blogs);
+    return (
+        <UserBoundary onUserLoaded={(user, username) => {
+            console.log('user loaded in login', user, username)
+            if (!user) return; // stay to log in
+            if (!username) { // needs to register
                 router.push('/create-user');
                 return;
             }
-            if(blogs && blogs.length === 0) { // needs to create first blog
+            // code review: may want to send to /home instead
+            if (blogs && blogs.length === 0) { // needs to create first blog
                 router.push('/create-blog');
                 return;
             }

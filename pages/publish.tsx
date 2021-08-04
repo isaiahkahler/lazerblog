@@ -59,13 +59,15 @@ function Publish() {
                                     const postRef = await firebase.firestore().collection('blogs').doc(blogSlug).collection('posts').doc(postSlug).get();
                                     if(!postRef.exists) {
                                         await firebase.firestore().collection('blogs').doc(blogSlug).collection('posts').doc(postSlug).set({
-                                            date: Date.now(),
+                                            slug: postSlug,
+                                            title: title,
                                             description: description,
-                                            author: username,
+                                            date: Date.now(),
+                                            content: content,
                                             image: '',
                                             tags: !!tag ? tag.split(',').map(str => str.trim()) : [],
-                                            title: title,
-                                            content: content
+                                            author: username,
+                                            blog: blogSlug,
                                         });
                                         await firebase.firestore().collection('users').doc(username).update({
                                             draft: firebase.firestore.FieldValue.delete()

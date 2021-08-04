@@ -41,29 +41,48 @@ function MyAppWrapper(props: { children?: React.ReactNode }) {
                 } else {
                     setUsername(undefined);
                 }
-                const _username = usernameRef.exists && usernameData ? usernameData.username : undefined;
+                const _username: string | undefined = usernameRef.exists && usernameData ? usernameData.username : undefined;
+
+                if (!_username) {
+                    setFollowing(undefined);
+                    setBlogs(undefined);
+                    setUserLoading(false);
+                    return;
+                }
 
                 // set blogs & following
                 unsubDocListeners = firebase.firestore().collection('users').doc(_username).onSnapshot((doc) => {
                     const docData = doc.data();
                     if (doc.exists && docData) {
-                        if (!docData.following) setFollowing(undefined);
-                        if (docData.following) setFollowing(docData.following);
-                        if (!docData.blogs) setBlogs(undefined);
-                        if (docData.blogs) setBlogs(docData.blogs);
+                        if (docData.following) {
+                            setFollowing(docData.following);
+                        } else {
+                            setFollowing(undefined);
+                        }
+                        if (docData.blogs) { 
+                            setBlogs(docData.blogs);
+                        } else {
+                            setBlogs(undefined);
+                        }
                     }
+                    setUserLoading(false);
+                }, (error) => {
+                    //code review: handle
+                    console.error(error);
                 })
-                // console.log('request: ', `/users/${_username}.blogs`)
 
             } catch (error) {
                 // code review:
                 console.error(error)
             }
 
-            setUserLoading(false);
+            // had to set this after the onSnapshot completes, given as a callback 
+            // setUserLoading(false);
 
         }, (error) => {
             // code review: handle
+        }, () => {
+            console.log('wtf? completed')
         });
 
         // updateData(firebase.auth().currentUser);
