@@ -192,7 +192,7 @@ function NewPost() {
         return (
             <div>
                 <Head>
-                    <title>Create New Post | Lazer Blog</title>
+                    <title>Create New Post | reauthor</title>
                     <meta name="description" content="Fast and Free Blogging Service" />
                     <link rel="icon" href="/favicon.ico" />
                 </Head>

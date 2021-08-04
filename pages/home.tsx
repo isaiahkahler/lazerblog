@@ -23,7 +23,7 @@ function Home(props: HomeProps) {
     return (
         <div>
             <Head>
-                <title>Your Feed | Lazer Blog</title>
+                <title>Your Feed | reauthor</title>
                 <meta name="description" content="Fast and Free Blogging Service" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>

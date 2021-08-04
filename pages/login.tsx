@@ -27,13 +27,13 @@ function Login() {
     return (
         <div>
             <Head>
-                <title>Sign in to Lazer Blog</title>
+                <title>Sign in to reauthor</title>
                 <meta name="description" content="Fast and Free Blogging Service" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <Layout style={{ minHeight: "100vh", display: 'flex' }}>
                 <Container style={{ alignItems: 'center' }}>
-                    <h1 style={{ textAlign: 'center' }}>Sign in to continue to Lazer Blog.</h1>
+                    <h1 style={{ textAlign: 'center' }}>Sign in to continue to reauthor.</h1>
                     <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
                 </Container>
             </Layout>

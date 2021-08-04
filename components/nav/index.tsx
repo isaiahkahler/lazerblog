@@ -15,7 +15,7 @@ export default function Nav(props: NavProps) {
 
     return (
         <div className={styles.nav}>
-            <h2 style={{margin: '10px 0'}}>Lazer Blog</h2>
+            <h2 style={{margin: '10px 0'}}>reauthor</h2>
             {user ? <span><Button onClick={() => {
                 firebase.auth().signOut().then(() => {
                     // code review: does this cause problems when a page controls its own navigation?

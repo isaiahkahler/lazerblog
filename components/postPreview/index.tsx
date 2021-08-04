@@ -9,10 +9,10 @@ export default function PostPreview({ post, showSource }: { post: Post, showSour
 
     return (
         <div className={styles.previewContainer}>
-            <div className={styles.previewSource}>
+            {showSource && <div className={styles.previewSource}>
                 <span><a href={`/${post.blog}`}><h3>/{post.blog}</h3></a></span>
                 <span><a href={`/users/${post.author}`}><h3>@{post.author}</h3></a></span>
-            </div>
+            </div>}
             <Link href={`/${post.blog}/${post.slug}`}>
                 <a style={{ color: 'inherit' }}>
                     <h1 className={styles.previewTitle}>{post.title}</h1>

@@ -1,1 +1,1 @@
-export const URL = 'https://lazerblog.com'
+export const URL = 'https://reauthor.xyz'

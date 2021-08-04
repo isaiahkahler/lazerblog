@@ -16,13 +16,13 @@ export default function Home() {
     return (
         <div>
             <Head>
-                <title>Lazer Blog</title>
+                <title>reauthor</title>
                 <meta name="description" content="Fast and Free Blogging Service" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <Layout>
                 <Container>
-                    <h1>Lazer Blog</h1>
+                    <h1>reauthor</h1>
                     <LinkButton href='/login'>
                         <h2>start blogging</h2>
                     </LinkButton>

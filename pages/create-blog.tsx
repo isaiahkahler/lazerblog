@@ -34,7 +34,7 @@ function CreateBlog() {
     return (
         <div>
             <Head>
-                <title>Create Your Blog | Lazer Blog</title>
+                <title>Create Your Blog | reauthor</title>
                 <meta name="description" content="Fast and Free Blogging Service" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
