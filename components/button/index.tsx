@@ -4,7 +4,7 @@ import Link, { LinkProps } from 'next/link'
 
 interface ButtonProps {
     children?: React.ReactNode,
-    onClick?: () => void,
+    onClick?: React.MouseEventHandler<HTMLAnchorElement>,
     style?: CSSProperties,
 }
 
@@ -33,4 +33,12 @@ export function TransparentButton(props: ButtonProps) {
         </a>
     );
 
+}
+
+export function IconButton (props: ButtonProps) {
+    return (
+        <a className={`${styles.button} ${styles.iconButton}`} onClick={props.onClick} style={{...props.style, color: 'inherit'}}>
+            {props.children}
+        </a>
+    );
 }
