@@ -12,6 +12,7 @@ import moment from 'moment'
 import { useStoreState, useStoreActions } from '../../components/store'
 import { Post } from '../../components/types'
 import PostPreview from '../../components/postPreview'
+import { getRandomSadEmoji } from '../../components/randomEmoji'
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     console.log('params', context.params);
@@ -124,7 +125,7 @@ export default function BlogWrapper(props: BlogWrapperProps) {
             <Nav />
             <Layout>
                 <Container>
-                    <h1>404 The page does not exist.</h1>
+                    <h1>{getRandomSadEmoji()} 404 The page does not exist.</h1>
                     <p>Was the URL spelled correctly?</p>
                     <Button onClick={() => {
                         router.back();

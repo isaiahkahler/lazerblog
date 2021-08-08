@@ -10,6 +10,12 @@ export interface Post {
     blog: string,
 }
 
+export interface PostWithInfo {
+    post: Post,
+    user: User,
+    blog: Blog
+}
+
 export interface User extends UserBase {
     username: string,
 }
@@ -28,4 +34,15 @@ export interface Draft {
     postTo: string,
     slug: string,
     title: string,
+}
+
+export interface Blog extends BlogBase {
+    slug: string,
+}
+
+export interface BlogBase {
+    author: string,
+    blogDescription: string,
+    brandImage: string,
+    name: string
 }

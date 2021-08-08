@@ -1,17 +1,24 @@
-import { Post } from '../types'
+import { Blog, Post, User } from '../types'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import Image from 'next/image'
 import styles from './preview.module.css'
 import moment from 'moment'
+import { useStoreActions } from '../store'
+import { useEffect, useState } from 'react'
 
-export default function PostPreview({ post, showSource }: { post: Post, showSource?: boolean }) {
+interface PostPreviewProps {
+    post: Post,
+    blog?: Blog,
+    user?: User,
+}
+
+export default function PostPreview({ post, blog, user }: PostPreviewProps) {
 
     return (
         <div className={styles.previewContainer}>
-            {showSource && <div className={styles.previewSource}>
-                <span><a href={`/${post.blog}`}><h3>/{post.blog}</h3></a></span>
-                <span><a href={`/users/${post.author}`}><h3>@{post.author}</h3></a></span>
+            {blog && user && <div className={styles.previewSource}>
+            <a href={`/users/${post.author}`} style={{color: "#000"}}>{user.firstName} {user.lastName}</a> in <a href={`/${post.blog}`} style={{color: "#000"}}>{blog.name}</a>
             </div>}
             <Link href={`/${post.blog}/${post.slug}`}>
                 <a style={{ color: 'inherit' }}>

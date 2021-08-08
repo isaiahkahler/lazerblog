@@ -10,7 +10,7 @@ interface UserBoundaryProps {
     onUserLoaded?: (userAuth: firebase.User | undefined, user: User | undefined) => void,
 }
 
-export function UserBoundary(props: UserBoundaryProps) {
+export function UserBoundary({children, onUserLoaded}: UserBoundaryProps) {
 
     const userAuth = useStoreState(state => state.userAuth);
     const user = useStoreState(state => state.user);
@@ -18,14 +18,13 @@ export function UserBoundary(props: UserBoundaryProps) {
     const userLoading = useStoreState(state => state.userLoading);
 
     useEffect(() => {
-        console.log('user loading?', userLoading)
         if(userLoading) return;
-        props.onUserLoaded && props.onUserLoaded(userAuth, user);
-    }, [userLoading, user, props, userAuth])
+        onUserLoaded && onUserLoaded(userAuth, user);
+    }, [userLoading, user, onUserLoaded, userAuth])
 
     // code review: make this prettier / cooler 
     if (userLoading) return <p>userLoading</p>;
 
 
-    return <>{props.children}</>;
+    return <>{children}</>;
 }
