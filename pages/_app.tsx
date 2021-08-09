@@ -5,6 +5,8 @@ import { store, useStoreActions, useStoreState } from '../components/store'
 import firebase from '../firebase'
 import React, { useEffect } from 'react'
 import { User } from '../components/types'
+import Nav from '../components/nav'
+import Head from 'next/head'
 
 function MyApp({ Component, pageProps }: AppProps) {
     return <StoreProvider store={store}><MyAppWrapper><Component {...pageProps} /></MyAppWrapper></StoreProvider>
@@ -15,11 +17,12 @@ function MyAppWrapper(props: { children?: React.ReactNode }) {
     const setUserAuth = useStoreActions(actions => actions.setUserAuth);
     const setUser = useStoreActions(actions => actions.setUser);
     const setUserLoading = useStoreActions(actions => actions.setUserLoading);
+    const title = useStoreState(state => state.title);
 
     useEffect(() => {
         // when auth state changes, update user, username, and blog
         let unsubDocListeners = () => { };
-        let unsubOtherListener = () => {};
+        let unsubOtherListener = () => { };
         const unsub = firebase.auth().onAuthStateChanged(async (userAuth) => {
             console.log('auth state changed')
             if (!userAuth) {
@@ -35,7 +38,7 @@ function MyAppWrapper(props: { children?: React.ReactNode }) {
                 const usernameRef = await firebase.firestore().collection('usernames').doc(userAuth.uid).get();
                 const usernameData = usernameRef.data();
                 const _username: string | undefined = usernameRef.exists && usernameData ? usernameData.username : undefined;
-                
+
                 if (!_username) {
                     setUser(undefined);
                     setUserLoading(false);
@@ -46,7 +49,7 @@ function MyAppWrapper(props: { children?: React.ReactNode }) {
                 unsubDocListeners = firebase.firestore().collection('users').doc(_username).onSnapshot((doc) => {
                     const docData = doc.data();
                     if (doc.exists && docData) {
-                        setUser({username: _username, ...docData} as User);
+                        setUser({ username: _username, ...docData } as User);
                     }
                     setUserLoading(false);
                 }, (error) => {
@@ -77,6 +80,12 @@ function MyAppWrapper(props: { children?: React.ReactNode }) {
     }, []);
 
     return (<>
+        <Head>
+            <title>{title}</title>
+            <meta name="description" content="Fast and Free Blogging Service" />
+            <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <Nav />
         {props.children}
     </>);
 }

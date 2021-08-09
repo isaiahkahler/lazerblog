@@ -8,7 +8,7 @@ export default function SignOut()  {
 
     return(
         <div>
-            <Nav />
+            {/* <Nav /> */}
             <Layout>
                 <Container>
                     <h1>sign out</h1>

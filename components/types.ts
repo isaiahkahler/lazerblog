@@ -12,8 +12,8 @@ export interface Post {
 
 export interface PostWithInfo {
     post: Post,
-    user: User,
-    blog: Blog
+    user?: User | null,
+    blog?: Blog | null
 }
 
 export interface User extends UserBase {

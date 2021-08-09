@@ -69,12 +69,6 @@ function CreateUser() {
 
     return (
         <div>
-            <Head>
-                <title>Create Your Profile | reauthor</title>
-                <meta name="description" content="Fast and Free Blogging Service" />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
-            <Nav />
             <Layout>
                 <Container>
                     <h1>Create your profile.</h1>

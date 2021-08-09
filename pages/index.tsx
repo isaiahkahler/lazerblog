@@ -15,11 +15,6 @@ export default function Home() {
 
     return (
         <div>
-            <Head>
-                <title>reauthor</title>
-                <meta name="description" content="Fast and Free Blogging Service" />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
             <Layout>
                 <Container>
                     <h1>reauthor</h1>

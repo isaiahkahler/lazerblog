@@ -49,7 +49,7 @@ function Publish() {
 
     return (
         <div>
-            <Nav />
+            {/* <Nav /> */}
             <Layout>
                 <Container>
                     <h1>Finalize your writing.</h1>

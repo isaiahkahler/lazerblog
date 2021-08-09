@@ -32,12 +32,6 @@ function CreateBlog() {
 
     return (
         <div>
-            <Head>
-                <title>Create Your Blog | reauthor</title>
-                <meta name="description" content="Fast and Free Blogging Service" />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
-            <Nav />
             <Layout>
                 <Container>
                     <h1>Create your new blog.</h1>

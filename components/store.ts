@@ -11,12 +11,14 @@ interface StoreModel {
       users: {[username: string]: User},
       posts: {[slug: string]: Post}
     },
+    title: string,
     setUserAuth: Action<StoreModel, firebase.User | undefined>,
     setUser: Action<StoreModel, User | undefined>,
     setUserLoading: Action<StoreModel, boolean>,
     addPostToCache: Action<StoreModel, Post>,
     addBlogToCache: Action<StoreModel, Blog>,
     addUserToCache: Action<StoreModel, User>,
+    setTitle: Action<StoreModel, string>,
     // are these needed?
     // removePostFromCache: Action<StoreModel, string>,
     // removeBlogFromCache: Action<StoreModel, string>,
@@ -38,6 +40,7 @@ export const store = createStore<StoreModel>({
     users: {},
     posts: {}
   },
+  title: 'reauthor',
   setUserAuth: action((state, payload) => {
     state.userAuth = payload;
   }),
@@ -58,6 +61,9 @@ export const store = createStore<StoreModel>({
     state.cache.users[user.username] = user;
     console.log('added', user.username, 'to cache');
 
+  }),
+  setTitle: action((state, title) => {
+    state.title = title;
   }),
   // code review: does this ever need to happen? like can we just always store posts lol
   // removePostFromCache: action((state, postSlug) => {

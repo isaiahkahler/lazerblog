@@ -122,7 +122,7 @@ export default function BlogWrapper(props: BlogWrapperProps) {
     const router = useRouter();
     if (!props.blog) return (
         <div>
-            <Nav />
+            {/* <Nav /> */}
             <Layout>
                 <Container>
                     <h1>{getRandomSadEmoji()} 404 The page does not exist.</h1>

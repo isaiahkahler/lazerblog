@@ -16,23 +16,16 @@ import CircleProgress from '../../components/circleProgress'
 
 interface HomeProps {
     posts: PostWithInfo[],
-    loadMore: () => void,
     outOfPosts: boolean,
     loading: boolean,
 }
 
-export default function Home({ posts, loadMore, outOfPosts, loading }: HomeProps) {
+export default function Home({ posts, outOfPosts, loading }: HomeProps) {
 
     //todo: if posts length is zero, conditionally render a skeleton
 
     return (
         <div>
-            <Head>
-                <title>Your Feed | reauthor</title>
-                <meta name="description" content="Fast and Free Blogging Service" />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
-            <Nav />
             <Layout>
                 <Container>
                     {posts ? posts.map((post, index) => <PostPreview post={post.post} key={index} blog={post.blog} user={post.user} />) : <div style={{ display: 'flex', justifyContent: 'center' }}><p>No posts to show...</p></div>}

@@ -21,11 +21,15 @@
     width: 100%;
 }
 
-.previewSource h3 {
+/* .previewSource h3 {
     display: inline;
-}
-.previewSource span {
+} */
+/* .previewSource span {
     margin: 0 10px 0 0;
+} */
+
+.previewSource a {
+    font-weight: bold;
 }
 
 @media screen and (max-width: 768px) {

@@ -185,12 +185,6 @@ function NewPost() {
     if (!postToBlog) {
         return (
             <div>
-                <Head>
-                    <title>Create New Post | reauthor</title>
-                    <meta name="description" content="Fast and Free Blogging Service" />
-                    <link rel="icon" href="/favicon.ico" />
-                </Head>
-                <Nav />
                 <Layout>
                     <Container>
                         <h1>Choose a blog to post to.</h1>
@@ -204,13 +198,6 @@ function NewPost() {
 
     return (
         <div>
-            <Head>
-                <title>Create New Post | Lazer Blog</title>
-                <meta name="description" content="Fast and Free Blogging Service" />
-                <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
-            <Nav />
             <Layout>
                 <Container>
 

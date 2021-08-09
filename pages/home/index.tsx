@@ -90,7 +90,8 @@ export default function HomeWrapper() {
     }, [shouldLoad]);
 
     useEffect(() => {
-        setShouldLoad(false);
+        if(postsWithData.length !== 0)
+            setShouldLoad(false);
     }, [postsWithData, setShouldLoad])
 
 
@@ -103,5 +104,5 @@ export default function HomeWrapper() {
             router.push('/create-user')
             return;
         }
-    }}><Home posts={postsWithData} loadMore={fetchPosts} outOfPosts={outOfPosts} loading={shouldLoad} /></UserBoundary>);
+    }}><Home posts={postsWithData} outOfPosts={outOfPosts} loading={shouldLoad} /></UserBoundary>);
 }

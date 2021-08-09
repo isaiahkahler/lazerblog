@@ -6,20 +6,35 @@ import styles from './preview.module.css'
 import moment from 'moment'
 import { useStoreActions } from '../store'
 import { useEffect, useState } from 'react'
+import If from '../if'
 
 interface PostPreviewProps {
     post: Post,
-    blog?: Blog,
-    user?: User,
+    blog?: Blog | null,
+    user?: User | null,
 }
 
 export default function PostPreview({ post, blog, user }: PostPreviewProps) {
 
     return (
         <div className={styles.previewContainer}>
-            {blog && user && <div className={styles.previewSource}>
-            <a href={`/users/${post.author}`} style={{color: "#000"}}>{user.firstName} {user.lastName}</a> in <a href={`/${post.blog}`} style={{color: "#000"}}>{blog.name}</a>
-            </div>}
+
+            <If value={blog && user}>
+                <div className={styles.previewSource}>
+                    <a href={`/users/${post.author}`} style={{ color: "#000" }}>{user && user.firstName} {user && user.lastName}</a> in <a href={`/${post.blog}`} style={{ color: "#000" }}>{blog && blog.name}</a>
+                </div>
+            </If>
+            <If value={blog && !user}>
+                <div className={styles.previewSource}>
+                    In <a href={`/${post.blog}`} style={{ color: "#000" }}>{blog && blog.name}</a>
+                </div>
+            </If>
+            <If value={!blog && user}>
+                <div className={styles.previewSource}>
+                    From <a href={`/users/${post.author}`} style={{ color: "#000" }}> {user && user.firstName} {user && user.lastName}</a>
+                </div>
+            </If>
+
             <Link href={`/${post.blog}/${post.slug}`}>
                 <a style={{ color: 'inherit' }}>
                     <h1 className={styles.previewTitle}>{post.title}</h1>
