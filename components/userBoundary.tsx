@@ -14,7 +14,6 @@ export function UserBoundary({children, onUserLoaded}: UserBoundaryProps) {
 
     const userAuth = useStoreState(state => state.userAuth);
     const user = useStoreState(state => state.user);
-    // const username = useStoreState(state => state.username);
     const userLoading = useStoreState(state => state.userLoading);
 
     useEffect(() => {

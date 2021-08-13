@@ -1,18 +1,16 @@
-import UserDisplay from "./userDisplay"
+import UserDisplay from "./user"
 import usePostFeed from "../../components/usePostFeed"
 import firebase from '../../firebase'
-import { useStoreActions, useStoreState } from "../../components/store"
 import { useRouter } from "next/router"
 import { GetServerSideProps } from "next"
 import { BlogBase, Post, PostWithInfo, User, UserBase } from "../../components/types"
-import Head from "next/head"
-import Nav from "../../components/nav"
 import Layout from "../../components/layout"
 import Container from "../../components/container"
 import { getRandomSadEmoji } from "../../components/randomEmoji"
 import Button from "../../components/button"
 import { useState } from "react"
 import { useEffect } from "react"
+import PostFeed from "../../components/postFeed"
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   console.log('params', context.params);
@@ -47,17 +45,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const posts = postsRef.docs.map(doc => doc.data() as Post);
   const postsWithData: PostWithInfo[] = [];
   for (const post of posts) {
-      const blogRef = await firebase.firestore().collection('blogs').doc(post.blog).get();
-      const blogData = blogRef.data();
-      if(blogRef.exists && blogData) {
-        postsWithData.push({ post: post, user: null, blog: {slug: post.blog, ...blogData as BlogBase} })
-      }
+    const blogRef = await firebase.firestore().collection('blogs').doc(post.blog).get();
+    const blogData = blogRef.data();
+    if (blogRef.exists && blogData) {
+      postsWithData.push({ post: post, user: null, blog: { slug: post.blog, ...blogData as BlogBase } })
+    }
   }
   console.log('check 3')
 
   return {
     props: {
-      user: {username: username, ...userData},
+      user: { username: username, ...userData },
       posts: postsWithData.length === 0 ? null : postsWithData,
     }
   };
@@ -68,12 +66,10 @@ interface UsersWrapperProps {
   posts: PostWithInfo[] | null
 }
 
-export default function UsersWrapper({user, posts} : UsersWrapperProps) {
-  // console.log('thing', user, posts)
+export default function UsersWrapper({ user, posts }: UsersWrapperProps) {
   const router = useRouter();
   const { username } = router.query;
-  // console.log('username', username)
-  const [usernameValue, setUsernameValue] = useState((username && typeof(username) === 'string') ? username : '');
+  const [usernameValue, setUsernameValue] = useState((username && typeof (username) === 'string') ? username : '');
   const postFeed = usePostFeed({
     query: firebase.firestore().collectionGroup('posts').where('author', '==', usernameValue).orderBy('date', 'desc'),
     showBlog: true,
@@ -83,37 +79,40 @@ export default function UsersWrapper({user, posts} : UsersWrapperProps) {
 
 
   useEffect(() => {
-    if(username !== usernameValue && user && typeof(username) === 'string')
+    if (username !== usernameValue && user && typeof (username) === 'string')
       setUsernameValue(username);
   }, [user, username, usernameValue]);
 
   useEffect(() => {
     console.log('new username', usernameValue)
     postFeed.reload();
-  }, [usernameValue]);
+  }, [usernameValue, postFeed]);
 
   if (!username) return null;
   if (typeof (username) !== 'string') return null;
 
 
-  if(!user) return (
+  if (!user) return (
     <div>
-          <Layout>
-              <Container>
-                <h1>{getRandomSadEmoji()} The user does not exist.</h1>
-                <p>Was the URL spelled correctly?</p>
-                <Button onClick={() => {
-                      router.back();
-                  }}>
-                      <h2>← go back</h2>
-                  </Button>
-              </Container>
-          </Layout>
+      <Layout>
+        <Container>
+          <h1>{getRandomSadEmoji()} The user does not exist.</h1>
+          <p>Was the URL spelled correctly?</p>
+          <Button onClick={() => {
+            router.back();
+          }}>
+            <h2>← go back</h2>
+          </Button>
+        </Container>
+      </Layout>
     </div>
   );
 
 
   return (
-    <UserDisplay posts={postFeed.posts} loading={postFeed.loading} outOfPosts={postFeed.outOfPosts} user={user} />
+    <UserDisplay user={user}>
+      <PostFeed posts={postFeed.posts} loading={postFeed.loading} outOfPosts={postFeed.outOfPosts} disableOutOfPostsMessage />
+    </UserDisplay>
   );
+
 }

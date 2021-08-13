@@ -45,8 +45,6 @@ interface Post {
 
 
 export default function Post({post}: {post: Post}) {
-    // code review:
-    if(!post) return <p>null????????</p>;
     return(
         <div>
             <Layout>

@@ -9,6 +9,7 @@ import PencilIcon from '../icons/PencilIcon'
 import LogoutIcon from '../icons/logoutIcon'
 import { useEffect } from 'react'
 import SettingsIcon from '../icons/settingsIcon'
+import Link from 'next/link'
 
 
 interface NavProps {
@@ -23,7 +24,11 @@ export default function Nav(props: NavProps) {
 
     return (
         <div className={styles.nav}>
-            <h2 style={{ margin: '10px 0' }}>reauthor</h2>
+            <Link href="/">
+                <a style={{color: 'inherit'}}>
+                    <h2 style={{ margin: '10px 0' }}>reauthor</h2>
+                </a>
+            </Link>
             <span>
                 <IconButton onClick={() => setOpenDropdown(!openDropdown)}>
                     <UserIcon size={'30px'} color={"#aaa"} />

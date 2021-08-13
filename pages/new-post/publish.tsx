@@ -1,14 +1,14 @@
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
-import Button from "../components/button"
-import { URL } from "../components/constants"
-import Container from "../components/container"
-import Input from "../components/input"
-import Layout from "../components/layout"
-import Nav from "../components/nav"
-import { useStoreState } from "../components/store"
-import { UserBoundary } from "../components/userBoundary"
-import firebase from '../firebase'
+import Button from "../../components/button"
+import { URL } from "../../components/constants"
+import Container from "../../components/container"
+import Input from "../../components/input"
+import Layout from "../../components/layout"
+import Nav from "../../components/nav"
+import { useStoreState } from "../../components/store"
+import { UserBoundary } from "../../components/userBoundary"
+import firebase from '../../firebase'
 
 
 function Publish() {
@@ -74,7 +74,7 @@ function Publish() {
                                             date: Date.now(),
                                             content: content,
                                             image: '',
-                                            tags: !!tag ? tag.split(',').map(str => str.trim()) : [],
+                                            tags: !!tag ? tag.split(',').map(str => str.trim()).filter(str => !!str) : [],
                                             author: user.username,
                                             blog: blogSlug,
                                         });

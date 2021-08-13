@@ -10,6 +10,7 @@ import buttonStyle from '../components/button/button.module.css'
 import { useStoreActions, useStoreState } from "../components/store";
 import { UserBoundary } from "../components/userBoundary";
 import useRedirect from "../components/useRedirect";
+import { UserBase } from "../components/types";
 
 
 
@@ -92,9 +93,10 @@ function CreateUser() {
                                                     firstName: firstName,
                                                     lastName: lastName,
                                                     profilePicture: '',
+                                                    bannerImage: '',
                                                     blogs: [],
                                                     following: []
-                                                });
+                                                } as UserBase);
                                                 
                                                 redirect(() => {
                                                     router.push('/create-blog');

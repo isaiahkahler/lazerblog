@@ -1,11 +1,8 @@
 import { Blog, Post, User } from '../types'
-import { useRouter } from 'next/router'
 import Link from 'next/link'
 import Image from 'next/image'
 import styles from './preview.module.css'
 import moment from 'moment'
-import { useStoreActions } from '../store'
-import { useEffect, useState } from 'react'
 import If from '../if'
 
 interface PostPreviewProps {
@@ -48,6 +45,7 @@ export default function PostPreview({ post, blog, user }: PostPreviewProps) {
             {post.image ? <Link href={`/${post.blog}/${post.slug}`}>
                 <a>
                     {/* code review: fix this as any */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={post.image} alt={post.description} className={styles.previewImage} />
                     {/* <Image src={post.image as any} alt={post.description} layout='fill' className={styles.previewImage} /> */}
                 </a>

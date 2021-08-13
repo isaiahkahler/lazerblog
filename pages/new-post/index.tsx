@@ -236,7 +236,7 @@ function NewPost() {
                         <Button onClick={async () => {
                             const success = await setDraft();
                             if(success){
-                                router.push(`/publish`);
+                                router.push(`/new-post/publish`);
                             }
                         }}>
                             <h2>finalize</h2>

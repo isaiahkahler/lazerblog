@@ -26,6 +26,7 @@ export interface UserBase {
     following: string[],
     blogs: string[]
     profilePicture: string,
+    bannerImage: string,
     draft?: Draft
 }
 
