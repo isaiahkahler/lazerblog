@@ -1,16 +1,16 @@
 import UserDisplay from "./user"
-import usePostFeed from "../../components/usePostFeed"
-import firebase from '../../firebase'
+import usePostFeed from "../../../components/usePostFeed"
+import firebase from '../../../firebase'
 import { useRouter } from "next/router"
 import { GetServerSideProps } from "next"
-import { BlogBase, Post, PostWithInfo, User, UserBase } from "../../components/types"
-import Layout from "../../components/layout"
-import Container from "../../components/container"
-import { getRandomSadEmoji } from "../../components/randomEmoji"
-import Button from "../../components/button"
+import { BlogBase, Post, PostWithInfo, User, UserBase } from "../../../components/types"
+import Layout from "../../../components/layout"
+import Container from "../../../components/container"
+import { getRandomSadEmoji } from "../../../components/randomEmoji"
+import Button from "../../../components/button"
 import { useState } from "react"
 import { useEffect } from "react"
-import PostFeed from "../../components/postFeed"
+import PostFeed from "../../../components/postFeed"
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   console.log('params', context.params);
@@ -45,6 +45,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const posts = postsRef.docs.map(doc => doc.data() as Post);
   const postsWithData: PostWithInfo[] = [];
   for (const post of posts) {
+    if(post.blog.includes('users/')) {
+      postsWithData.push({ post: post, user: null, blog: null })
+      continue;
+    }
     const blogRef = await firebase.firestore().collection('blogs').doc(post.blog).get();
     const blogData = blogRef.data();
     if (blogRef.exists && blogData) {

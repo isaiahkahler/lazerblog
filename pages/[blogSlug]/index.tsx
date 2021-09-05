@@ -107,7 +107,7 @@ export default function BlogWrapper({blog, posts}: BlogWrapperProps) {
 
     return (
     <BlogDisplay blog={blog}>
-        <PostFeed posts={postFeed.posts} loading={postFeed.loading} outOfPosts={postFeed.outOfPosts} />
+        <PostFeed posts={postFeed.posts} loading={postFeed.loading} outOfPosts={postFeed.outOfPosts} disableOutOfPostsMessage />
     </BlogDisplay>
     );
 }

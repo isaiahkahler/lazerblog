@@ -8,9 +8,9 @@ import firebase from '../../firebase'
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     console.log('params', context.params);
-    const { blog, post } = context.params ? context.params : { blog: '404', post: '404' };
-    if(blog && post && typeof(blog) === 'string' && typeof(post) === 'string') {
-        const blogRef = await firebase.firestore().collection('blogs').doc(blog).collection('posts').doc(post).get();
+    const { blogSlug, post } = context.params ? context.params : { blogSlug: '404', post: '404' };
+    if(blogSlug && post && typeof(blogSlug) === 'string' && typeof(post) === 'string') {
+        const blogRef = await firebase.firestore().collection('blogs').doc(blogSlug).collection('posts').doc(post).get();
         const blogData = blogRef.data();
         if(blogRef.exists && blogData) {
             return {
@@ -45,6 +45,14 @@ interface Post {
 
 
 export default function Post({post}: {post: Post}) {
+
+    if(!post) {
+        console.error('whats wrong with post', post)
+        return (<div>
+            error
+        </div>);
+    }
+
     return(
         <div>
             <Layout>

@@ -18,17 +18,17 @@ export default function PostPreview({ post, blog, user }: PostPreviewProps) {
 
             <If value={blog && user}>
                 <div className={styles.previewSource}>
-                    <a href={`/users/${post.author}`} style={{ color: "#000" }}>{user && user.firstName} {user && user.lastName}</a> in <a href={`/${post.blog}`} style={{ color: "#000" }}>{blog && blog.name}</a>
+                    <Link href={`/users/${post.author}`}><a style={{ color: "#000" }}>{user && user.firstName} {user && user.lastName}</a></Link> in <Link href={`/${post.blog}`}><a style={{ color: "#000" }}>{blog && blog.name}</a></Link>
                 </div>
             </If>
             <If value={blog && !user}>
                 <div className={styles.previewSource}>
-                    In <a href={`/${post.blog}`} style={{ color: "#000" }}>{blog && blog.name}</a>
+                    In <Link href={`/${post.blog}`}><a style={{ color: "#000" }}>{blog && blog.name}</a></Link>
                 </div>
             </If>
             <If value={!blog && user}>
                 <div className={styles.previewSource}>
-                    From <a href={`/users/${post.author}`} style={{ color: "#000" }}> {user && user.firstName} {user && user.lastName}</a>
+                    From <Link href={`/users/${post.author}`}><a style={{ color: "#000" }}> {user && user.firstName} {user && user.lastName}</a></Link>
                 </div>
             </If>
 
