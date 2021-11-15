@@ -9,7 +9,7 @@ import Input from '../components/input'
 import { useEffect, useState } from "react";
 import firebase from '../firebase'
 import buttonStyle from '../components/button/button.module.css'
-import { useStoreState } from "../components/store"
+import { useStore } from "../components/store"
 import { UserBoundary } from "../components/userBoundary"
 import useRedirect from "../components/useRedirect"
 import { URL } from "../components/constants"
@@ -26,8 +26,8 @@ function CreateBlog() {
     });
     const [blogDescription, setBlogDescription] = useState('');
     const [formSubmitted, setFormSubmitted] = useState(false);
-    const userAuth = useStoreState(state => state.userAuth);
-    const user = useStoreState(state => state.user);
+    const userAuth = useStore(state => state.userAuth);
+    const user = useStore(state => state.user);
     const redirect = useRedirect();
 
     return (

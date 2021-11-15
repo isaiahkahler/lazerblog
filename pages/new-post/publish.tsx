@@ -6,7 +6,7 @@ import Container from "../../components/container"
 import Input from "../../components/input"
 import Layout from "../../components/layout"
 import Nav from "../../components/nav"
-import { useStoreState } from "../../components/store"
+import { useStore } from "../../components/store"
 import { UserBoundary } from "../../components/userBoundary"
 import firebase from '../../firebase'
 
@@ -18,7 +18,7 @@ function Publish() {
     const [content, setContent] = useState<any>();
     const [blogSlug, setBlogSlug] = useState('');
     const [postSlug, setPostSlug] = useState('');
-    const user = useStoreState(state => state.user);
+    const user = useStore(state => state.user);
     const router = useRouter();
 
     useEffect(() => {

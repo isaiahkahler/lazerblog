@@ -1,7 +1,7 @@
 import { Blog, User } from "../../components/types";
 import styles from './blog.module.css'
 import Link from 'next/link'
-import { useStoreState, useStoreActions } from '../../components/store'
+import { useStore } from '../../components/store'
 import { TransparentButton } from '../../components/button'
 import { useEffect, useState } from 'react'
 import { useRouter } from "next/router";
@@ -17,10 +17,10 @@ interface BlogProps {
 
 export default function BlogDisplay({ blog, children }: BlogProps) {
     const router = useRouter();
-    const getUser = useStoreActions(actions => actions.getUser);
-    const user = useStoreState(state => state.user);
-    const doFollow = useStoreActions(actions => actions.doFollow);
-    const doUnfollow = useStoreActions(actions => actions.doUnfollow);
+    const getUser = useStore(state => state.getUser);
+    const user = useStore(state => state.user);
+    const doFollow = useStore(state => state.doFollow);
+    const doUnfollow = useStore(state => state.doUnfollow);
 
     const [blogAuthor, setBlogAuthor] = useState<User>({
         firstName: '',
@@ -54,7 +54,7 @@ export default function BlogDisplay({ blog, children }: BlogProps) {
                     From <Link href={`/users/${blog.author}`}><a style={{ color: "#000" }}>{blogAuthor.firstName} {blogAuthor.lastName}</a></Link>
                 </span>
                 <p style={{ maxWidth: '680px' }}>{blog.blogDescription}</p>
-                {user && (<TransparentButton style={{ marginBottom: '1rem' }} onClick={() => {
+                {/* {user && (<TransparentButton style={{ marginBottom: '1rem' }} onClick={() => {
                     // do they want to follow, unfollow, or edit? 
                     if (user && user.username === blog.author) {
                         // edit profile
@@ -74,15 +74,13 @@ export default function BlogDisplay({ blog, children }: BlogProps) {
                     }
                 }}>
                     {user.username === blog.author ? <p>edit profile</p> : user.following.includes(blog.slug) ? <p>unfollow</p> : <p>follow</p>}
-                </TransparentButton>)}
+                </TransparentButton>)} */}
 
-                {!user && <TransparentButton onClick={() => {
+                {/* {!user && <TransparentButton onClick={() => {
                     // code review / todo: add redirect 
                     router.push('/login');
-                }}><p>sign in to follow</p></TransparentButton>}
-                <If value={user}>
-
-                </If>
+                }}><p>sign in to follow</p></TransparentButton>} */}
+                
             </div>
             <Layout>
                 <Container>

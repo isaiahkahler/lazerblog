@@ -22,6 +22,8 @@ export default function HomeFeed({ user }: HomeFeedProps) {
     return (
     <Layout>
         <Container>
+            <h1 style={{marginBottom: 0}}>From Your Following</h1>
+            <hr style={{marginBottom: '2rem'}} />
             <PostFeed posts={postFeed.posts} loading={postFeed.loading} outOfPosts={postFeed.outOfPosts} />
         </Container>
     </Layout>);

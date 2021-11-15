@@ -1,7 +1,6 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import { StoreProvider } from 'easy-peasy'
-import { store, useStoreActions, useStoreState } from '../components/store'
+import { useStore } from '../components/store'
 import firebase from '../firebase'
 import React, { useEffect } from 'react'
 import { User } from '../components/types'
@@ -9,15 +8,15 @@ import Nav from '../components/nav'
 import Head from 'next/head'
 
 function MyApp({ Component, pageProps }: AppProps) {
-    return <StoreProvider store={store}><MyAppWrapper><Component {...pageProps} /></MyAppWrapper></StoreProvider>
+    return <MyAppWrapper><Component {...pageProps} /></MyAppWrapper>;
 }
 
 function MyAppWrapper(props: { children?: React.ReactNode }) {
 
-    const setUserAuth = useStoreActions(actions => actions.setUserAuth);
-    const setUser = useStoreActions(actions => actions.setUser);
-    const setUserLoading = useStoreActions(actions => actions.setUserLoading);
-    const title = useStoreState(state => state.title);
+    const setUserAuth = useStore(state => state.setUserAuth);
+    const setUser = useStore(state => state.setUser);
+    const setUserLoading = useStore(state => state.setUserLoading);
+    const title = useStore(state => state.title);
 
     useEffect(() => {
         // when auth state changes, update user, username, and blog
@@ -26,8 +25,8 @@ function MyAppWrapper(props: { children?: React.ReactNode }) {
         const unsub = firebase.auth().onAuthStateChanged(async (userAuth) => {
             console.log('auth state changed')
             if (!userAuth) {
-                setUserAuth(undefined);
-                setUser(undefined);
+                setUserAuth(null);
+                setUser(null);
                 setUserLoading(false);
                 return;
             }
@@ -40,7 +39,7 @@ function MyAppWrapper(props: { children?: React.ReactNode }) {
                 const _username: string | undefined = usernameRef.exists && usernameData ? usernameData.username : undefined;
 
                 if (!_username) {
-                    setUser(undefined);
+                    setUser(null);
                     setUserLoading(false);
                     return;
                 }

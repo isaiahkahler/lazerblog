@@ -6,14 +6,17 @@ import firebase from '../firebase'
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
 import * as firebaseui from 'firebaseui';
 import { useEffect, useState } from 'react'
-import { useStoreState } from '../components/store'
+import { useStore } from '../components/store'
 import { UserBoundary } from '../components/userBoundary'
 import useRedirect from '../components/useRedirect'
 
 
 const uiConfig: firebaseui.auth.Config = {
     signInFlow: 'popup',
-    signInOptions: [firebase.auth.EmailAuthProvider.PROVIDER_ID],
+    signInOptions: [
+        firebase.auth.EmailAuthProvider.PROVIDER_ID,
+        firebase.auth.GoogleAuthProvider.PROVIDER_ID
+    ],
     callbacks: {
         signInSuccessWithAuthResult: (res) => {
             return false;

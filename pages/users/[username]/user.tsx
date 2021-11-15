@@ -4,7 +4,7 @@ import { TransparentButton } from "../../../components/button"
 import styles from './user.module.css'
 import Layout from "../../../components/layout"
 import Container from "../../../components/container"
-import { useStoreActions, useStoreState } from "../../../components/store"
+import { useStore } from "../../../components/store"
 import { useRouter } from "next/router"
 
 interface UserProps {
@@ -14,9 +14,9 @@ interface UserProps {
 
 // different from naming scheme to not confuse with type & variable `User`
 export default function UserDisplay({ user, children }: UserProps) {
-    const _user = useStoreState(state => state.user);
-    const doFollow = useStoreActions(actions => actions.doFollow);
-    const doUnfollow = useStoreActions(actions => actions.doUnfollow);
+    const _user = useStore(state => state.user);
+    const doFollow = useStore(state => state.doFollow);
+    const doUnfollow = useStore(state => state.doUnfollow);
     const router = useRouter();
     //todo: if posts length is zero, conditionally render a skeleton
     return (
@@ -26,7 +26,7 @@ export default function UserDisplay({ user, children }: UserProps) {
                 <h1>{user.firstName} {user.lastName}</h1>
                 <p>@{user.username}</p>
                 <p style={{ maxWidth: '680px' }}>description</p>
-                {_user && (<TransparentButton style={{ marginBottom: '1rem' }} onClick={() => {
+                {/* {_user && (<TransparentButton style={{ marginBottom: '1rem' }} onClick={() => {
                     
                     // do they want to follow, unfollow, or edit? 
                     if(user.username === _user.username) {
@@ -47,7 +47,7 @@ export default function UserDisplay({ user, children }: UserProps) {
                     }
                 }}>
                     {user.username === _user.username ? <p>edit profile</p> : _user.following.includes(`users/${user.username}`) ? <p>unfollow</p> : <p>follow</p>}
-                </TransparentButton>)}
+                </TransparentButton>)} */}
 
                 {!user && <TransparentButton onClick={() => {
                     // code review / todo: add redirect 

@@ -7,7 +7,7 @@ import Input from '../components/input'
 import { useEffect, useState } from "react";
 import firebase from '../firebase'
 import buttonStyle from '../components/button/button.module.css'
-import { useStoreActions, useStoreState } from "../components/store";
+import { useStore } from "../components/store";
 import { UserBoundary } from "../components/userBoundary";
 import useRedirect from "../components/useRedirect";
 import { UserBase } from "../components/types";
@@ -23,8 +23,8 @@ function CreateUser() {
     const [usernameTaken, setUsernameTaken] = useState<boolean | undefined>();
     const [validUsername, setValidUsername] = useState<boolean>(false);
 
-    const userAuth = useStoreState(state => state.userAuth);
-    const user = useStoreState(state => state.user);
+    const userAuth = useStore(state => state.userAuth);
+    const user = useStore(state => state.user);
     const redirect = useRedirect();
 
     // parse first and last name from sign up

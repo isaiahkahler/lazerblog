@@ -9,7 +9,7 @@ import { useEditor, EditorContent, Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import styles from './editor.module.css'
 import { useEffect, useState } from "react"
-import { useStoreState } from "../../components/store"
+import { useStore } from "../../components/store"
 import useRedirect from "../../components/useRedirect"
 import { useSlugUID } from "../../components/useSlug"
 import Input from '../../components/input'
@@ -109,7 +109,7 @@ function NewPost() {
     const redirect = useRedirect();
     const [postSlug, setPostSlug] = useSlugUID();
     const [submitted, setSubmitted] = useState(false);
-    const user = useStoreState(state => state.user);
+    const user = useStore(state => state.user);
 
     // code review: 
 

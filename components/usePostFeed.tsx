@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useStoreActions, useStoreState } from "./store";
+import { useStore } from "./store";
 import { Post, PostWithInfo } from "./types";
 import firebase from '../firebase'
 
@@ -10,27 +10,33 @@ interface UsePostFeedProps {
     showBlog?: boolean,
     loadOnScrollEnd?: boolean,
     initialPostData?: PostWithInfo[] | null,
+    initialOrderKey?: string | number | null
 }
 
-export default function usePostFeed({ query, showUser, showBlog, loadOnScrollEnd, initialPostData }: UsePostFeedProps) {
+export default function usePostFeed({ query, showUser, showBlog, loadOnScrollEnd, initialPostData, initialOrderKey }: UsePostFeedProps) {
 
     const [postsWithData, setPostsWithData] = useState<PostWithInfo[]>(initialPostData ? initialPostData : []);
-    const getUser = useStoreActions(actions => actions.getUser);
-    const getBlog = useStoreActions(actions => actions.getBlog);
-    const [lastQuery, setLastQuery] = useState<firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData> | undefined>()
+    const getUser = useStore(state => state.getUser);
+    const getBlog = useStore(state => state.getBlog);
+    const [lastQuery, setLastQuery] = useState<firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData> | null>(null)
     const [outOfPosts, setOutOfPosts] = useState(false);
     const [shouldLoad, setShouldLoad] = useState(false);
-    const queryOffset = initialPostData ? initialPostData.length : undefined;
+    const queryOffset = initialPostData ? (initialOrderKey ? initialOrderKey : null) : null;
 
     // get posts from firebase & update state 
     const fetchPosts = useCallback(async () => {
+        console.log('fetch posts')
         try {
+            console.log('last query?', !!lastQuery)
+            console.log('query offset?', queryOffset);
             const postsRef = lastQuery ? await query.startAfter(lastQuery).limit(10).get()
-                : queryOffset ? await query.startAt(queryOffset).limit(10).get() 
-                : await query.limit(10).get();
-            console.log('run fetch of posts')
+                : (queryOffset ? await query.startAfter(queryOffset).get()
+                : await query.limit(10).get());
+            console.log('run fetch of posts', postsRef.docs.length)
+            
             setLastQuery(postsRef.docs[postsRef.docs.length - 1]);
             if (!postsRef.docs || postsRef.docs.length === 0) {
+                console.log('set out of posts', postsRef.docs.length);
                 setOutOfPosts(true);
                 return;
             };
@@ -44,6 +50,7 @@ export default function usePostFeed({ query, showUser, showBlog, loadOnScrollEnd
                 }
                 const newPostsWithData = [...postsWithData, ..._postsWithData];
                 if (posts.length < 10) setOutOfPosts(true);
+                console.log('set posts with data')
                 setPostsWithData(newPostsWithData);
             })();
         } catch (error) {
@@ -63,6 +70,7 @@ export default function usePostFeed({ query, showUser, showBlog, loadOnScrollEnd
     // start loading if there's nothing 
     useEffect(() => {
         if (postsWithData.length === 0)
+            console.log('should load')
             setShouldLoad(true);
     }, [postsWithData]);
    
@@ -118,7 +126,7 @@ export default function usePostFeed({ query, showUser, showBlog, loadOnScrollEnd
         outOfPosts: outOfPosts,
         reload: () => {
             setPostsWithData(initialPostData ? initialPostData : []);
-            setLastQuery(undefined);
+            setLastQuery(null);
             // code review: which should it be?
             //setOutOfPosts(initialPostData ? initialPostData.length === 0 : false);
             setOutOfPosts(initialPostData ? initialPostData.length < 10 : false);

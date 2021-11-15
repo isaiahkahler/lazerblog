@@ -78,7 +78,8 @@ export default function UsersWrapper({ user, posts }: UsersWrapperProps) {
     query: firebase.firestore().collectionGroup('posts').where('author', '==', usernameValue).orderBy('date', 'desc'),
     showBlog: true,
     loadOnScrollEnd: true,
-    initialPostData: posts
+    initialPostData: posts,
+    initialOrderKey: posts ? posts[posts.length - 1].post.date : null
   });
 
 
@@ -90,7 +91,7 @@ export default function UsersWrapper({ user, posts }: UsersWrapperProps) {
   useEffect(() => {
     console.log('new username', usernameValue)
     postFeed.reload();
-  }, [usernameValue, postFeed]);
+  }, [usernameValue]);
 
   if (!username) return null;
   if (typeof (username) !== 'string') return null;

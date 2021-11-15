@@ -74,7 +74,8 @@ export default function BlogWrapper({blog, posts}: BlogWrapperProps) {
     const postFeed = usePostFeed({
       query: firebase.firestore().collectionGroup('posts').where('blog', '==', (blogSlug && typeof(blogSlug) === 'string') ? blogSlug : '').orderBy('date', 'desc'),
       loadOnScrollEnd: true,
-      initialPostData: posts
+      initialPostData: posts,
+      initialOrderKey: posts ? posts[posts.length - 1].post.date : null 
     });
 
 
@@ -86,7 +87,7 @@ export default function BlogWrapper({blog, posts}: BlogWrapperProps) {
   useEffect(() => {
     console.log('new blogSlug', blogSlugValue)
     postFeed.reload();
-  }, [blogSlugValue, postFeed]);
+  }, [blogSlugValue]);
 
     if (!blog) return (
         <div>
