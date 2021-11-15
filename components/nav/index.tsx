@@ -11,7 +11,6 @@ import { useEffect } from 'react'
 import SettingsIcon from '../icons/settingsIcon'
 import Link from 'next/link'
 import If from '../../components/if'
-import ClickAwayListener from 'react-click-away-listener';
 import PlusBoxMultipleOutlineIcon from '../icons/plusBoxMultipleOutlineIcon'
 
 
