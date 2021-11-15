@@ -24,14 +24,14 @@ export default function HomeWrapper() {
                         <h2>start writing</h2>
                     </LinkButton>
                     
-                    <h2 style={{marginTop: '10rem'}}>more features coming soon!</h2>
+                    {/* <h2 style={{marginTop: '10rem'}}>more features coming soon!</h2>
                     <ul>
                         <li>follow people and blogs</li>
                         <li>add images to your posts</li>
                         <li>add banners to your blog</li>
                         <li>add comments</li>
                         <li>explore topics and trending</li>
-                    </ul>
+                    </ul> */}
                 </Container>
             </Layout>
 
