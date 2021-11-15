@@ -32,14 +32,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const posts = postsRef.docs.map(doc => doc.data() as Post);
   const postsWithData: PostWithInfo[] = [];
   for (const post of posts) {
-    if(post.blog.includes('users/')) {
-      postsWithData.push({ post: post, user: null, blog: null })
-      continue;
-    }
-    const blogRef = await firebase.firestore().collection('blogs').doc(post.blog).get();
-    const blogData = blogRef.data();
     const userRef = await firebase.firestore().collection('users').doc(post.author).get();
     const userData = userRef.data();
+    
+    if(post.blog.includes('users/')) {
+      postsWithData.push({ post: post, user: { username: post.author, ...userData as UserBase}, blog: null })
+      continue;
+    }
+    
+    const blogRef = await firebase.firestore().collection('blogs').doc(post.blog).get();
+    const blogData = blogRef.data();
+
     console.log('user', post.author, userData)
     if (blogRef.exists && blogData && userRef.exists && userData) {
       postsWithData.push({ post: post, user: { username: post.author, ...userData as UserBase}, blog: { slug: post.blog, ...blogData as BlogBase } })

@@ -20,6 +20,7 @@ interface NavProps {
 }
 
 export default function Nav(props: NavProps) {
+    const userAuth = useStore(state => state.userAuth);
     const user = useStore(state => state.user);
     const router = useRouter();
     const [openDropdown, setOpenDropdown] = useState(false);
@@ -38,36 +39,29 @@ export default function Nav(props: NavProps) {
                     <UserIcon size={'30px'} color={"#aaa"} />
                 </IconButton>
                 <If value={openDropdown}>
-                    {/* <ClickAwayListener onClickAway={() => setOpenDropdown(false)}> */}
                     <Dropdown onClickAway={() => setOpenDropdown(false)}>
                         {user && <>
-                            <Link href={`/users/${user.username}`} passHref>
-                                <DropdownItem leftIcon={<IconButton><UserIcon size='30px' /></IconButton>} onClick={() => {
-                                    // router.push(`/users/${user.username}`);
-                                    setOpenDropdown(false);
-                                }}>
-                                    <div>
-                                        <div>{user.firstName} {user.lastName}</div>
-                                        <div>@{user.username}</div>
-                                    </div>
-                                </DropdownItem>
-                            </Link>
-                            <Link href='/new-post' passHref>
-                                <DropdownItem leftIcon={<IconButton><PencilIcon size='30px' /></IconButton>} onClick={() => {
-                                    // router.push('/new-post');
-                                    setOpenDropdown(false);
-                                }}>
-                                    Write a new post
-                                </DropdownItem>
-                            </Link>
-                            <Link href='/create-blog' passHref>
-                                <DropdownItem leftIcon={<IconButton><PlusBoxMultipleOutlineIcon size='30px' /></IconButton>} onClick={() => {
-                                    // router.push('/new-post');
-                                    setOpenDropdown(false);
-                                }}>
-                                    Create a new blog
-                                </DropdownItem>
-                            </Link>
+                            <DropdownItem href={`/users/${user.username}`} leftIcon={<IconButton><UserIcon size='30px' /></IconButton>} onClick={() => {
+                                // router.push(`/users/${user.username}`);
+                                setOpenDropdown(false);
+                            }}>
+                                <div>
+                                    <div>{user.firstName} {user.lastName}</div>
+                                    <div>@{user.username}</div>
+                                </div>
+                            </DropdownItem>
+                            <DropdownItem href='/new-post' leftIcon={<IconButton><PencilIcon size='30px' /></IconButton>} onClick={() => {
+                                // router.push('/new-post');
+                                setOpenDropdown(false);
+                            }}>
+                                Write a new post
+                            </DropdownItem>
+                            <DropdownItem href='/create-blog' leftIcon={<IconButton><PlusBoxMultipleOutlineIcon size='30px' /></IconButton>} onClick={() => {
+                                // router.push('/new-post');
+                                setOpenDropdown(false);
+                            }}>
+                                Create a new blog
+                            </DropdownItem>
                             {/* <DropdownItem leftIcon={<IconButton><SettingsIcon size='30px' /></IconButton>} onClick={() => {
 
                     }}>
@@ -86,20 +80,32 @@ export default function Nav(props: NavProps) {
                         </>}
 
                         <If.not value={user}>
-                            <Link href='/login' passHref>
-                                <DropdownItem leftIcon={<UserIcon size={'38px'} />}>
+                            <If.not value={userAuth}>
+                                <DropdownItem href='/login' leftIcon={<UserIcon size={'38px'} />}>
                                     <div>
                                         Sign In or Sign Up
                                     </div>
                                 </DropdownItem>
-                            </Link>
+                            </If.not>
+                            <If value={userAuth}>
+                                <DropdownItem href='/create-user' leftIcon={<UserIcon size={'38px'} />}>
+                                    <div>
+                                        Finish signing up
+                                    </div>
+                                </DropdownItem>
+                                <DropdownItem leftIcon={<LogoutIcon size={'38px'} />} onClick={() => {
+                                    firebase.auth().signOut().then(() => {
+                                        setOpenDropdown(false);
+                                    })
+                                }}>
+                                    <div>
+                                        Sign out
+                                    </div>
+                                </DropdownItem>
+                            </If>
                         </If.not>
                     </Dropdown>
-                    {/* </ClickAwayListener> */}
                 </If>
-                {/* {openDropdown && !user && <Dropdown>
-                    
-                </Dropdown>} */}
             </span>
         </div>
     );
@@ -119,9 +125,9 @@ function Dropdown({ children, onClickAway }: DropdownProps) {
         if (dropdownRef.current.contains(event.target as (Node | null))) {
             // inside click
             return;
-          }
-          // outside click 
-          onClickAway && onClickAway();
+        }
+        // outside click 
+        onClickAway && onClickAway();
     };
 
     useEffect(() => {
@@ -145,16 +151,26 @@ interface DropdownItemProps {
     children?: React.ReactNode,
     leftIcon?: JSX.Element,
     rightIcon?: JSX.Element,
+    href?: string
 }
 
-function DropdownItem({ onClick: onClick, leftIcon, rightIcon, children }: DropdownItemProps) {
+function DropdownItem({ onClick: onClick, leftIcon, rightIcon, children, href }: DropdownItemProps) {
     const LeftIcon = leftIcon ? () => leftIcon : () => null;
     const RightIcon = rightIcon ? () => rightIcon : () => null;
     return (
-        <span className={styles["menu-item"]} onClick={onClick}>
-            {LeftIcon && <span style={{ marginRight: '8px' }}><LeftIcon /></span>}
-            {children}
-            {RightIcon && <span style={{ marginLeft: '8px' }}><RightIcon /></span>}
-        </span>
+        <>
+            {href && <Link href={href} passHref>
+                <span className={styles["menu-item"]} onClick={onClick}>
+                    {LeftIcon && <span style={{ marginRight: '8px' }}><LeftIcon /></span>}
+                    {children}
+                    {RightIcon && <span style={{ marginLeft: '8px' }}><RightIcon /></span>}
+                </span>
+            </Link>}
+            {!href && <span className={styles["menu-item"]} onClick={onClick}>
+                {LeftIcon && <span style={{ marginRight: '8px' }}><LeftIcon /></span>}
+                {children}
+                {RightIcon && <span style={{ marginLeft: '8px' }}><RightIcon /></span>}
+            </span>}
+        </>
     );
 }

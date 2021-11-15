@@ -1,40 +1,63 @@
 import styles from './input.module.css'
+import { HTMLProps } from 'react';
 
-interface InputProps {
+interface ExtraInputProps {
     children?: React.ReactNode,
     value: string,
     setValue: (newValue: string) => void,
-    id?: string,
     label?: string,
     isValid?: boolean,
     invalidMessage?: string,
-    placeholder?: string,
-    className?: string
 }
+
+type InputProps = ExtraInputProps & HTMLProps<HTMLInputElement>;
+type TextAreaProps = ExtraInputProps & HTMLProps<HTMLTextAreaElement>;
 
 // code review: turn warning colors into global constants? (used over multiple components as text)
 export default function Input(props: InputProps) {
-    const borderStyle = props.isValid === false ? {border: '2px solid #cc0f35'} : {};
-    return(
+    const borderStyle = props.isValid === false ? { border: '2px solid #cc0f35' } : {};
+
+    const newProps : any = {...props};
+
+    const invalidMessage =  newProps.invalidMessage;
+    delete newProps.invalidMessage;
+    const label = newProps.label;
+    delete newProps.label;
+    const isValid = newProps.isValid;
+    delete newProps.isValid;
+    const setValue = newProps.setValue;
+    delete newProps.setValue;
+
+    return (
         <>
-            {props.label ? <h2 className={styles.label}><label htmlFor={props.id}>{props.label}</label></h2> : undefined}
-            <input type="text" className={`${props.className ? props.className : ''} ${styles.input}`} style={borderStyle} value={props.value} onChange={(event) => {props.setValue(event.target.value)}} id={props.id} placeholder={props.placeholder} />
-            {props.isValid === false ? <h3 style={{color: "#cc0f35", marginTop: '0'}}>{props.invalidMessage}</h3> : undefined}
+            {label ? <h2 className={styles.label}><label htmlFor={newProps.id}>{label}</label></h2> : undefined}
+            <input {...newProps} type="text" className={`${newProps.className ? newProps.className : ''} ${styles.input}`} style={borderStyle} onChange={(event) => { setValue(event.target.value) }} />
+            {isValid === false ? <h3 style={{ color: "#cc0f35", marginTop: '0' }}>{invalidMessage}</h3> : undefined}
         </>
     );
 }
 
-interface TextAreaProps {
-    placeholder?: string,
-}
 
-export function TextArea(props: InputProps & TextAreaProps) {
-    const borderStyle = props.isValid === false ? {border: '2px solid #cc0f35'} : {};
-    return(
+export function TextArea(props: TextAreaProps) {
+    const borderStyle = props.isValid === false ? { border: '2px solid #cc0f35' } : {};
+
+
+    const newProps : any = {...props};
+
+    const invalidMessage = newProps.invalidMessage;
+    delete newProps.invalidMessage;
+    const label = newProps.label;
+    delete newProps.label;
+    const isValid = newProps.isValid;
+    delete newProps.isValid;
+    const setValue = newProps.setValue;
+    delete newProps.setValue;
+
+    return (
         <>
-            {props.label? <h2 className={styles.label}><label htmlFor={props.id}>{props.label}</label></h2> : undefined}
-            <textarea className={styles.input} style={borderStyle} name={props.id} id={props.id} rows={3} placeholder={props.placeholder} value={props.value} onChange={(event) => {props.setValue(event.target.value)}} ></textarea>
-            {props.isValid === false ? <h3 style={{color: "#cc0f35", marginTop: '0'}}>{props.invalidMessage}</h3> : undefined}
+            {label ? <h2 className={styles.label}><label htmlFor={newProps.id}>{label}</label></h2> : undefined}
+            <textarea className={styles.input} style={borderStyle} name={newProps.id} id={newProps.id} rows={3} placeholder={newProps.placeholder} onChange={(event) => { setValue(event.target.value) }} ></textarea>
+            {isValid === false ? <h3 style={{ color: "#cc0f35", marginTop: '0' }}>{invalidMessage}</h3> : undefined}
         </>
     );
 }

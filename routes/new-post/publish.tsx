@@ -55,7 +55,7 @@ function Publish() {
                     <h1>Finalize your writing.</h1>
                     {title ? <p>{URL}/{blogSlug}/{postSlug}</p> : null}
                     <Input value={description} setValue={setDescription} label='Add a one-line description.' placeholder='optional, but recommended' id='description' />
-                    <Input value={tag} setValue={setTag} label='Add tags' placeholder='up to five...' id='tags' />
+                    <Input value={tag} setValue={setTag} label='Add tags' placeholder='up to five tags, separated by commas...' id='tags' />
                     <hr style={{ margin: '2rem 0' }} />
                     <h1>{title}</h1>
                     <div dangerouslySetInnerHTML={{ __html: content }}></div>
@@ -65,9 +65,11 @@ function Publish() {
                             try {
                                 console.log('title,', !!title, 'content', !!content, 'blog', !!blogSlug, 'post', !!postSlug)
                                 if(title && content && blogSlug && postSlug && user) {
-                                    const postRef = await firebase.firestore().collection('blogs').doc(blogSlug).collection('posts').doc(postSlug).get();
+
+                                    const query = blogSlug.includes('users/') ? firebase.firestore().doc(blogSlug).collection('posts').doc(postSlug) : firebase.firestore().collection('blogs').doc(blogSlug).collection('posts').doc(postSlug);
+                                    const postRef = await query.get();
                                     if(!postRef.exists) {
-                                        await firebase.firestore().collection('blogs').doc(blogSlug).collection('posts').doc(postSlug).set({
+                                        await query.set({
                                             slug: postSlug,
                                             title: title,
                                             description: description,

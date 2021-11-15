@@ -21,7 +21,7 @@ function MyAppWrapper(props: { children?: React.ReactNode }) {
     useEffect(() => {
         // when auth state changes, update user, username, and blog
         let unsubDocListeners = () => { };
-        let unsubOtherListener = () => { };
+
         const unsub = firebase.auth().onAuthStateChanged(async (userAuth) => {
             console.log('auth state changed')
             if (!userAuth) {
@@ -31,7 +31,7 @@ function MyAppWrapper(props: { children?: React.ReactNode }) {
                 return;
             }
 
-            setUserAuth(userAuth);
+            // setUserAuth(userAuth);
             try {
                 // set username
                 const usernameRef = await firebase.firestore().collection('usernames').doc(userAuth.uid).get();
@@ -40,6 +40,7 @@ function MyAppWrapper(props: { children?: React.ReactNode }) {
 
                 if (!_username) {
                     setUser(null);
+                    setUserAuth(null);
                     setUserLoading(false);
                     return;
                 }
@@ -49,16 +50,21 @@ function MyAppWrapper(props: { children?: React.ReactNode }) {
                     const docData = doc.data();
                     if (doc.exists && docData) {
                         setUser({ username: _username, ...docData } as User);
+                    } else {
+                        setUser(null);
                     }
+                    setUserAuth(userAuth);
                     setUserLoading(false);
                 }, (error) => {
                     //code review: handle
                     console.error(error);
+                    setUserAuth(userAuth);
                 });
-
+                
             } catch (error) {
                 // code review:
                 console.error(error)
+                setUserAuth(userAuth);
             }
 
             // had to set this after the onSnapshot completes, given as a callback 

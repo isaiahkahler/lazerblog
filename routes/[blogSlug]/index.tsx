@@ -10,6 +10,7 @@ import { getRandomSadEmoji } from '../../components/randomEmoji'
 import BlogDisplay from './blog'
 import usePostFeed from '../../components/usePostFeed'
 import PostFeed from '../../components/postFeed'
+import PageNotFound from '../../components/404'
 
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -89,22 +90,7 @@ export default function BlogWrapper({blog, posts}: BlogWrapperProps) {
     postFeed.reload();
   }, [blogSlugValue]);
 
-    if (!blog) return (
-        <div>
-            {/* <Nav /> */}
-            <Layout>
-                <Container>
-                    <h1>{getRandomSadEmoji()} 404 The page does not exist.</h1>
-                    <p>Was the URL spelled correctly?</p>
-                    <Button onClick={() => {
-                        router.back();
-                    }}>
-                        <h2>← go back</h2>
-                    </Button>
-                </Container>
-            </Layout>
-        </div>
-    );
+    if (!blog) return (<PageNotFound />);
 
     return (
     <BlogDisplay blog={blog}>
