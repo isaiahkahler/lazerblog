@@ -1,13 +1,16 @@
 import create from 'zustand'
 import firebase from '../firebase'
-import { Blog, BlogBase, Post, User, UserBase } from './types'
+import { Blog, BlogBase, Post, User, UserBase, UserStore } from './types'
 
 interface Store {
-  userAuth: firebase.User | null,
-  user: User | null,
+  // userAuth: firebase.User | null,
+  user: {
+    auth: firebase.User | null,
+    data: User | null
+  },
   userLoading: boolean,
-  setUserAuth: (userAuth: firebase.User | null) => void,
-  setUser: (user: User | null) => void,
+  // setUserAuth: (userAuth: firebase.User | null) => void,
+  setUser: (user: UserStore) => void,
   setUserLoading: (userLoading: boolean) => void,
   cache: {
     blogs: { [slug: string]: Blog },
@@ -28,11 +31,14 @@ interface Store {
 }
 
 export const useStore = create<Store>((set, get) => ({
-  userAuth: null,
-  user: null,
+  // userAuth: null,
+  user: {
+    auth: null,
+    data: null
+  },
   userLoading: true,
-  setUserAuth: (userAuth: firebase.User | null) => set(state => ({ userAuth: userAuth })),
-  setUser: (user: User | null) => set(state => ({ user: user })),
+  // setUserAuth: (userAuth: firebase.User | null) => set(state => ({ userAuth: userAuth })),
+  setUser: (_user: UserStore) => set(state => ({ user: {auth: _user.auth, data: _user.data} })),
   setUserLoading: (userLoading: boolean) => set(state => ({ userLoading: userLoading })),
   cache: {
     blogs: {},
@@ -58,19 +64,19 @@ export const useStore = create<Store>((set, get) => ({
   setTitle: (title: string) => set(state => ({ title: title })),
   doFollow: async (usernameOrBlog: string) => {
     const state = get();
-    if (!state.user) return;
-    await firebase.firestore().collection('users').doc(state.user.username).set({
-      following: state.user.following ? [...state.user.following, usernameOrBlog] : [usernameOrBlog]
+    if (!state.user.data) return;
+    await firebase.firestore().collection('users').doc(state.user.data.username).set({
+      following: state.user.data.following ? [...state.user.data.following, usernameOrBlog] : [usernameOrBlog]
     }, { merge: true });
 
   },
   doUnfollow: async (usernameOrBlog: string) => {
     const state = get();
-    if (!state.user) return;
-    if (!(state.user.following.includes(usernameOrBlog))) return;
+    if (!state.user.data) return;
+    if (!(state.user.data.following.includes(usernameOrBlog))) return;
 
-    await firebase.firestore().collection('users').doc(state.user.username).set({
-      following: state.user.following.filter(blog => blog !== usernameOrBlog)
+    await firebase.firestore().collection('users').doc(state.user.data.username).set({
+      following: state.user.data.following.filter(blog => blog !== usernameOrBlog)
     }, { merge: true });
 
   },

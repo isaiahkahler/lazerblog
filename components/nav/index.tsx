@@ -20,7 +20,7 @@ interface NavProps {
 }
 
 export default function Nav(props: NavProps) {
-    const userAuth = useStore(state => state.userAuth);
+    // const userAuth = useStore(state => state.userAuth);
     const user = useStore(state => state.user);
     const router = useRouter();
     const [openDropdown, setOpenDropdown] = useState(false);
@@ -40,14 +40,14 @@ export default function Nav(props: NavProps) {
                 </IconButton>
                 <If value={openDropdown}>
                     <Dropdown onClickAway={() => setOpenDropdown(false)}>
-                        {user && <>
-                            <DropdownItem href={`/users/${user.username}`} leftIcon={<IconButton><UserIcon size='30px' /></IconButton>} onClick={() => {
+                        {user.data && <>
+                            <DropdownItem href={`/users/${user.data.username}`} leftIcon={<IconButton><UserIcon size='30px' /></IconButton>} onClick={() => {
                                 // router.push(`/users/${user.username}`);
                                 setOpenDropdown(false);
                             }}>
                                 <div>
-                                    <div>{user.firstName} {user.lastName}</div>
-                                    <div>@{user.username}</div>
+                                    <div>{user.data.firstName} {user.data.lastName}</div>
+                                    <div>@{user.data.username}</div>
                                 </div>
                             </DropdownItem>
                             <DropdownItem href='/new-post' leftIcon={<IconButton><PencilIcon size='30px' /></IconButton>} onClick={() => {
@@ -79,15 +79,15 @@ export default function Nav(props: NavProps) {
                             </DropdownItem>
                         </>}
 
-                        <If.not value={user}>
-                            <If.not value={userAuth}>
+                        <If.not value={user.data}>
+                            <If.not value={user.auth}>
                                 <DropdownItem href='/login' leftIcon={<UserIcon size={'38px'} />}>
                                     <div>
                                         Sign In or Sign Up
                                     </div>
                                 </DropdownItem>
                             </If.not>
-                            <If value={userAuth}>
+                            <If value={user.auth}>
                                 <DropdownItem href='/create-user' leftIcon={<UserIcon size={'38px'} />}>
                                     <div>
                                         Finish signing up

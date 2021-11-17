@@ -10,6 +10,9 @@ import { useStore } from '../components/store'
 import { UserBoundary } from '../components/userBoundary'
 import useRedirect from '../components/useRedirect'
 
+type SignInHandler = (userAuth: firebase.User) => void;
+
+let onSignIn : SignInHandler = (userAuth) => {};
 
 const uiConfig: firebaseui.auth.Config = {
     signInFlow: 'popup',
@@ -18,7 +21,11 @@ const uiConfig: firebaseui.auth.Config = {
         firebase.auth.GoogleAuthProvider.PROVIDER_ID
     ],
     callbacks: {
-        signInSuccessWithAuthResult: (res) => {
+        signInSuccessWithAuthResult: (auth: any) => {
+            const userAuth : firebase.User | undefined = auth.user && auth.user as firebase.User;
+            if(userAuth) {
+              onSignIn(userAuth);
+            }
             return false;
         },
         signInFailure: (error) => { },
@@ -26,6 +33,17 @@ const uiConfig: firebaseui.auth.Config = {
 }
 
 function Login() {
+    const router = useRouter();
+    const user = useStore(state => state.user);
+
+    onSignIn = (_userAuth) => {
+        if(_userAuth && user.data) {
+            router.push(`/users/${user.data.username}`);
+        }
+        if(_userAuth && !user.data) {
+            router.push('/create-user')
+        }
+    }
 
     return (
         <div>
@@ -50,24 +68,28 @@ export default function LoginWrapper() {
     const router = useRouter();
     const redirect = useRedirect();
     return (
-        <UserBoundary onUserLoaded={(userAuth, user) => {
-            // console.log('user loaded in login', user, username)
-            if (!userAuth) return; // stay to log in
-            if (!user) { // needs to register
+        <UserBoundary 
+        onUserLoaded={(user) => {
+            // console.log('user loaded in login', user)
+            if (!user.auth) return; // stay to log in
+            if (!user.data) { // needs to register
                 router.push('/create-user');
                 return;
             }
+
+            const userData = user.data;
             // code review: may want to send to /home instead
-            if (user.blogs && user.blogs.length === 0) { // needs to create first blog
-                router.push('/create-blog');
-                return;
-            }
+            // if (user.blogs && user.blogs.length === 0) { // needs to create first blog
+            //     router.push('/create-blog');
+            //     return;
+            // }
             // redirect will redirect if the URL contains ?redirect=[new-route]
             // else, has blogs, go to user page
             redirect(() => {
-                router.push(`/users/${user.username}`);
+                router.push(`/users/${userData.username}`);
             });
-        }}>
+        }}
+        >
             <Login />
         </UserBoundary>
     );

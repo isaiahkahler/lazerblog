@@ -7,12 +7,12 @@ import HomeFeed from './homeFeed'
 
 export default function HomeWrapper() {
 
-    const userAuth = useStore(state => state.userAuth);
+    // const userAuth = useStore(state => state.userAuth);
     const user = useStore(state => state.user);
     const userLoading = useStore(state => state.userLoading);
 
     // todo: replace with landing page
-    // if(!userAuth || !user) return (
+    // if(!user.auth || !user.data) return (
     return (
         <div>
             <Layout>
@@ -38,5 +38,5 @@ export default function HomeWrapper() {
         </div>
     );
 
-    // return (<UserBoundary><HomeFeed user={user} /></UserBoundary>);
+    // return (<UserBoundary><HomeFeed user={user.data} /></UserBoundary>);
 }

@@ -109,7 +109,8 @@ function NewPost() {
     const redirect = useRedirect();
     const [postSlug, setPostSlug] = useSlugUID();
     const [submitted, setSubmitted] = useState(false);
-    const user = useStore(state => state.user);
+    const userStoreObject = useStore(state => state.user);
+    const user = userStoreObject.data;
 
     // code review: 
 
@@ -251,19 +252,19 @@ function NewPost() {
 export default function NewPostWrapper() {
     const router = useRouter();
 
-    return (<UserBoundary onUserLoaded={(userAuth, user) => {
-        if (!userAuth) { // nobody is logged in
+    return (<UserBoundary onUserLoaded={(user) => {
+        if (!user.auth) { // nobody is logged in
             console.log('nobody is logged in')
             router.push({ pathname: '/login', query: { redirect: 'new-post' } });
             return;
         }
-        if (!user) { // user is not registered
+        if (!user.data) { // user is not registered
             console.log('user is not registered')
 
             router.push({ pathname: '/create-user', query: { redirect: 'new-post' } });
             return;
         }
-        if (!user.blogs) {
+        if (!user.data.blogs) {
             console.log('no blog(s) to post to');
             router.push({ pathname: '/create-blog', query: { redirect: 'new-post' } });
             return;

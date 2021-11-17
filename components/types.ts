@@ -1,3 +1,5 @@
+import firebase from '../firebase'
+
 export interface Post {
     slug: string,
     title: string,
@@ -14,6 +16,11 @@ export interface PostWithInfo {
     post: Post,
     user?: User | null,
     blog?: Blog | null
+}
+
+export interface UserStore {
+    data: User | null,
+    auth: firebase.User | null
 }
 
 export interface User extends UserBase {

@@ -18,7 +18,8 @@ function Publish() {
     const [content, setContent] = useState<any>();
     const [blogSlug, setBlogSlug] = useState('');
     const [postSlug, setPostSlug] = useState('');
-    const user = useStore(state => state.user);
+    const userStoreObject = useStore(state => state.user);
+    const user = userStoreObject.data;
     const router = useRouter();
 
     useEffect(() => {
@@ -107,12 +108,12 @@ function Publish() {
 export default function PublishWrapper() {
     const router = useRouter();
 
-    return (<UserBoundary onUserLoaded={(user, username) => {
-        if(!user) {
+    return (<UserBoundary onUserLoaded={(user) => {
+        if(!user.data) {
             router.push('/login');
             return;
         }
-        if(!username) {
+        if(!user.data.username) {
             router.push('/create-user');
         }
     }}><Publish /></UserBoundary>);

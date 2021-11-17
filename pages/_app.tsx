@@ -13,74 +13,111 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 function MyAppWrapper(props: { children?: React.ReactNode }) {
 
-    const setUserAuth = useStore(state => state.setUserAuth);
+    // const setUserAuth = useStore(state => state.setUserAuth);
     const setUser = useStore(state => state.setUser);
     const setUserLoading = useStore(state => state.setUserLoading);
     const title = useStore(state => state.title);
 
     useEffect(() => {
         // when auth state changes, update user, username, and blog
-        let unsubDocListeners = () => { };
+        let unsubUserListener = () => { };
+        let unsubUsernameListener = () => { };
 
         const unsub = firebase.auth().onAuthStateChanged(async (userAuth) => {
-            console.log('auth state changed')
+            console.log('auth state changed', userAuth);
+
             if (!userAuth) {
-                setUserAuth(null);
-                setUser(null);
+                // setUserAuth(null);
+                // setUser(null);
+                setUser({
+                    data: null,
+                    auth: null
+                })
                 setUserLoading(false);
                 return;
             }
 
+            console.log('some console log in the middle')
+
             // setUserAuth(userAuth);
             try {
                 // set username
-                const usernameRef = await firebase.firestore().collection('usernames').doc(userAuth.uid).get();
-                const usernameData = usernameRef.data();
-                const _username: string | undefined = usernameRef.exists && usernameData ? usernameData.username : undefined;
 
-                if (!_username) {
-                    setUser(null);
-                    setUserAuth(null);
-                    setUserLoading(false);
-                    return;
-                }
+                console.log('trying to get username')
 
-                // set blogs & following
-                unsubDocListeners = firebase.firestore().collection('users').doc(_username).onSnapshot((doc) => {
-                    const docData = doc.data();
-                    if (doc.exists && docData) {
-                        setUser({ username: _username, ...docData } as User);
-                    } else {
-                        setUser(null);
+                unsubUsernameListener = firebase.firestore().collection('usernames').doc(userAuth.uid).onSnapshot((usernameRef) => {
+
+                    console.log('inside username listener')
+
+                    // const usernameRef = await firebase.firestore().collection('usernames').doc(userAuth.uid).get();
+                    const usernameData = usernameRef.data();
+                    const _username: string | undefined = usernameRef.exists && usernameData ? usernameData.username : undefined;
+
+                    if (!_username) {
+                        console.log('couldnt get username')
+                        // setUser(null);
+                        // setUserAuth(null);
+                        setUser({
+                            data: null,
+                            auth: userAuth
+                        })
+                        setUserLoading(false);
+                        return;
                     }
-                    setUserAuth(userAuth);
-                    setUserLoading(false);
-                }, (error) => {
-                    //code review: handle
-                    console.error(error);
-                    setUserAuth(userAuth);
+
+                    console.log('got username')
+
+                    // set blogs & following
+                    unsubUserListener = firebase.firestore().collection('users').doc(_username).onSnapshot((doc) => {
+                        console.log('user state changed')
+                        const docData = doc.data();
+                        if (doc.exists && docData) {
+                            setUser({
+                                data: { username: _username, ...docData } as User,
+                                auth: userAuth
+                            });
+                            // setUserAuth(userAuth);
+                            setUserLoading(false);
+                        } else {
+                            // setUser(null);
+                            // setUserAuth(userAuth);
+                            setUser({
+                                data: null,
+                                auth: userAuth
+                            })
+                            setUserLoading(false);
+                        }
+                    }, (error) => {
+                        //code review: handle
+                        console.error(error);
+                    });
+
+
+                }, (error) => { // end username listener
+                    console.error('error username listener', error);
                 });
-                
+
+
             } catch (error) {
                 // code review:
                 console.error(error)
-                setUserAuth(userAuth);
             }
+
+
+
 
             // had to set this after the onSnapshot completes, given as a callback 
             // setUserLoading(false);
 
         }, (error) => {
             // code review: handle
-        }, () => {
-            console.log('wtf? completed')
         });
 
         // updateData(firebase.auth().currentUser);
 
         return () => {
             unsub();
-            unsubDocListeners();
+            unsubUserListener();
         }
     }, []);
 
@@ -96,3 +133,4 @@ function MyAppWrapper(props: { children?: React.ReactNode }) {
 }
 
 export default MyApp
+

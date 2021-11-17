@@ -1,29 +1,44 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useStore } from "./store";
 import firebase from '../firebase'
-import { User } from "./types";
+import { User, UserStore } from "./types";
 
 
 interface UserBoundaryProps {
     children: React.ReactNode,
-    onUserLoaded?: (userAuth: firebase.User | null, user: User | null) => void,
+    onUserLoaded?: (userStore: UserStore) => void,
+    precondition?: (userStore: UserStore) => true | (() => void),
 }
 
-export function UserBoundary({children, onUserLoaded}: UserBoundaryProps) {
-
-    const userAuth = useStore(state => state.userAuth);
+export function UserBoundary({ children, onUserLoaded, precondition }: UserBoundaryProps) {
+    // const userAuth = useStore(state => state.userAuth);
     const user = useStore(state => state.user);
     const userLoading = useStore(state => state.userLoading);
-
+    const [initial, setInitial] = useState(true);
+  
+  
     useEffect(() => {
-        if(userLoading) return;
-        onUserLoaded && onUserLoaded(userAuth, user);
-    }, [userLoading, user, onUserLoaded, userAuth])
-
-    // code review: make this prettier / cooler 
-    if (userLoading) return <p>userLoading</p>;
-
-
-    return <>{children}</>;
-}
+      if (userLoading) return;
+      if(initial && precondition) {
+        const result = precondition(user);
+        if (typeof (result) === 'function') {
+          result();
+        }
+        setInitial(false);
+      }
+      // console.log('on user loaded of user boundary')
+      onUserLoaded && onUserLoaded(user);
+    }, [user, userLoading, onUserLoaded, precondition, initial, setInitial]);
+  
+    // code review: make this loading screen better
+    if (userLoading) return <>user loading...</>;
+    if (precondition && initial) return <>waiting for precondition</>;
+  
+    return (
+      <>
+        {children}
+      </>
+    )
+  }
+  

@@ -26,7 +26,7 @@ function CreateBlog() {
     });
     const [blogDescription, setBlogDescription] = useState('');
     const [formSubmitted, setFormSubmitted] = useState(false);
-    const userAuth = useStore(state => state.userAuth);
+    // const userAuth = useStore(state => state.userAuth);
     const user = useStore(state => state.user);
     const redirect = useRedirect();
 
@@ -47,20 +47,20 @@ function CreateBlog() {
 
                                 (async () => {
                                     try {
-                                        if (blogSlug && userAuth && user) {
+                                        if (blogSlug && user.auth && user.data) {
                                             const blogURL = blogSlugTaken ? backupBlogSlug : blogSlug;
                                             const blogURLDoc = await firebase.firestore().collection('blogs').doc(blogURL).get();
                                             if(!blogURLDoc.exists) {
                                                 // add blog to 'blogs'
                                                 await firebase.firestore().collection('blogs').doc(blogURL).set({
                                                     name: blogName,
-                                                    author: user.username,
+                                                    author: user.data.username,
                                                     blogDescription: blogDescription,
                                                     brandImage: ''
                                                 });
                                                 // add blog to user     
-                                                await firebase.firestore().collection('users').doc(user.username).set({
-                                                    blogs: user.blogs ? [...user.blogs, blogSlug] : [blogSlug]
+                                                await firebase.firestore().collection('users').doc(user.data.username).set({
+                                                    blogs: user.data.blogs ? [...user.data.blogs, blogSlug] : [blogSlug]
                                                 }, {merge: true});
 
                                                 // redirects if URL has ?redirect=[new-route]
@@ -84,17 +84,17 @@ function CreateBlog() {
 }
 
 
-export default function BlogWrapper() {
+export default function CreateBlogWrapper() {
     const router = useRouter();
     return (
-        <UserBoundary onUserLoaded={(user, username) => {
-            if(user && username) return; // logged in and registered
-            if(!user) { // needs to log in
+        <UserBoundary onUserLoaded={user => {
+            if(user.data && user.auth) return; // logged in and registered
+            if(!user.auth) { // needs to log in
                 console.log('no user')
                 router.push('/login')
                 return;
             }
-            if(!username) { // needs to register
+            if(!user.data) { // needs to register
                 router.push('/create-user');
                 return; 
             }

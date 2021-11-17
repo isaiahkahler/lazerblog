@@ -26,19 +26,19 @@ function CreateUser() {
 
     const [loading, setLoading] = useState(false);
 
-    const userAuth = useStore(state => state.userAuth);
+    // const userAuth = useStore(state => state.userAuth);
     const user = useStore(state => state.user);
     const redirect = useRedirect();
 
     // parse first and last name from sign up
     useEffect(() => {
-        if (userAuth) {
-            if (!firstName && !lastName && userAuth.displayName) {
-                setFirstName(userAuth.displayName.split(' ')[0]);
-                setLastName(userAuth.displayName.split(' ')[1]);
+        if (user.auth) {
+            if (!firstName && !lastName && user.auth.displayName) {
+                setFirstName(user.auth.displayName.split(' ')[0]);
+                setLastName(user.auth.displayName.split(' ')[1]);
             }
         }
-    }, [userAuth, firstName, lastName]);
+    }, [user.auth, firstName, lastName]);
 
 
     // check if username is valid
@@ -100,11 +100,11 @@ function CreateUser() {
 
                                 (async () => {
                                     try { 
-                                        if(userAuth && usernameInput && !usernameTaken && validUsername) {
+                                        if(user.auth && usernameInput && !usernameTaken && validUsername) {
                                             setLoading(true);
                                             const usernameDoc = await firebase.firestore().collection('users').doc(usernameInput).get();
                                             if(!usernameDoc.exists) {
-                                                await firebase.firestore().collection('usernames').doc(userAuth.uid).set({
+                                                await firebase.firestore().collection('usernames').doc(user.auth.uid).set({
                                                     username: usernameInput
                                                 });
                                                 await firebase.firestore().collection('users').doc(usernameInput).set({
@@ -112,7 +112,9 @@ function CreateUser() {
                                                     lastName: lastName,
                                                     profilePicture: '',
                                                     bannerImage: '',
-                                                    blogs: [],
+                                                    blogs: [
+                                                        `users/${usernameInput}`
+                                                    ],
                                                     following: []
                                                 } as UserBase);
                                                 
@@ -142,17 +144,17 @@ function CreateUser() {
 export default function CreateUserWrapper() {
     const router = useRouter();
     return (
-        <UserBoundary onUserLoaded={(userAuth, user) => {
-            if (!userAuth) { // nobody is logged in
+        <UserBoundary onUserLoaded={(user) => {
+            if (!user.auth) { // nobody is logged in
                 router.push('/login');
                 return;
             }
-            if (!user) return; // user is not registered, stay here
-            if (user.blogs && user.blogs.length === 0) { // user is registered and needs to create first blog
-                router.push('/create-blog')
-            }
+            if (!user.data) return; // user is not registered, stay here
+            // if (user.blogs && user.blogs.length === 0) { // user is registered and needs to create first blog
+            //     router.push('/create-blog')
+            // }
             // user is registered and has blogs
-            router.push(`/users/${user.username}`);
+            router.push(`/users/${user.data.username}`);
         }}>
             <CreateUser />
         </UserBoundary>

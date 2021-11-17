@@ -35,12 +35,12 @@ export default function BlogDisplay({ blog, children }: BlogProps) {
     useEffect(() => {
         (async () => {
             if (blogAuthor.username !== '') return;
-            const user = await getUser(blog.author);
-            if (!user) {
+            const _user = await getUser(blog.author);
+            if (!_user) {
                 // code review: 
                 throw new Error('oh the user ? what');
             }
-            setBlogAuthor(user);
+            setBlogAuthor(_user);
         })();
     }, [getUser, blog, blogAuthor]);
 
@@ -54,14 +54,14 @@ export default function BlogDisplay({ blog, children }: BlogProps) {
                     From <Link href={`/users/${blog.author}`}><a style={{ color: "#000" }}>{blogAuthor.firstName} {blogAuthor.lastName}</a></Link>
                 </span>
                 <p style={{ maxWidth: '680px' }}>{blog.blogDescription}</p>
-                {/* {user && (<TransparentButton style={{ marginBottom: '1rem' }} onClick={() => {
+                {/* {user.data && (<TransparentButton style={{ marginBottom: '1rem' }} onClick={() => {
                     // do they want to follow, unfollow, or edit? 
-                    if (user && user.username === blog.author) {
+                    if (user.data && user.data.username === blog.author) {
                         // edit profile
                         router.push('/edit-profile')
                         return;
                     }
-                    if (user && typeof (blog.slug) === 'string' && user.following.includes(blog.slug)) {
+                    if (user.data && typeof (blog.slug) === 'string' && user.data.following.includes(blog.slug)) {
                         // unfollow
                         doUnfollow(blog.slug);
                         console.log('unfollow', blog.slug)
@@ -73,10 +73,10 @@ export default function BlogDisplay({ blog, children }: BlogProps) {
                         return;
                     }
                 }}>
-                    {user.username === blog.author ? <p>edit profile</p> : user.following.includes(blog.slug) ? <p>unfollow</p> : <p>follow</p>}
+                    {user.data.username === blog.author ? <p>edit profile</p> : user.data.following.includes(blog.slug) ? <p>unfollow</p> : <p>follow</p>}
                 </TransparentButton>)} */}
 
-                {/* {!user && <TransparentButton onClick={() => {
+                {/* {!user.data && <TransparentButton onClick={() => {
                     // code review / todo: add redirect 
                     router.push('/login');
                 }}><p>sign in to follow</p></TransparentButton>} */}
