@@ -19,12 +19,14 @@ export default function BlogDisplay({ blog, children }: BlogProps) {
     const router = useRouter();
     const getUser = useStore(state => state.getUser);
     const user = useStore(state => state.user);
+    const currentUser = user.data;
     const doFollow = useStore(state => state.doFollow);
     const doUnfollow = useStore(state => state.doUnfollow);
 
     const [blogAuthor, setBlogAuthor] = useState<User>({
         firstName: '',
         lastName: '',
+        bio: '',
         bannerImage: '',
         blogs: [],
         following: [],
@@ -49,9 +51,10 @@ export default function BlogDisplay({ blog, children }: BlogProps) {
         <div>
             <div className={styles.banner} style={{ backgroundColor: blog.brandImage ? 'rgba(255, 255, 255, 0.3)' : '#eee', backgroundImage: blog.brandImage ? `url(${blog.brandImage})` : 'none' }}>
                 <h1>{blog.name}</h1>
-                <Link href={`/${blog.slug}`}><a style={{ color: "#000" }}>/{blog.slug}</a></Link>
+                {/* <Link href={`/${blog.slug}`}><a style={{ color: "#000" }}>/{blog.slug}</a></Link> */}
+                <p>/{blog.slug}</p>
                 <span>
-                    From <Link href={`/users/${blog.author}`}><a style={{ color: "#000" }}>{blogAuthor.firstName} {blogAuthor.lastName}</a></Link>
+                    From <Link href={`/users/${blog.author}`}><a>{blogAuthor.firstName} {blogAuthor.lastName}</a></Link>
                 </span>
                 <p style={{ maxWidth: '680px' }}>{blog.blogDescription}</p>
                 {/* {user.data && (<TransparentButton style={{ marginBottom: '1rem' }} onClick={() => {
@@ -80,10 +83,17 @@ export default function BlogDisplay({ blog, children }: BlogProps) {
                     // code review / todo: add redirect 
                     router.push('/login');
                 }}><p>sign in to follow</p></TransparentButton>} */}
-                
+
             </div>
             <Layout>
                 <Container>
+                    <If value={currentUser && currentUser.username === blog.author}>
+                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                            <TransparentButton onClick={() => router.push('/new-post')}  style={{marginBottom: '2rem'}}>
+                                <p>write a new post</p>
+                            </TransparentButton>
+                        </div>
+                    </If>
                     {children}
                 </Container>
             </Layout>

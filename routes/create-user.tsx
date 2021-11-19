@@ -3,85 +3,86 @@ import Container from "../components/container"
 import Nav from "../components/nav"
 import Head from 'next/head'
 import { useRouter } from 'next/router';
-import Input from '../components/input'
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import firebase from '../firebase'
 // import buttonStyle from '../components/button/button.module.css'
 import { useStore } from "../components/store";
 import { UserBoundary } from "../components/userBoundary";
 import useRedirect from "../components/useRedirect";
 import { UserBase } from "../components/types";
-import {InputButton} from "../components/button";
+import { InputButton } from "../components/button";
+import { SubmitHandler, useForm } from "react-hook-form";
+import CustomInput, { InputInvalidMessage, InputLabel, useCustomInputProps } from "../components/input";
+import CircleProgress from "../components/circleProgress";
+import If from '../components/if'
 
+interface FormInputs {
+    firstName: string,
+    lastName: string,
+    username: string,
+    bio: string
+}
 
+let typingDelayTimeout: NodeJS.Timeout | null = null;
 
-function CreateUser() {
-    const router = useRouter();
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
+interface CreateUserProps {
+    submitHandler: (data: FormInputs) => void
+}
+
+function CreateUser({ submitHandler }: CreateUserProps) {
+    const user = useStore(state => state.user);
+
+    const { register, handleSubmit, formState: { errors }, trigger } = useForm<FormInputs>({
+        defaultValues: {
+            firstName: user.auth ? user.auth.displayName?.split(' ')[0] : '',
+            lastName: user.auth ? user.auth.displayName?.split(' ')[1] : ''
+        }
+    });
+
     const [usernameInput, setUsernameInput] = useState('');
-    const [formSubmitted, setFormSubmitted] = useState(false);
-    const [usernameTaken, setUsernameTaken] = useState<boolean | undefined>();
-    const [validUsername, setValidUsername] = useState<boolean>(false);
 
     const [loading, setLoading] = useState(false);
 
-    // const userAuth = useStore(state => state.userAuth);
-    const user = useStore(state => state.user);
-    const redirect = useRedirect();
 
-    // parse first and last name from sign up
+    const onSubmit: SubmitHandler<FormInputs> = (data) => {
+        setLoading(true);
+        submitHandler(data);
+    };
+
     useEffect(() => {
-        if (user.auth) {
-            if (!firstName && !lastName && user.auth.displayName) {
-                setFirstName(user.auth.displayName.split(' ')[0]);
-                setLastName(user.auth.displayName.split(' ')[1]);
+        console.log('form state change', errors.firstName, errors.lastName, errors.username)
+    }, [errors])
+
+
+    const firstNameRequiredError = errors.firstName?.type === 'required';
+    const firstNameMaxLengthError = errors.firstName?.type === 'maxLength';
+    const firstNamePatternError = errors.firstName?.type === 'pattern';
+    const firstNameError = firstNameRequiredError || firstNameMaxLengthError || firstNamePatternError;
+
+    const lastNameRequiredError = errors.lastName?.type === 'required';
+    const lastNameMaxLengthError = errors.lastName?.type === 'maxLength';
+    const lastNamePatternError = errors.lastName?.type === 'pattern';
+    const lastNameError = lastNameRequiredError || lastNameMaxLengthError || lastNamePatternError;
+
+    const usernameRequiredError = errors.username?.type === 'required';
+    const usernameLengthError = errors.username?.type === 'minLength' || errors.username?.type === 'maxLength';
+    const usernamePatternError = errors.username?.type === 'pattern';
+    const usernameTakenError = errors.username?.type === 'taken';
+    const usernameError = usernameRequiredError || usernameLengthError || usernamePatternError || usernameTakenError;
+    const usernameErrorWithoutValidate = usernameRequiredError || usernameLengthError || usernamePatternError;
+
+    const bioLengthError = errors.bio?.type === 'maxLength';
+
+    useEffect(() => {
+        const _typingDelayTimeout = setTimeout(() => {
+            if (usernameInput.length !== 0) {
+                trigger('username');
             }
+        }, 500);
+        return () => {
+            clearTimeout(_typingDelayTimeout);
         }
-    }, [user.auth, firstName, lastName]);
-
-
-    // check if username is valid
-    useEffect(() => {
-        // only letters, numbers, and underscores
-        const valid = new RegExp('^[a-zA-Z0-9_-]{2,16}$');
-        if (valid.test(usernameInput)) {
-            setValidUsername(true);
-        } else {
-            setValidUsername(false);
-        }
-    }, [usernameInput]);
-
-
-    // check if username is taken after the user stops typing
-    useEffect(() => {
-        const delayDebounceFn = setTimeout(async () => {
-            try {
-                //code review: strip characters that are not allowed (maybe make input controlled this way)
-                if (usernameInput && validUsername) {
-                    console.log(`checking if username ${usernameInput} is taken`);
-                    const usernameDoc = await firebase.firestore().collection('users').doc(usernameInput).get();
-                    if (usernameDoc.exists) {
-                        console.log('username taken')
-                        setUsernameTaken(true);
-                    } else {
-                        console.log('username not taken')
-                        setUsernameTaken(false);
-                    }
-                } else {
-                    setUsernameTaken(false);
-                }
-            } catch (error) {
-                // code review: handle
-                console.error('error checking if username is valid')
-                console.error(error)
-            }
-
-        }, 500)
-
-        return () => clearTimeout(delayDebounceFn)
-    }, [usernameInput, validUsername, setUsernameTaken]);
-
+    }, [usernameInput, trigger]);
 
 
     return (
@@ -89,49 +90,91 @@ function CreateUser() {
             <Layout>
                 <Container>
                     <h1>Create your profile.</h1>
-                    <form>
-                        <Input value={firstName} setValue={setFirstName} id='firstname' label='First Name' isValid={!formSubmitted || firstName.length !== 0} invalidMessage="Please enter your first name." />
-                        <Input value={lastName} setValue={setLastName} id='lastname' label='Last Name' isValid={!formSubmitted || lastName.length !== 0} invalidMessage="Please enter your last name." />
-                        <Input value={usernameInput} setValue={setUsernameInput} id='username' label='Username' autoComplete='off' isValid={!usernameTaken && (!formSubmitted || (!usernameTaken && validUsername))} invalidMessage={usernameInput.length === 0 ? "Please enter a username." : usernameTaken ? "The username already exists." : "Username must be 2-16 characters. Letters, numbers, hyphens, and underscores only"} />
-                        <div style={{ display: 'flex', justifyContent: 'center', margin: '1rem 0' }}>
-                            <InputButton value='continue' style={{position: 'absolute'}} disabled={loading} type='submit' onClick={(event) => {
-                                event.preventDefault();
-                                setFormSubmitted(true);
+                    <form onSubmit={handleSubmit(onSubmit)}>
 
-                                (async () => {
-                                    try { 
-                                        if(user.auth && usernameInput && !usernameTaken && validUsername) {
-                                            setLoading(true);
-                                            const usernameDoc = await firebase.firestore().collection('users').doc(usernameInput).get();
-                                            if(!usernameDoc.exists) {
-                                                await firebase.firestore().collection('usernames').doc(user.auth.uid).set({
-                                                    username: usernameInput
-                                                });
-                                                await firebase.firestore().collection('users').doc(usernameInput).set({
-                                                    firstName: firstName,
-                                                    lastName: lastName,
-                                                    profilePicture: '',
-                                                    bannerImage: '',
-                                                    blogs: [
-                                                        `users/${usernameInput}`
-                                                    ],
-                                                    following: []
-                                                } as UserBase);
-                                                
-                                                setTimeout(() => {
-                                                    redirect(() => {
-                                                        router.push('/create-blog');
-                                                    });
-                                                }, 1000);
-                                            }
-                                        }
-                                    } catch (error) {
+                        <InputLabel>First Name</InputLabel>
+                        <input {...register('firstName', {
+                            required: true,
+                            minLength: 1,
+                            maxLength: 25,
+                            pattern: /^[a-zA-Z .'-]+$/
+                        })} id='firstname' {...useCustomInputProps(!firstNameError)} />
+                        <InputInvalidMessage isValid={!firstNameRequiredError}>Please enter your first name.</InputInvalidMessage>
+                        <InputInvalidMessage isValid={!firstNameMaxLengthError}>Max length is 25.</InputInvalidMessage>
+                        <InputInvalidMessage isValid={!firstNamePatternError}>Please enter a valid name without special characters.</InputInvalidMessage>
 
+
+                        <InputLabel>Last Name</InputLabel>
+                        <input {...register('lastName', {
+                            required: true,
+                            minLength: 1,
+                            maxLength: 25,
+                            pattern: /^[a-zA-Z .'-]+$/
+                        })} id='lastname' {...useCustomInputProps(!lastNameError)} />
+                        <InputInvalidMessage isValid={!lastNameRequiredError}>Please enter your last name.</InputInvalidMessage>
+                        <InputInvalidMessage isValid={!lastNameMaxLengthError}>Max length is 25.</InputInvalidMessage>
+                        <InputInvalidMessage isValid={!lastNamePatternError}>Please enter a valid name without special characters.</InputInvalidMessage>
+
+                        <InputLabel>Username</InputLabel>
+                        <input {...register('username', {
+                            required: true,
+                            minLength: 2,
+                            maxLength: 16,
+                            pattern: /^[a-zA-Z0-9_-]+$/,
+                            onChange: event => setUsernameInput(event.target.value),
+                            validate: {
+                                taken: async (value) => {
+                                    if (typingDelayTimeout) {
+                                        clearTimeout(typingDelayTimeout);
                                     }
-                                })();
+
+                                    return new Promise((resolve) => {
+                                        typingDelayTimeout = setTimeout(async () => {
+                                            try {
+                                                if (value && !usernameErrorWithoutValidate) {
+                                                    console.log(`checking if username ${value} is taken`);
+                                                    const usernameDoc = await firebase.firestore().collection('users').doc(value).get();
+                                                    if (usernameDoc.exists) {
+                                                        console.log('username taken')
+                                                        resolve(false);
+                                                    } else {
+                                                        console.log('username not taken')
+                                                        resolve(true);
+                                                    }
+                                                } else {
+                                                    resolve(true);
+                                                }
+                                            } catch (error) {
+                                                console.error('error checking if username is valid')
+                                                console.error(error)
+                                                resolve(false);
+                                            }
+
+                                        }, 500);
 
 
-                            }} />
+                                    })
+                                }
+                            }
+                        })} id='username' autoComplete='off' {...useCustomInputProps(!usernameError)} />
+                        <InputInvalidMessage isValid={!usernameRequiredError}>Please enter a username.</InputInvalidMessage>
+                        <InputInvalidMessage isValid={!usernameLengthError && !usernamePatternError}>Username must be 2-16 characters. Letters, numbers, hyphens, and underscores only.</InputInvalidMessage>
+                        <InputInvalidMessage isValid={!usernameTakenError}>The username is taken.</InputInvalidMessage>
+
+                        <InputLabel>Bio</InputLabel>
+                        <textarea {...register('bio', {
+                            maxLength: 200,
+                        })} placeholder='optional' id='username' autoComplete='off' rows={3} {...useCustomInputProps(!bioLengthError)} />
+                        <InputInvalidMessage isValid={!bioLengthError}>Max length is 200 characters.</InputInvalidMessage>
+
+
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '1rem 0' }}>
+                            <InputButton value='continue' disabled={loading} type='submit' />
+                            <If value={loading}>
+                                <div style={{position: 'absolute'}}>
+                                    <CircleProgress />
+                                </div>
+                            </If>
                         </div>
                     </form>
                 </Container>
@@ -143,20 +186,57 @@ function CreateUser() {
 
 export default function CreateUserWrapper() {
     const router = useRouter();
+    const redirect = useRedirect();
+    const user = useStore(state => state.user);
+
+    const handleSubmit = (data: FormInputs) => {
+        console.log('handleSubmit!!!');
+
+            (async () => {
+                try {
+                    if (user.auth && data.username) {
+                        const usernameDoc = await firebase.firestore().collection('users').doc(data.username).get();
+                        if (!usernameDoc.exists) {
+                            await firebase.firestore().collection('usernames').doc(user.auth.uid).set({
+                                username: data.username
+                            });
+                            await firebase.firestore().collection('users').doc(data.username).set({
+                                firstName: data.firstName,
+                                lastName: data.lastName,
+                                bio: data.bio,
+                                profilePicture: '',
+                                bannerImage: '',
+                                blogs: [
+                                    `users/${data.username}`
+                                ],
+                                following: []
+                            } as UserBase);
+
+                            setTimeout(() => {
+                                redirect(() => {
+                                    router.push(`/${data.username}`);
+                                });
+                            }, 1000);
+                        }
+                    }
+                } catch (error) {
+                    // code review: handle error
+                }
+            })();
+
+    }
+
     return (
         <UserBoundary onUserLoaded={(user) => {
             if (!user.auth) { // nobody is logged in
                 router.push('/login');
                 return;
             }
-            if (!user.data) return; // user is not registered, stay here
-            // if (user.blogs && user.blogs.length === 0) { // user is registered and needs to create first blog
-            //     router.push('/create-blog')
-            // }
-            // user is registered and has blogs
+            if (!user.data) return; 
+            
             router.push(`/users/${user.data.username}`);
         }}>
-            <CreateUser />
+            <CreateUser submitHandler={handleSubmit} />
         </UserBoundary>
     );
 }

@@ -12,6 +12,7 @@ import SettingsIcon from '../icons/settingsIcon'
 import Link from 'next/link'
 import If from '../../components/if'
 import PlusBoxMultipleOutlineIcon from '../icons/plusBoxMultipleOutlineIcon'
+import MenuIcon from '../icons/menuIcon'
 
 
 
@@ -36,7 +37,7 @@ export default function Nav(props: NavProps) {
             </Link>
             <span>
                 <IconButton onClick={() => setOpenDropdown(!openDropdown)}>
-                    <UserIcon size={'30px'} color={"#aaa"} />
+                    <MenuIcon size={'30px'} color={"#aaa"} />
                 </IconButton>
                 <If value={openDropdown}>
                     <Dropdown onClickAway={() => setOpenDropdown(false)}>

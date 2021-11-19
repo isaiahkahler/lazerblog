@@ -30,6 +30,7 @@ export interface User extends UserBase {
 export interface UserBase {
     firstName: string,
     lastName: string,
+    bio: string,
     following: string[],
     blogs: string[]
     profilePicture: string,

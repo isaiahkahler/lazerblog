@@ -1,11 +1,13 @@
 
 import { User } from "../../../components/types"
-import { TransparentButton } from "../../../components/button"
-import styles from './user.module.css'
+import Button, { TransparentButton } from "../../../components/button"
+import styles from '../../[blogSlug]/blog.module.css'
 import Layout from "../../../components/layout"
 import Container from "../../../components/container"
 import { useStore } from "../../../components/store"
 import { useRouter } from "next/router"
+import If from '../../../components/if'
+import {forwardRef} from 'react';
 
 interface UserProps {
     user: User,
@@ -15,6 +17,7 @@ interface UserProps {
 // different from naming scheme to not confuse with type & variable `User`
 export default function UserDisplay({ user, children }: UserProps) {
     const _user = useStore(state => state.user);
+    const currentUser = _user.data;
     const doFollow = useStore(state => state.doFollow);
     const doUnfollow = useStore(state => state.doUnfollow);
     const router = useRouter();
@@ -25,16 +28,18 @@ export default function UserDisplay({ user, children }: UserProps) {
                 {/*  */}
                 <h1>{user.firstName} {user.lastName}</h1>
                 <p>@{user.username}</p>
-                <p style={{ maxWidth: '680px' }}>description</p>
-                {/* {_user && (<TransparentButton style={{ marginBottom: '1rem' }} onClick={() => {
+                <If value={user.bio}>
+                    <p style={{ maxWidth: '680px' }}>{user.bio}</p>
+                </If>
+                {/* {currentUser && (<TransparentButton style={{ marginBottom: '1rem' }} onClick={() => {
                     
                     // do they want to follow, unfollow, or edit? 
-                    if(user.username === _user.username) {
+                    if(user.username === currentUser.username) {
                         // edit profile
                         router.push('/edit-profile');
                         return;
                     }
-                    if(_user.following.includes(`users/${user.username}`)) {
+                    if(currentUser.following.includes(`users/${user.username}`)) {
                         // unfollow
                         doUnfollow(`users/${user.username}`);
                         console.log('unfollow', `users/${user.username}`)
@@ -46,16 +51,23 @@ export default function UserDisplay({ user, children }: UserProps) {
                         return;
                     }
                 }}>
-                    {user.username === _user.username ? <p>edit profile</p> : _user.following.includes(`users/${user.username}`) ? <p>unfollow</p> : <p>follow</p>}
+                    {user.username === currentUser.username ? <p>edit profile</p> : currentUser.following.includes(`users/${user.username}`) ? <p>unfollow</p> : <p>follow</p>}
                 </TransparentButton>)} */}
 
-                {!user && <TransparentButton onClick={() => {
+                {/* {!user && <TransparentButton onClick={() => {
                     // code review / todo: add redirect 
                     router.push('/login');
-                }}><p>sign in to follow</p></TransparentButton>}
+                }}><p>sign in to follow</p></TransparentButton>} */}
             </div>
             <Layout>
                 <Container>
+                    <If value={currentUser && currentUser.username === user.username}>
+                        <div style={{display: 'flex', justifyContent: 'center'}}>
+                            <TransparentButton onClick={() => router.push('/new-post')} style={{marginBottom: '2rem'}}>
+                                <p>write a new post</p>
+                            </TransparentButton>
+                        </div>
+                    </If>
                     {children}
                 </Container>
             </Layout>

@@ -5,6 +5,7 @@
     border-radius: 10px;
     font-size: 1rem;
     transition: 200ms;
+    font-family: inherit;
 }
 .label {
     margin-bottom: 0.5rem;

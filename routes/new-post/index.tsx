@@ -12,11 +12,12 @@ import { useEffect, useState } from "react"
 import { useStore } from "../../components/store"
 import useRedirect from "../../components/useRedirect"
 import { useSlugUID } from "../../components/useSlug"
-import Input from '../../components/input'
+import Input, { InputInvalidMessage, useCustomInputProps } from '../../components/input'
 import firebase from '../../firebase'
 import { URL } from "../../components/constants"
 import CodeBlock from '@tiptap/extension-code-block'
 import Placeholder from '@tiptap/extension-placeholder'
+import Link from 'next/link'
 
 
 function MenuBar({ editor }: { editor: Editor | null }) {
@@ -129,6 +130,8 @@ function NewPost() {
         ],
     });
 
+    const customInputProps = useCustomInputProps(!submitted || title.length !== 0, styles.titleInput);
+
     // grab the saved draft, if there is one
     useEffect(() => {
         if (!editor) return;
@@ -190,6 +193,8 @@ function NewPost() {
                     <Container>
                         <h1>Choose a blog to post to.</h1>
                         {user.blogs.map((blog, index) => <a key={index} onClick={() => { setPostToBlog(blog) }}><h1>{blog}</h1></a>)}
+                        <hr />
+                        <h2>Or <Link href='/create-blog'><a>create a new blog</a></Link></h2>
                     </Container>
                 </Layout>
             </div>
@@ -203,10 +208,13 @@ function NewPost() {
                 <Container>
 
                     <h1>Create a new post at <a onClick={() => { setPostToBlog(undefined) }}>/{postToBlog}</a></h1>
-                    <Input value={title} setValue={(value) => {
-                        setTitle(value);
-                        setPostSlug(value);
-                    }} isValid={!submitted || title.length !== 0} placeholder="Title" invalidMessage='Please enter a title.' className={styles.titleInput}></Input>
+
+                    <input value={title} onChange={event => {
+                        setTitle(event.target.value);
+                        setPostSlug(event.target.value);
+                    }} placeholder='Title' {...customInputProps} />
+                    <InputInvalidMessage isValid={!submitted || title.length !== 0}>Please enter a title.</InputInvalidMessage>
+
                     <MenuBar editor={editor} />
                     {/* code review: fix this invalid editor thing */}
                     <EditorContent className={(submitted && (editor && editor.isEmpty)) ? styles.invalidEditor : '' } editor={editor} placeholder='Start writing...' />
