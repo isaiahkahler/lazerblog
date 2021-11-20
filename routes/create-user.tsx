@@ -214,7 +214,7 @@ export default function CreateUserWrapper() {
 
                             setTimeout(() => {
                                 redirect(() => {
-                                    router.push(`/${data.username}`);
+                                    router.push(`/users/${data.username}`);
                                 });
                             }, 1000);
                         }
