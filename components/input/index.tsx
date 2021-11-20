@@ -1,5 +1,5 @@
 import styles from './input.module.css'
-import { ForwardedRef, forwardRef, HTMLProps, LegacyRef } from 'react';
+import { ForwardedRef, forwardRef, HTMLProps, LegacyRef } from 'react'
 
 // interface ExtraInputProps {
 //     children?: React.ReactNode,
@@ -14,79 +14,105 @@ import { ForwardedRef, forwardRef, HTMLProps, LegacyRef } from 'react';
 
 // code review: turn warning colors into global constants? (used over multiple components as text)
 
-type CustomInputProps = HTMLProps<HTMLInputElement> & {isValid: boolean, ref: ForwardedRef<HTMLInputElement>};
-type CustomTextAreaProps = HTMLProps<HTMLTextAreaElement> & {isValid: boolean};
-
+type CustomInputProps = HTMLProps<HTMLInputElement> & {
+  isValid: boolean
+  ref: ForwardedRef<HTMLInputElement>
+}
+type CustomTextAreaProps = HTMLProps<HTMLTextAreaElement> & { isValid: boolean }
 
 export default function CustomInput(props: CustomInputProps) {
-    const borderStyle = props.isValid === false ? { border: '2px solid #cc0f35' } : {};
+  const borderStyle =
+    props.isValid === false ? { border: '2px solid #cc0f35' } : {}
 
-    // const newProps : any = {...props};
+  // const newProps : any = {...props};
 
-    // const invalidMessage =  newProps.invalidMessage;
-    // delete newProps.invalidMessage;
-    // const label = newProps.label;
-    // delete newProps.label;
-    // const isValid = newProps.isValid;
-    // delete newProps.isValid;
-    // const setValue = newProps.setValue;
-    // delete newProps.setValue;
+  // const invalidMessage =  newProps.invalidMessage;
+  // delete newProps.invalidMessage;
+  // const label = newProps.label;
+  // delete newProps.label;
+  // const isValid = newProps.isValid;
+  // delete newProps.isValid;
+  // const setValue = newProps.setValue;
+  // delete newProps.setValue;
 
-    return (
-        <input type="text" {...props} className={`${props.className ? props.className : ''} ${styles.input}`} style={{...props.style, ...borderStyle}} />
-        // <>
-            // {/* {label ? <h2 className={styles.label}><label htmlFor={newProps.id}>{label}</label></h2> : undefined} */}
-            // {/* {isValid === false ? <h3 style={{ color: "#cc0f35", marginTop: '0' }}>{invalidMessage}</h3> : undefined} */}
-        // </>
-    );
+  return (
+    <input
+      type="text"
+      {...props}
+      className={`${props.className ? props.className : ''} ${styles.input}`}
+      style={{ ...props.style, ...borderStyle }}
+    />
+    // <>
+    // {/* {label ? <h2 className={styles.label}><label htmlFor={newProps.id}>{label}</label></h2> : undefined} */}
+    // {/* {isValid === false ? <h3 style={{ color: "#cc0f35", marginTop: '0' }}>{invalidMessage}</h3> : undefined} */}
+    // </>
+  )
 }
 
 // export const CustomInputWithRef = forwardRef<CustomInputProps>((props, ref) => <CustomInput {...props} ref={ref} />)
 // CustomInputWithRef.displayName = 'CustomInputWithRef';
 
 export function useCustomInputProps(isValid?: boolean, className?: string) {
-    const borderStyle = (isValid === undefined) ? {} : isValid === false ? { border: '2px solid #cc0f35' } : {};
-    return {
-        className: className === undefined ? styles.input : `${className} ${styles.input}`,
-        style: borderStyle,
-    }
+  const borderStyle =
+    isValid === undefined
+      ? {}
+      : isValid === false
+      ? { border: '2px solid #cc0f35' }
+      : {}
+  return {
+    className:
+      className === undefined ? styles.input : `${className} ${styles.input}`,
+    style: borderStyle,
+  }
 }
 
 export function InputLabel(props: HTMLProps<HTMLHeadingElement>) {
-    if (!props.children) return null;
-    return (<h2 className={styles.label}><label htmlFor={props.id}>{props.children}</label></h2>);
+  if (!props.children) return null
+  return (
+    <h2 className={styles.label}>
+      <label htmlFor={props.id}>{props.children}</label>
+    </h2>
+  )
 }
 
-export function InputInvalidMessage(props: HTMLProps<HTMLHeadElement> & {isValid: boolean}) {
-    return !props.isValid ? <h3 style={{ color: "#cc0f35", marginTop: '0' }}>{props.children}</h3> : null;
+export function InputInvalidMessage(
+  props: HTMLProps<HTMLHeadElement> & { isValid: boolean },
+) {
+  return !props.isValid ? (
+    <h3 style={{ color: '#cc0f35', marginTop: '0' }}>{props.children}</h3>
+  ) : null
 }
-
 
 /**
- * 
+ *
  * @param props make sure to include name, id, placeholder, onChange
- * @returns 
+ * @returns
  */
 export function CustomTextArea(props: CustomTextAreaProps) {
-    const borderStyle = props.isValid === false ? { border: '2px solid #cc0f35' } : {};
+  const borderStyle =
+    props.isValid === false ? { border: '2px solid #cc0f35' } : {}
 
+  // const newProps : any = {...props};
 
-    // const newProps : any = {...props};
+  // const invalidMessage = newProps.invalidMessage;
+  // delete newProps.invalidMessage;
+  // const label = newProps.label;
+  // delete newProps.label;
+  // const isValid = newProps.isValid;
+  // delete newProps.isValid;
+  // const setValue = newProps.setValue;
+  // delete newProps.setValue;
 
-    // const invalidMessage = newProps.invalidMessage;
-    // delete newProps.invalidMessage;
-    // const label = newProps.label;
-    // delete newProps.label;
-    // const isValid = newProps.isValid;
-    // delete newProps.isValid;
-    // const setValue = newProps.setValue;
-    // delete newProps.setValue;
-
-    return (
-        // <>
-        //     {label ? <h2 className={styles.label}><label htmlFor={newProps.id}>{label}</label></h2> : undefined}
-            <textarea rows={3} {...props} className={`${props.className ? props.className : ''} ${styles.input}`} style={borderStyle}></textarea>
-        //     {isValid === false ? <h3 style={{ color: "#cc0f35", marginTop: '0' }}>{invalidMessage}</h3> : undefined}
-        // </>
-    );
+  return (
+    // <>
+    //     {label ? <h2 className={styles.label}><label htmlFor={newProps.id}>{label}</label></h2> : undefined}
+    <textarea
+      rows={3}
+      {...props}
+      className={`${props.className ? props.className : ''} ${styles.input}`}
+      style={borderStyle}
+    ></textarea>
+    //     {isValid === false ? <h3 style={{ color: "#cc0f35", marginTop: '0' }}>{invalidMessage}</h3> : undefined}
+    // </>
+  )
 }

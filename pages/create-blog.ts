@@ -1,1 +1,1 @@
-export {default} from '../routes/create-blog';
+export { default } from '../routes/create-blog'

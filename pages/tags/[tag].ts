@@ -1,1 +1,1 @@
-export {default, getServerSideProps} from '../../routes/tags/[tag]';
+export { default, getServerSideProps } from '../../routes/tags/[tag]'

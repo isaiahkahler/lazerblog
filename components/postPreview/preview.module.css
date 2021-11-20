@@ -1,24 +1,24 @@
 .previewContainer {
-    margin-bottom: 4rem;
+  margin-bottom: 4rem;
 }
 
 .previewTitle {
-    margin: 5px 0;
+  margin: 5px 0;
 }
 
 .previewSubtitle {
-    margin: 5px 0;
-    font-weight: normal;
+  margin: 5px 0;
+  font-weight: normal;
 }
 .previewMeta {
-    padding: 5px 0 10px 0;
+  padding: 5px 0 10px 0;
 }
 .previewMeta span {
-    margin: 0 10px 0 0;
+  margin: 0 10px 0 0;
 }
 .previewImage {
-    max-height: 600px;
-    width: 100%;
+  max-height: 600px;
+  width: 100%;
 }
 
 /* .previewSource h3 {
@@ -29,15 +29,15 @@
 } */
 
 .previewSource a {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 @media screen and (max-width: 768px) {
-    .banner {
-        min-height: 160px;
-        padding: 0 2.5vw;
-    }
-    .banner h1 {
-        font-size: 27px;
-    }
+  .banner {
+    min-height: 160px;
+    padding: 0 2.5vw;
+  }
+  .banner h1 {
+    font-size: 27px;
+  }
 }

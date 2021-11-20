@@ -1,1 +1,1 @@
-export {default} from '../routes/create-user';
+export { default } from '../routes/create-user'

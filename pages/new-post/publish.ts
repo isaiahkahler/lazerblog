@@ -1,1 +1,1 @@
-export {default} from '../../routes/new-post/publish';
+export { default } from '../../routes/new-post/publish'

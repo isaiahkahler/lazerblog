@@ -1,1 +1,1 @@
-export {default} from '../routes/login';
+export { default } from '../routes/login'

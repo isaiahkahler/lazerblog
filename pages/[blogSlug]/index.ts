@@ -1,1 +1,1 @@
-export {default, getServerSideProps} from '../../routes/[blogSlug]';
+export { default, getServerSideProps } from '../../routes/[blogSlug]'
