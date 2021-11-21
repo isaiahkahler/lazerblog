@@ -224,9 +224,10 @@ function NewPost() {
 
                             if(success) {
                                 // code review: should this page support ?redirect=[page]
-                                redirect(() => {
-                                    router.push(`/home`);
-                                });
+                                // redirect(() => {
+                                //     // to do and code review: change this back to / or /home when 
+                                //     router.push(`/users/${user.username}`);
+                                // });
                             }
                         }}>
                             <h2>save draft</h2>
