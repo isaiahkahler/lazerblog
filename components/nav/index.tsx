@@ -1,8 +1,8 @@
 import styles from './nav.module.css'
-import firebase from '../../firebase'
+// import firebase from '../../firebase'
 import Button, { IconButton } from '../button'
 import { useRouter } from 'next/router'
-import { useStore } from '../store'
+import { useStore } from '../../data/store'
 import UserIcon from '../icons/userIcon'
 import { MutableRefObject, useCallback, useRef, useState } from 'react'
 import PencilIcon from '../icons/PencilIcon'
@@ -13,6 +13,9 @@ import Link from 'next/link'
 import If from '../../components/if'
 import PlusBoxMultipleOutlineIcon from '../icons/plusBoxMultipleOutlineIcon'
 import MenuIcon from '../icons/menuIcon'
+import { supabase } from '@supabase'
+import BlogIcon from '@components/icons/blogIcon'
+import { Blog } from '@data/types'
 
 
 
@@ -25,8 +28,29 @@ export default function Nav(props: NavProps) {
     const user = useStore(state => state.user);
     const router = useRouter();
     const [openDropdown, setOpenDropdown] = useState(false);
+    // const [blogsDropdown, setBlogsDropdown] = useState<Blog[]>([]);
+    const [blogsDropdown, setBlogsDropdown] = useState(false);
 
+    // const blogAppear = (first: boolean) => {
+    //     setTimeout(() => {
+    //         if(!user.blogs) return;
+    //         if(blogsDropdown.length + 1 !== user.blogs.length) {
+    //             setBlogsDropdown([...blogsDropdown, user.blogs[blogsDropdown.length + 1]]);
+    //             blogAppear(false);
+    //         }
+    //     }, first ? 0 : 250)
+    // }
 
+    // const blogDisappear = (first: boolean) => {
+    //     setTimeout(() => {
+    //         if(!user.blogs) return;
+    //         if(blogsDropdown.length !== 0) {
+    //             console.log('sliced', [...blogsDropdown.slice(0, blogsDropdown.length - 1)])
+    //             setBlogsDropdown([...blogsDropdown.slice(0, blogsDropdown.length - 1)]);
+    //             blogDisappear(false);
+    //         }
+    //     }, first ? 0 : 250)
+    // }
 
     return (
         <div className={styles.nav}>
@@ -47,10 +71,33 @@ export default function Nav(props: NavProps) {
                                 setOpenDropdown(false);
                             }}>
                                 <div>
-                                    <div>{user.data.firstName} {user.data.lastName}</div>
+                                    <div>{user.data.name}</div>
                                     <div>@{user.data.username}</div>
                                 </div>
                             </DropdownItem>
+                            <If value={user.blogs && user.blogs.length > 1}>
+                                <DropdownItem leftIcon={<IconButton><BlogIcon size='30px' /></IconButton>} onClick={() => {
+                                    // setOpenDropdown(false);
+                                    // console.log('blogs length', user.blogs?.length);
+                                    if (blogsDropdown) {
+                                        setBlogsDropdown(false)
+                                    } else {
+                                        setBlogsDropdown(true)
+                                    }
+                                }}>
+                                    {!blogsDropdown ? 'View your blogs' : 'Hide blogs'}
+                                </DropdownItem>
+                            </If>
+                            <If value={blogsDropdown}>
+                                {user.blogs && user.blogs.filter(blog => !blog.blog_slug.includes('users/')).map(blog => <div key={blog.blog_slug} style={{marginLeft: '1rem'}}>
+                                    <DropdownItem href={`/${blog.blog_slug}`} leftIcon={<IconButton><BlogIcon size='30px' /></IconButton>} onClick={() => {
+                                        router.push('/' + blog.blog_slug);
+                                        setOpenDropdown(false);
+                                    }}>
+                                        {blog.name}
+                                    </DropdownItem>
+                                </div>)}
+                            </If>
                             <DropdownItem href='/new-post' leftIcon={<IconButton><PencilIcon size='30px' /></IconButton>} onClick={() => {
                                 // router.push('/new-post');
                                 setOpenDropdown(false);
@@ -63,16 +110,8 @@ export default function Nav(props: NavProps) {
                             }}>
                                 Create a new blog
                             </DropdownItem>
-                            {/* <DropdownItem leftIcon={<IconButton><SettingsIcon size='30px' /></IconButton>} onClick={() => {
-
-                    }}>
-                        Settings
-                    </DropdownItem> */}
                             <DropdownItem leftIcon={<IconButton><LogoutIcon size='30px' /></IconButton>} onClick={() => {
-                                firebase.auth().signOut().then(() => {
-                                    // code review: does this cause problems when a page controls its own navigation?
-                                    // e.g. will the page get redirected and then be reloaded unnecessarily? 
-                                    // location.reload();
+                                supabase.auth.signOut().then(() => {
                                     setOpenDropdown(false);
                                 });
                             }}>
@@ -89,15 +128,16 @@ export default function Nav(props: NavProps) {
                                 </DropdownItem>
                             </If.not>
                             <If value={user.auth}>
-                                <DropdownItem href='/create-user' leftIcon={<UserIcon size={'38px'} />}>
+                                <DropdownItem href='/create-profile' leftIcon={<UserIcon size={'38px'} />}>
                                     <div>
                                         Finish signing up
                                     </div>
                                 </DropdownItem>
                                 <DropdownItem leftIcon={<LogoutIcon size={'38px'} />} onClick={() => {
-                                    firebase.auth().signOut().then(() => {
-                                        setOpenDropdown(false);
-                                    })
+                                    // firebase.auth().signOut().then(() => {
+                                    //     setOpenDropdown(false);
+                                    // })
+                                    supabase.auth.signOut();
                                 }}>
                                     <div>
                                         Sign out

@@ -3,10 +3,10 @@ import { GetServerSideProps } from "next"
 import Link from "next/link"
 import Container from "../../components/container"
 import Layout from "../../components/layout"
-import firebase from '../../firebase'
-import { User, Post, Blog } from '../../components/types'
+import { User, Post, Blog } from '@data/types'
 import {getRandomSadEmoji} from '../../components/randomEmoji'
 import PageNotFound from "../../components/404"
+import {supabase} from '@supabase'
 
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -18,30 +18,26 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 
     if (blogSlug && post && typeof (blogSlug) === 'string' && typeof (post) === 'string') {
-        const postRef = await firebase.firestore().collection('blogs').doc(blogSlug).collection('posts').doc(post).get();
-        const postData = postRef.data();
-        if (postRef.exists && postData) {
 
-            _post = {
-                // title: postData.title,
-                // description: postData.description,
-                // date: postData.date,
-                // image: postData.image,
-                // tags: postData.tags,
-                // content: postData.content,
-                ...postData as Post
-            };
+        const postResponse = await supabase.from('posts').select('*').eq('post_slug', post);
+        if(postResponse.error) throw postResponse.error;
+        const postData = postResponse.data[0];
+        if (postData) {
 
-            const userRef = await firebase.firestore().collection('users').doc(postData.author).get();
-            const userData = userRef.data();
-            if (userRef.exists && userData) {
-                _user = {username: postData.author, ...userData};
+            _post = postData as Post;
+
+            const userResponse = await supabase.from('users').select('*').eq('user_id', _post.user_id);
+            if(userResponse.error) throw userResponse.error;
+            const userData = userResponse.data[0];
+            if (userData) {
+                _user = userData;
             }
 
             if(!postData.blog.includes('users/')) {
-                const blogRef = await firebase.firestore().collection('blogs').doc(postData.blog).get();
-                const blogData = blogRef.data();
-                _blog = {...blogData as Blog}
+                const blogResponse = await supabase.from('blogs').select('*').eq('blog_slug', blogSlug);
+                if(blogResponse.error) throw blogResponse.error;
+                const blogData = blogResponse.data[0];
+                _blog = blogData;
             }
         }
     }
@@ -79,7 +75,7 @@ export default function PostDisplay({ post, user, blog }: { post: Post | null, u
                 <Container>
                     <h1>{post.title}</h1>
                     {post.description ? <h2>{post.description}</h2> : null}
-                    <p>{moment(post.date).calendar()} {user ? <>by {<Link href={`/users/${user.username}`}><a>{user.firstName} {user.lastName}</a></Link>}</> : undefined} {blog ? <>in {<Link href={`/${blog.slug}`}>{blog.name}</Link>}</> : undefined}</p>
+                    <p>{moment(post.date).calendar()} {user ? <>by {<Link href={`/users/${user.username}`}><a>{user.name}</a></Link>}</> : undefined} {blog ? <>in {<Link href={`/${blog.blog_slug}`}>{blog.name}</Link>}</> : undefined}</p>
                     {post.tags.length > 0 ? post.tags.map((tag, index) => <span key={index}><Link href={`/tags/${tag}`}><a style={{ margin: '0px 10px 0px 0px' }}>#{tag}</a></Link></span>) : null}
                     <hr style={{ margin: '2rem 0' }} />
                     <div dangerouslySetInnerHTML={{ __html: post.content }}></div>

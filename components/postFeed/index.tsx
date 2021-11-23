@@ -1,5 +1,5 @@
 
-import { PostWithInfo } from '../types'
+import { PostWithInfo } from '@data/types'
 import PostPreview from "../postPreview"
 import If from '../if'
 import { getRandomSadEmoji } from '../randomEmoji'

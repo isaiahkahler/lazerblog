@@ -4,39 +4,36 @@ import Nav from "../components/nav"
 import Head from 'next/head'
 import { useRouter } from 'next/router';
 import { useEffect, useState, forwardRef } from "react";
-import firebase from '../firebase'
 // import buttonStyle from '../components/button/button.module.css'
-import { useStore } from "../components/store";
+import { useStore } from "../data/store";
 import { UserBoundary } from "../components/userBoundary";
-import useRedirect from "../components/useRedirect";
-import { UserBase } from "../components/types";
+import useRedirect from "../hooks/useRedirect";
+import { Blog, User } from "@data/types";
 import { InputButton } from "../components/button";
 import { SubmitHandler, useForm } from "react-hook-form";
 import CustomInput, { InputInvalidMessage, InputLabel, useCustomInputProps } from "../components/input";
 import CircleProgress from "../components/circleProgress";
 import If from '../components/if'
+import { supabase } from "@supabase";
 
-interface FormInputs {
-    firstName: string,
-    lastName: string,
+export interface UserFormInputs {
+    name: string,
     username: string,
     bio: string
 }
 
 let typingDelayTimeout: NodeJS.Timeout | null = null;
 
-interface CreateUserProps {
-    submitHandler: (data: FormInputs) => void
+interface CreateProfileProps {
+    submitHandler: (data: UserFormInputs) => void,
+    initialData?: UserFormInputs
 }
 
-function CreateUser({ submitHandler }: CreateUserProps) {
+export function CreateProfile({ submitHandler, initialData }: CreateProfileProps) {
     const user = useStore(state => state.user);
 
-    const { register, handleSubmit, formState: { errors }, trigger } = useForm<FormInputs>({
-        defaultValues: {
-            firstName: user.auth ? user.auth.displayName?.split(' ')[0] : '',
-            lastName: user.auth ? user.auth.displayName?.split(' ')[1] : ''
-        }
+    const { register, handleSubmit, formState: { errors }, trigger } = useForm<UserFormInputs>({
+        defaultValues: initialData || undefined
     });
 
     const [usernameInput, setUsernameInput] = useState('');
@@ -44,25 +41,20 @@ function CreateUser({ submitHandler }: CreateUserProps) {
     const [loading, setLoading] = useState(false);
 
 
-    const onSubmit: SubmitHandler<FormInputs> = (data) => {
+    const onSubmit: SubmitHandler<UserFormInputs> = (data) => {
         setLoading(true);
         submitHandler(data);
     };
 
-    useEffect(() => {
-        console.log('form state change', errors.firstName, errors.lastName, errors.username)
-    }, [errors])
+    // useEffect(() => {
+    //     console.log('form state change', errors.name, errors.lastName, errors.username)
+    // }, [errors])
 
 
-    const firstNameRequiredError = errors.firstName?.type === 'required';
-    const firstNameMaxLengthError = errors.firstName?.type === 'maxLength';
-    const firstNamePatternError = errors.firstName?.type === 'pattern';
-    const firstNameError = firstNameRequiredError || firstNameMaxLengthError || firstNamePatternError;
-
-    const lastNameRequiredError = errors.lastName?.type === 'required';
-    const lastNameMaxLengthError = errors.lastName?.type === 'maxLength';
-    const lastNamePatternError = errors.lastName?.type === 'pattern';
-    const lastNameError = lastNameRequiredError || lastNameMaxLengthError || lastNamePatternError;
+    const nameRequiredError = errors.name?.type === 'required';
+    const nameMaxLengthError = errors.name?.type === 'maxLength';
+    const namePatternError = errors.name?.type === 'pattern';
+    const nameError = nameRequiredError || nameMaxLengthError || namePatternError;
 
     const usernameRequiredError = errors.username?.type === 'required';
     const usernameLengthError = errors.username?.type === 'minLength' || errors.username?.type === 'maxLength';
@@ -89,31 +81,19 @@ function CreateUser({ submitHandler }: CreateUserProps) {
         <div>
             <Layout>
                 <Container>
-                    <h1>Create your profile.</h1>
+                    {initialData ? <h1>Edit your profile.</h1> : <h1>Create your profile.</h1>}
                     <form onSubmit={handleSubmit(onSubmit)}>
 
-                        <InputLabel>First Name</InputLabel>
-                        <input {...register('firstName', {
+                        <InputLabel>Your Name</InputLabel>
+                        <input {...register('name', {
                             required: true,
                             minLength: 1,
                             maxLength: 25,
                             pattern: /^[a-zA-Z .'-]+$/
-                        })} id='firstname' {...useCustomInputProps(!firstNameError)} />
-                        <InputInvalidMessage isValid={!firstNameRequiredError}>Please enter your first name.</InputInvalidMessage>
-                        <InputInvalidMessage isValid={!firstNameMaxLengthError}>Max length is 25.</InputInvalidMessage>
-                        <InputInvalidMessage isValid={!firstNamePatternError}>Please enter a valid name without special characters.</InputInvalidMessage>
-
-
-                        <InputLabel>Last Name</InputLabel>
-                        <input {...register('lastName', {
-                            required: true,
-                            minLength: 1,
-                            maxLength: 25,
-                            pattern: /^[a-zA-Z .'-]+$/
-                        })} id='lastname' {...useCustomInputProps(!lastNameError)} />
-                        <InputInvalidMessage isValid={!lastNameRequiredError}>Please enter your last name.</InputInvalidMessage>
-                        <InputInvalidMessage isValid={!lastNameMaxLengthError}>Max length is 25.</InputInvalidMessage>
-                        <InputInvalidMessage isValid={!lastNamePatternError}>Please enter a valid name without special characters.</InputInvalidMessage>
+                        })} id='name' {...useCustomInputProps(!nameError)} />
+                        <InputInvalidMessage isValid={!nameRequiredError}>Please enter your name.</InputInvalidMessage>
+                        <InputInvalidMessage isValid={!nameMaxLengthError}>Max length is 25.</InputInvalidMessage>
+                        <InputInvalidMessage isValid={!namePatternError}>Please enter a valid name without special characters.</InputInvalidMessage>
 
                         <InputLabel>Username</InputLabel>
                         <input {...register('username', {
@@ -133,8 +113,14 @@ function CreateUser({ submitHandler }: CreateUserProps) {
                                             try {
                                                 if (value && !usernameErrorWithoutValidate) {
                                                     console.log(`checking if username ${value} is taken`);
-                                                    const usernameDoc = await firebase.firestore().collection('users').doc(value).get();
-                                                    if (usernameDoc.exists) {
+                                                    const { data, error } = await supabase.from('users').select('username').eq('username', value);
+                                                    if (error) throw error;
+                                                    if (!data) {
+                                                        resolve(false);
+                                                        return;
+                                                    };
+                                                    const usernameTaken = data.length !== 0;
+                                                    if (usernameTaken) {
                                                         console.log('username taken')
                                                         resolve(false);
                                                     } else {
@@ -171,7 +157,7 @@ function CreateUser({ submitHandler }: CreateUserProps) {
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '1rem 0' }}>
                             <InputButton value='continue' disabled={loading} type='submit' />
                             <If value={loading}>
-                                <div style={{position: 'absolute'}}>
+                                <div style={{ position: 'absolute' }}>
                                     <CircleProgress />
                                 </div>
                             </If>
@@ -184,45 +170,57 @@ function CreateUser({ submitHandler }: CreateUserProps) {
 }
 
 
-export default function CreateUserWrapper() {
+export default function CreateProfileWrapper() {
     const router = useRouter();
     const redirect = useRedirect();
     const user = useStore(state => state.user);
 
-    const handleSubmit = (data: FormInputs) => {
+    const handleSubmit = (data: UserFormInputs) => {
         console.log('handleSubmit!!!');
 
-            (async () => {
-                try {
-                    if (user.auth && data.username) {
-                        const usernameDoc = await firebase.firestore().collection('users').doc(data.username).get();
-                        if (!usernameDoc.exists) {
-                            await firebase.firestore().collection('usernames').doc(user.auth.uid).set({
-                                username: data.username
-                            });
-                            await firebase.firestore().collection('users').doc(data.username).set({
-                                firstName: data.firstName,
-                                lastName: data.lastName,
-                                bio: data.bio,
-                                profilePicture: '',
-                                bannerImage: '',
-                                blogs: [
-                                    `users/${data.username}`
-                                ],
-                                following: []
-                            } as UserBase);
+        (async () => {
+            try {
+                if (user.auth && user.auth && data.username) {
 
-                            setTimeout(() => {
-                                redirect(() => {
-                                    router.push(`/users/${data.username}`);
-                                });
-                            }, 1000);
-                        }
+
+                    const userResponse = await supabase.from('users').select('username').eq('username', data.username);
+                    if(userResponse.error) throw userResponse.error;
+                    if(userResponse && userResponse.data.length !== 0) throw new Error('username has just been taken. choose another.');
+
+                    const newUserData: User = {
+                        user_id: user.auth.id,
+                        name: data.name,
+                        // bio: data.bio,
+                        username: data.username,
+                        // banner_image: '',
+                        profile_picture: ''
                     }
-                } catch (error) {
-                    // code review: handle error
+
+                    const newUserBlog: Blog = {
+                        banner_image: '',
+                        blog_slug: `users/${data.username}`,
+                        description: data.bio,
+                        name: data.name,
+                        user_id: user.auth.id
+                    }
+
+                    const insertResponse = await supabase.from('users').insert([newUserData]);
+                    if(insertResponse.error) throw insertResponse.error;
+                    const insertBlogResponse = await supabase.from('blogs').insert([newUserBlog]);
+                    if(insertBlogResponse.error) throw insertBlogResponse.error;
+
+                    setTimeout(() => {
+                        redirect(() => {
+                            router.push(`/users/${data.username}`);
+                        });
+                    }, 1000);
+                    
                 }
-            })();
+            } catch (error) {
+                // code review: handle error
+                console.error('error inserting user:', error)
+            }
+        })();
 
     }
 
@@ -232,11 +230,11 @@ export default function CreateUserWrapper() {
                 router.push('/login');
                 return;
             }
-            if (!user.data) return; 
-            
+            if (!user.data) return;
+
             router.push(`/users/${user.data.username}`);
         }}>
-            <CreateUser submitHandler={handleSubmit} />
+            <CreateProfile submitHandler={handleSubmit} />
         </UserBoundary>
     );
 }

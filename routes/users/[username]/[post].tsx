@@ -1,6 +1,7 @@
+import { supabase } from "@supabase";
 import { GetServerSideProps } from "next"
-import firebase from '../../../firebase'
 import Post from '../../[blogSlug]/[post]'
+
 
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -11,23 +12,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     let _post = null;
 
     if (username && post && typeof (username) === 'string' && typeof (post) === 'string') {
-        const userRef = await firebase.firestore().collection('users').doc(username).get();
-        const userData = userRef.data();
+        const userResponse = await supabase.from('users').select('*').eq('username', username);
+        if(userResponse.error) throw userResponse.error;
+        const userData = userResponse.data[0];
 
-        if (userRef.exists && userData) {
-            _user = { username: username, ...userData };
+        if (userData) {
+            _user = userData;
 
-            const postRef = await firebase.firestore().collection('users').doc(username).collection('posts').doc(post).get();
-            const postData = postRef.data();
-            if (postRef.exists && postData) {
-                _post = {
-                    title: postData.title,
-                    description: postData.description,
-                    date: postData.date,
-                    image: postData.image,
-                    tags: postData.tags,
-                    content: postData.content,
-                };
+            const postResponse = await supabase.from('posts').select('*').eq('post_slug', post);
+            if(postResponse.error) throw postResponse.error;
+            const postData = postResponse.data[0];
+            if (postData) {
+                _post = postData;
             }
         }
     }

@@ -6,9 +6,12 @@ import Container from "../../components/container"
 import Input, { InputLabel, useCustomInputProps } from "../../components/input"
 import Layout from "../../components/layout"
 import Nav from "../../components/nav"
-import { useStore } from "../../components/store"
+import { useStore } from "../../data/store"
 import { UserBoundary } from "../../components/userBoundary"
-import firebase from '../../firebase'
+import { supabase } from "@supabase"
+import { Draft, Post } from "@data/types"
+import If from '@components/if'
+import CircleProgress from "@components/circleProgress"
 
 
 function Publish() {
@@ -18,6 +21,7 @@ function Publish() {
     const [content, setContent] = useState<any>();
     const [blogSlug, setBlogSlug] = useState('');
     const [postSlug, setPostSlug] = useState('');
+    const [loading, setLoading] = useState(false);
     const userStoreObject = useStore(state => state.user);
     const user = userStoreObject.data;
     const router = useRouter();
@@ -26,14 +30,60 @@ function Publish() {
         (async () => {
             if (!user) return;
 
-            if (user.draft) {
-                setTitle(user.draft.title);
-                setBlogSlug(user.draft.postTo);
-                setPostSlug(user.draft.slug);
-                setContent(user.draft.content);
+            const draftResponse = await supabase.from('drafts').select('*').eq('user_id', user.user_id);
+            if(draftResponse.error) throw draftResponse.error;
+            const draftData = draftResponse.data[0] as Draft;
+
+            if (draftData) {
+                setTitle(draftData.title);
+                setBlogSlug(draftData.post_to);
+                setPostSlug(draftData.slug);
+                setContent(draftData.content);
             }
         })();
     }, [user]);
+
+    const handleClick = async () => {
+        try {
+            if (title && content && blogSlug && postSlug && user) {
+                setLoading(true);
+                const tags = !!tag ? tag.split(',').map(str => {
+                    let newStr = str.trim()
+                    var from = "àáäãâèéëêìíïîòóöôùúüûñç·/_,:;";
+                    var to = "aaaaaeeeeiiiioooouuuunc------";
+                    for (var i = 0, l = from.length; i < l; i++) {
+                        newStr = newStr.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
+                    }
+
+                    newStr = newStr.replace(/[^a-z0-9 -]/g, '') // remove invalid chars
+                        .replace(/\s+/g, '-') // collapse whitespace and replace by -
+                        .replace(/-+/g, '-'); // collapse dashes
+                    return newStr;
+                }).filter(str => !!str) : [];
+
+                const postResponse = await supabase.from('posts').insert([{
+                    user_id: user.user_id,
+                    post_slug: postSlug,
+                    title: title,
+                    description: description,
+                    date: Date.now(),
+                    content: content,
+                    image: '',
+                    tags: tags,
+                    blog: blogSlug
+                } as Post]);
+                if(postResponse.error) throw postResponse.error;
+
+                const deleteDraftResponse = await supabase.from('drafts').delete().eq('user_id', user.user_id);
+                if(deleteDraftResponse.error) throw deleteDraftResponse.error;
+
+                router.push(`/${blogSlug}/${postSlug}`)
+            }
+        } catch (error) {
+            // code review: handle 
+            console.error('firebase error', error)
+        }
+    }
 
     return (
         <div>
@@ -53,54 +103,14 @@ function Publish() {
                     <div dangerouslySetInnerHTML={{ __html: content }}></div>
                     {/* {content} */}
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <Button onClick={async () => {
-                            try {
-                                console.log('title,', !!title, 'content', !!content, 'blog', !!blogSlug, 'post', !!postSlug)
-                                if (title && content && blogSlug && postSlug && user) {
-
-                                    const query = blogSlug.includes('users/') ? firebase.firestore().doc(blogSlug).collection('posts').doc(postSlug) : firebase.firestore().collection('blogs').doc(blogSlug).collection('posts').doc(postSlug);
-                                    const postRef = await query.get();
-                                    if (!postRef.exists) {
-                                        await query.set({
-                                            slug: postSlug,
-                                            title: title,
-                                            description: description,
-                                            date: Date.now(),
-                                            content: content,
-                                            image: '',
-                                            tags: !!tag ? tag.split(',').map(str => {
-                                                let newStr = str.trim()
-                                                var from = "àáäãâèéëêìíïîòóöôùúüûñç·/_,:;";
-                                                var to = "aaaaaeeeeiiiioooouuuunc------";
-                                                for (var i = 0, l = from.length; i < l; i++) {
-                                                    newStr = newStr.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
-                                                }
-
-                                                newStr = newStr.replace(/[^a-z0-9 -]/g, '') // remove invalid chars
-                                                    .replace(/\s+/g, '-') // collapse whitespace and replace by -
-                                                    .replace(/-+/g, '-'); // collapse dashes
-                                                return newStr;
-                                            }).filter(str => !!str) : [],
-                                            author: user.username,
-                                            blog: blogSlug,
-                                        });
-                                        await firebase.firestore().collection('users').doc(user.username).update({
-                                            draft: firebase.firestore.FieldValue.delete()
-                                        });
-
-                                        router.push(`/${blogSlug}/${postSlug}`)
-                                    } else {
-                                        // code review
-                                        console.log('else')
-                                    }
-                                }
-                            } catch (error) {
-                                // code review: handle 
-                                console.error('firebase error', error)
-                            }
-                        }}>
+                        <Button onClick={handleClick}>
                             <h2>publish</h2>
                         </Button>
+                        <If value={loading}>
+                            <span style={{position: 'absolute'}}>
+                                <CircleProgress />
+                            </span>
+                        </If>
                     </div>
                 </Container>
             </Layout>
@@ -117,7 +127,7 @@ export default function PublishWrapper() {
             return;
         }
         if (!user.data.username) {
-            router.push('/create-user');
+            router.push('/create-profile');
         }
     }}><Publish /></UserBoundary>);
 }

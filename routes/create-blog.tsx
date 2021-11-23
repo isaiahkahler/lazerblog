@@ -7,37 +7,41 @@ import Head from 'next/head'
 import { useRouter } from 'next/router';
 import Input from '../components/input'
 import { useEffect, useState } from "react";
-import firebase from '../firebase'
-import { useStore } from "../components/store"
+import { useStore } from "@data/store"
 import { UserBoundary } from "../components/userBoundary"
-import useRedirect from "../components/useRedirect"
+import useRedirect from "../hooks/useRedirect"
 import { URL } from "../components/constants"
-import useSlug, { useBackupSlug } from "../components/useSlug"
+import useSlug, { useBackupSlug } from "../hooks/useSlug"
 import { SubmitHandler, useForm } from "react-hook-form"
 import { InputButton } from '../components/button'
 import If from '../components/if'
 import CircleProgress from '../components/circleProgress'
+import { supabase } from "@supabase"
+import { Blog } from "@data/types"
 
 
-interface FormInputs {
+export interface BlogFormInputs {
     name: string,
     description: string
 }
 
 let typingDelayTimeout: NodeJS.Timeout | null = null;
 
-type FormOutputs = FormInputs & {slug: string};
+export type BlogFormOutputs = BlogFormInputs & {slug: string};
 
 interface CreateBlogProps {
-    submitHandler: (data: FormOutputs) => void
+    submitHandler: (data: BlogFormOutputs) => void,
+    initialData?: BlogFormInputs
 }
 
-function CreateBlog({ submitHandler }: CreateBlogProps) {
+export function CreateBlog({ submitHandler, initialData }: CreateBlogProps) {
 
     const [loading, setLoading] = useState(false);
     const [blogSlug, setBlogSlug] = useSlug();
-    const { register, handleSubmit, formState: { errors }, trigger } = useForm<FormInputs>();
-    const onSubmit: SubmitHandler<FormInputs> = (data) => {
+    const { register, handleSubmit, formState: { errors }, trigger } = useForm<BlogFormInputs>({
+        defaultValues: initialData || undefined
+    });
+    const onSubmit: SubmitHandler<BlogFormInputs> = (data) => {
         setLoading(true);
         submitHandler({...data, slug: blogSlugTaken ? backupBlogSlug : blogSlug});
     }
@@ -54,9 +58,12 @@ function CreateBlog({ submitHandler }: CreateBlogProps) {
         return new Promise((resolve) => {
             typingDelayTimeout = setTimeout(async () => {
                 try {
-                    const blogSlugDoc = await firebase.firestore().collection('blogs').doc(newSlug).get();
-                    console.log(`checked if blog ${blogSlug} exists`, blogSlugDoc.exists)
-                    resolve(blogSlugDoc.exists);
+                    const blogResponse = await supabase.from('blogs').select('blog_slug').eq('blog_slug', newSlug);
+                    if(blogResponse.error) throw blogResponse.error;
+                    const blogExists = blogResponse.data[0] as string | null;
+
+                    console.log(`checked if blog ${blogSlug} exists`, blogExists)
+                    resolve(!!blogExists);
                 } catch (error) {
                     // code review: handle error
                     console.error(error);
@@ -81,7 +88,7 @@ function CreateBlog({ submitHandler }: CreateBlogProps) {
         <div>
             <Layout>
                 <Container>
-                    <h1>Create your new blog.</h1>
+                    {initialData ? <h1>Edit your blog.</h1> : <h1>Create your new blog.</h1>}
                     <form onSubmit={handleSubmit(onSubmit)}>
                         {/* <Input value={blogName} setValue={value => { setBlogName(value); setBlogSlug(value) }} id='blogname' label='Blog Name' isValid={!formSubmitted || blogSlug.length !== 0} invalidMessage={"Please enter your blog name."} /> */}
                         <InputLabel>Blog Name</InputLabel>
@@ -125,24 +132,27 @@ export default function CreateBlogWrapper() {
     const user = useStore(state => state.user);
     const redirect = useRedirect();
 
-    const handleSubmit = ({name, description, slug}: FormOutputs) => {
+    const handleSubmit = ({name, description, slug}: BlogFormOutputs) => {
 
         (async () => {
             try {
                 if (slug && user.auth && user.data) {
-                    const blogURLDoc = await firebase.firestore().collection('blogs').doc(slug).get();
-                    if (!blogURLDoc.exists) {
+
+                    const blogExistsResponse = await supabase.from('blogs').select('blog_slug').eq('blog_slug', slug);
+                    if(blogExistsResponse.error) throw blogExistsResponse.error;
+                    const blogExists = blogExistsResponse.data[0] as string | null;
+
+                    if (!blogExists) {
                         // add blog to 'blogs'
-                        await firebase.firestore().collection('blogs').doc(slug).set({
+
+                        const setBlogResponse = await supabase.from('blogs').insert([{
+                            blog_slug: slug,
                             name: name,
-                            author: user.data.username,
-                            blogDescription: description,
-                            brandImage: ''
-                        });
-                        // add blog to user     
-                        await firebase.firestore().collection('users').doc(user.data.username).set({
-                            blogs: user.data.blogs ? [...user.data.blogs, slug] : [slug]
-                        }, { merge: true });
+                            user_id: user.data.user_id,
+                            description: description,
+                            banner_image: ''
+                        } as Blog]);
+                        if(setBlogResponse.error) throw setBlogResponse.error;
 
                         // redirects if URL has ?redirect=[new-route]
                         // else goes to /[blog]
@@ -166,7 +176,7 @@ export default function CreateBlogWrapper() {
                 return;
             }
             if (!user.data) { // needs to register
-                router.push('/create-user');
+                router.push('/create-profile');
                 return;
             }
         }}>
