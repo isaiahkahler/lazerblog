@@ -1,9 +1,8 @@
 import TagDisplay from "./tag"
-import usePostFeed from "../../../components/usePostFeed"
-import firebase from '../../../firebase'
+import usePostFeed from "@hooks/usePostFeed"
 import { useRouter } from "next/router"
 import { GetServerSideProps } from "next"
-import { BlogBase, Post, PostWithInfo, User, UserBase } from "../../../components/types"
+import { Blog, Post, PostWithInfo, User } from "@data/types"
 import Layout from "../../../components/layout"
 import Container from "../../../components/container"
 import { getRandomSadEmoji } from "../../../components/randomEmoji"
@@ -11,10 +10,12 @@ import Button from "../../../components/button"
 import { useState } from "react"
 import { useEffect } from "react"
 import PostFeed from "../../../components/postFeed"
+import { supabase } from "@supabase"
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   console.log('params', context.params);
   const { tag } = context.params ? context.params : { tag: undefined };
+  console.log('tag', tag)
 
   if (!tag || typeof (tag) !== 'string') {
     console.log('check 1')
@@ -27,25 +28,28 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
 
-  const query = firebase.firestore().collectionGroup('posts').where('tags', 'array-contains', tag).orderBy('date', 'desc');
-  const postsRef = await query.limit(10).get();
-  const posts = postsRef.docs.map(doc => doc.data() as Post);
+  const postsResponse = await supabase.from('posts').select('*').filter('tags', 'cs', `["${tag}"]`).order('date', {ascending: false}).limit(10);
+  if (postsResponse.error) throw postsResponse.error;
+  const posts = postsResponse.data as Post[];
   const postsWithData: PostWithInfo[] = [];
   for (const post of posts) {
-    const userRef = await firebase.firestore().collection('users').doc(post.author).get();
-    const userData = userRef.data();
+
+    const userResponse = await supabase.from('users').select('*').eq('user_id', post.user_id);
+    if (userResponse.error) throw userResponse.error;
+    const userData = userResponse.data[0] as User;
     
     if(post.blog.includes('users/')) {
-      postsWithData.push({ post: post, user: { username: post.author, ...userData as UserBase}, blog: null })
+      postsWithData.push({ post: post, user: userData, blog: null })
       continue;
     }
     
-    const blogRef = await firebase.firestore().collection('blogs').doc(post.blog).get();
-    const blogData = blogRef.data();
+    const blogResponse = await supabase.from('blogs').select('*').eq('blog_slug', post.blog);
+    if(blogResponse.error) throw blogResponse.error;
+    const blogData = blogResponse.data[0] as Blog;
 
-    console.log('user', post.author, userData)
-    if (blogRef.exists && blogData && userRef.exists && userData) {
-      postsWithData.push({ post: post, user: { username: post.author, ...userData as UserBase}, blog: { slug: post.blog, ...blogData as BlogBase } })
+    // console.log('user', post.user_id, userData)
+    if (blogData && userData) {
+      postsWithData.push({ post: post, user: userData, blog: blogData })
     }
   }
   console.log('check 3')
@@ -64,19 +68,18 @@ interface TagWrapperProps {
 }
 
 export default function TagWrapper({ tag, posts }: TagWrapperProps) {
-  console.log('tag', tag)
+  console.log('tag', tag, 'initial data', posts)
   const router = useRouter();
 
   const [tagValue, setTagValue] = useState((tag && typeof (tag) === 'string') ? tag : '');
 
-
+  
   const postFeed = usePostFeed({
-    query: firebase.firestore().collectionGroup('posts').where('author', '==', tag).orderBy('date', 'desc'),
+    query: supabase.from('posts').select('*').filter('tags', 'cs', `["${tag}"]`).order('date', {ascending: false}),
     showBlog: true,
     showUser: true,
     loadOnScrollEnd: true,
-    initialPostData: posts,
-    initialOrderKey: posts ? posts[posts.length - 1].post.date : null
+    initialPostData: posts
   });
 
 

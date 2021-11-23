@@ -2,15 +2,15 @@ import Layout from '../../components/layout'
 import Container from '../../components/container'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import firebase from '../../firebase'
 import { GetServerSideProps } from 'next'
 import Button from '../../components/button'
-import { Blog, Post, PostWithInfo, UserBase } from '../../components/types'
+import { Blog, Post, PostWithInfo } from '@data/types'
 import { getRandomSadEmoji } from '../../components/randomEmoji'
 import BlogDisplay from './blog'
-import usePostFeed from '../../components/usePostFeed'
+import usePostFeed from '@hooks/usePostFeed'
 import PostFeed from '../../components/postFeed'
 import PageNotFound from '../../components/404'
+import { supabase } from '@supabase'
 
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -27,10 +27,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         }
     }
 
-    const blogRef = await firebase.firestore().collection('blogs').doc(blogSlug).get();
-    const blogData = blogRef.data();
+    const blogResponse = await supabase.from('blogs').select('*').eq('blog_slug', blogSlug);
+    if(blogResponse.error) throw blogResponse.error;
+    const blogData = blogResponse.data[0] as Blog | null;
 
-    if (!blogRef.exists || !blogData) {
+    if (!blogData) {
         console.log('check 2')
         return {
             props: {
@@ -40,23 +41,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         }
     }
 
-    const postsRef = await firebase.firestore().collectionGroup('posts')
-        .where('blog', '==', blogSlug)
-        .orderBy('date', 'desc')
-        .limit(10).get();
-    const posts = postsRef.docs.map(doc => doc.data() as Post);
+    const postsResponse = await supabase.from('posts').select('*').eq('blog', blogSlug).order('date', {ascending: false}).limit(10);
+    if(postsResponse.error) throw postsResponse.error;
+    const posts = postsResponse.data as Post[];
     const postsWithData: PostWithInfo[] = posts.map(post => {
         return {
             post: post,
             blog: null,
-            user: null,
         };
     });
     console.log('check 3')
 
     return {
         props: {
-            blog: {slug: blogSlug, ...blogData } as Blog,
+            blog: blogData as Blog,
             posts: postsWithData.length === 0 ? null : postsWithData,
         }
     };
@@ -73,10 +71,9 @@ export default function BlogWrapper({blog, posts}: BlogWrapperProps) {
     const { blogSlug } = router.query;
     const [blogSlugValue, setBlogSlugValue] = useState((blogSlug && typeof (blogSlug) === 'string') ? blogSlug : '');
     const postFeed = usePostFeed({
-      query: firebase.firestore().collectionGroup('posts').where('blog', '==', (blogSlug && typeof(blogSlug) === 'string') ? blogSlug : '').orderBy('date', 'desc'),
+      query: supabase.from('posts').select('*').eq('blog', blogSlug).order('date', {ascending: false}),
       loadOnScrollEnd: true,
-      initialPostData: posts,
-      initialOrderKey: posts ? posts[posts.length - 1].post.date : null 
+      initialPostData: posts
     });
 
 

@@ -1,16 +1,16 @@
-import { useRouter } from "next/router";
-import { useEffect } from "react";
-import Container from "../components/container";
-import Layout from "../components/layout";
-import Nav from "../components/nav";
-import { useStore } from "../components/store";
-import firebase from '../firebase'
+import { useRouter } from "next/router"
+import { useEffect } from "react"
+import Container from "../components/container"
+import Layout from "../components/layout"
+import Nav from "../components/nav"
+import { useStore } from "../data/store"
+import {supabase} from '@supabase'
 
 export default function SignOut()  {
     const router = useRouter();
 
     useEffect(() => {
-        firebase.auth().signOut().then(() => {
+        supabase.auth.signOut().then(() => {
             router.push('/')
         });
     }, [router])

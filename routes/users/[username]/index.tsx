@@ -1,9 +1,7 @@
-import UserDisplay from "./user"
-import usePostFeed from "../../../components/usePostFeed"
-import firebase from '../../../firebase'
+import usePostFeed from '@hooks/usePostFeed'
 import { useRouter } from "next/router"
 import { GetServerSideProps } from "next"
-import { BlogBase, Post, PostWithInfo, User, UserBase } from "../../../components/types"
+import { Post, PostWithInfo, User, Blog } from "@data/types"
 import Layout from "../../../components/layout"
 import Container from "../../../components/container"
 import { getRandomSadEmoji } from "../../../components/randomEmoji"
@@ -11,6 +9,8 @@ import Button from "../../../components/button"
 import { useState } from "react"
 import { useEffect } from "react"
 import PostFeed from "../../../components/postFeed"
+import { supabase } from "@supabase"
+import BlogDisplay from "@routes/[blogSlug]/blog"
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   console.log('params', context.params);
@@ -26,78 +26,101 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   }
 
-  const userRef = await firebase.firestore().collection('users').doc(username).get();
-  const userData = userRef.data();
 
-  if (!userRef.exists || !userData) {
+  const userResponse = await supabase.from('users').select('*').eq('username', username);
+  if (userResponse.error) throw userResponse.error
+  const userData = userResponse.data[0] as User | null;
+
+  const userBlogResponse = await supabase.from('blogs').select('*').eq('blog_slug', `users/${username}`);
+  if(userBlogResponse.error) throw userResponse.error;
+  const userBlogData = userBlogResponse.data[0] as Blog | null;
+
+  if (!userData || !userBlogData) {
     console.log('check 2')
     return {
       props: {
         user: null,
+        blog: null,
         posts: null,
       }
     }
   }
 
 
-  const query = firebase.firestore().collectionGroup('posts').where('author', '==', username).orderBy('date', 'desc');
-  const postsRef = await query.limit(10).get();
-  const posts = postsRef.docs.map(doc => doc.data() as Post);
-  const postsWithData: PostWithInfo[] = [];
-  for (const post of posts) {
-    if(post.blog.includes('users/')) {
-      postsWithData.push({ post: post, user: null, blog: null })
+  // find posts made by this user
+  const postsResponse = await supabase.from('posts').select('*').eq('user_id', userData.user_id).order('date', {ascending: false}).limit(10);
+  if (postsResponse.error) throw postsResponse.error;
+  const postsData = postsResponse.data as Post[];
+  console.log('how many posts>??/?', postsData.length)
+
+
+  // add posts 
+  const postsWithInfo: PostWithInfo[] = [];
+  for (const post of postsData) {
+    if (!post.blog) {
+      postsWithInfo.push({ post: post, user: null, blog: null })
       continue;
     }
-    const blogRef = await firebase.firestore().collection('blogs').doc(post.blog).get();
-    const blogData = blogRef.data();
-    if (blogRef.exists && blogData) {
-      postsWithData.push({ post: post, user: null, blog: { slug: post.blog, ...blogData as BlogBase } })
-    }
+
+
+    const blogResponse = await supabase.from('blogs').select('*').eq('blog_slug', post.blog);
+    if (blogResponse.error) throw blogResponse.error;
+    const blogData = blogResponse.data[0];
+
+    postsWithInfo.push({ post: post, user: null, blog: blogData ? blogData as Blog : null })
+
+
   }
-  console.log('check 3')
+  console.log('check 3', postsWithInfo, postsData)
 
   return {
     props: {
-      user: { username: username, ...userData },
-      posts: postsWithData.length === 0 ? null : postsWithData,
+      user: userData,
+      blog:userBlogData,
+      posts: postsWithInfo.length === 0 ? null : postsWithInfo,
     }
   };
 }
 
 interface UsersWrapperProps {
   user: User | null,
+  blog: Blog | null,
   posts: PostWithInfo[] | null
 }
 
-export default function UsersWrapper({ user, posts }: UsersWrapperProps) {
+export default function UsersWrapper({ user, blog, posts }: UsersWrapperProps) {
   const router = useRouter();
   const { username } = router.query;
-  const [usernameValue, setUsernameValue] = useState((username && typeof (username) === 'string') ? username : '');
+  const [userIDValue, setUserIDValue] = useState(user ? user.user_id : '');
+  const [usernameValue, setUsernameValue] = useState(user ? user.username : '');
+
   const postFeed = usePostFeed({
-    query: firebase.firestore().collectionGroup('posts').where('author', '==', usernameValue).orderBy('date', 'desc'),
+    query: supabase.from('posts').select('*').eq('user_id', user ? user.user_id : '').order('date', {ascending: false}),
     showBlog: true,
     loadOnScrollEnd: true,
     initialPostData: posts,
-    initialOrderKey: posts ? posts[posts.length - 1].post.date : null
   });
 
+  const reload = postFeed.reload;
+
 
   useEffect(() => {
-    if (username !== usernameValue && user && typeof (username) === 'string')
+    if (username !== usernameValue && user && typeof (username) === 'string') {
+      console.log('change')
       setUsernameValue(username);
-  }, [user, username, usernameValue]);
+      reload();
+    }
+  }, [user, username, usernameValue, reload]);
 
-  useEffect(() => {
-    console.log('new username', usernameValue)
-    postFeed.reload();
-  }, [usernameValue]);
+  // useEffect(() => {
+  //   console.log('new username', usernameValue)
+  // }, [usernameValue]);
 
   if (!username) return null;
   if (typeof (username) !== 'string') return null;
 
 
-  if (!user) return (
+  if (!user || !blog) return (
     <div>
       <Layout>
         <Container>
@@ -115,9 +138,9 @@ export default function UsersWrapper({ user, posts }: UsersWrapperProps) {
 
 
   return (
-    <UserDisplay user={user}>
+    <BlogDisplay blog={blog}>
       <PostFeed posts={postFeed.posts} loading={postFeed.loading} outOfPosts={postFeed.outOfPosts} disableOutOfPostsMessage />
-    </UserDisplay>
+    </BlogDisplay>
   );
 
 }

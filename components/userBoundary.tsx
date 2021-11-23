@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { useStore } from "./store";
-import firebase from '../firebase'
-import { User, UserStore } from "./types";
+import { useStore } from "../data/store";
+import { UserStore } from "@data/types";
 
 
 interface UserBoundaryProps {

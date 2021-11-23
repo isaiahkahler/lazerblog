@@ -1,10 +1,10 @@
 
-import { User } from "../../../components/types"
+import { User } from "@data/types"
 import { TransparentButton } from "../../../components/button"
 import styles from './tag.module.css'
 import Layout from "../../../components/layout"
 import Container from "../../../components/container"
-import { useStore } from "../../../components/store"
+import { useStore } from "../../../data/store"
 import { useRouter } from "next/router"
 
 interface TagProps {

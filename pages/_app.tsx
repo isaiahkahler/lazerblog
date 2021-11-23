@@ -1,11 +1,13 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import { useStore } from '../components/store'
-import firebase from '../firebase'
-import React, { useEffect } from 'react'
-import { User } from '../components/types'
+import { useStore } from '../data/store'
+import React, { useEffect, useState } from 'react'
+import { Blog, User } from '@data/types'
+import { supabase } from '@supabase'
 import Nav from '../components/nav'
 import Head from 'next/head'
+import { Session } from '@supabase/gotrue-js'
+// import { RealtimeClient } from '@supabase/realtime-js'
 
 function MyApp({ Component, pageProps }: AppProps) {
     return <MyAppWrapper><Component {...pageProps} /></MyAppWrapper>;
@@ -17,108 +19,49 @@ function MyAppWrapper(props: { children?: React.ReactNode }) {
     const setUser = useStore(state => state.setUser);
     const setUserLoading = useStore(state => state.setUserLoading);
     const title = useStore(state => state.title);
+    const user = useStore(state => state.user);
+
+    const [session, setSession] = useState<Session | null>(null)
 
     useEffect(() => {
-        // when auth state changes, update user, username, and blog
-        let unsubUserListener = () => { };
-        let unsubUsernameListener = () => { };
+        console.log('session', session);
+        (async () => {
+            if(session && session.user) {
+                const userResponse = await supabase.from('users').select('*').eq('user_id', session.user.id)
+                if (userResponse.error) throw userResponse.error;
+                const user = userResponse.data[0] as User | null;
+                const blogsResponse = await supabase.from('blogs').select('*').eq('user_id', session.user.id);
+                if(blogsResponse.error) throw blogsResponse.error;
+                const blogs = blogsResponse.data as Blog[];
 
-        const unsub = firebase.auth().onAuthStateChanged(async (userAuth) => {
-            console.log('auth state changed', userAuth);
 
-            if (!userAuth) {
-                // setUserAuth(null);
-                // setUser(null);
+                console.log('user!!', user);
+                setUser({
+                    data: user,
+                    auth: session.user,
+                    blogs: blogs
+                });
+            } else {
                 setUser({
                     data: null,
-                    auth: null
-                })
-                setUserLoading(false);
-                return;
-            }
+                    auth: null,
+                    blogs: null
 
-            console.log('some console log in the middle')
-
-            // setUserAuth(userAuth);
-            try {
-                // set username
-
-                console.log('trying to get username')
-
-                unsubUsernameListener = firebase.firestore().collection('usernames').doc(userAuth.uid).onSnapshot((usernameRef) => {
-
-                    console.log('inside username listener')
-
-                    // const usernameRef = await firebase.firestore().collection('usernames').doc(userAuth.uid).get();
-                    const usernameData = usernameRef.data();
-                    const _username: string | undefined = usernameRef.exists && usernameData ? usernameData.username : undefined;
-
-                    if (!_username) {
-                        console.log('couldnt get username')
-                        // setUser(null);
-                        // setUserAuth(null);
-                        setUser({
-                            data: null,
-                            auth: userAuth
-                        })
-                        setUserLoading(false);
-                        return;
-                    }
-
-                    console.log('got username')
-
-                    // set blogs & following
-                    unsubUserListener = firebase.firestore().collection('users').doc(_username).onSnapshot((doc) => {
-                        console.log('user state changed')
-                        const docData = doc.data();
-                        if (doc.exists && docData) {
-                            setUser({
-                                data: { username: _username, ...docData } as User,
-                                auth: userAuth
-                            });
-                            // setUserAuth(userAuth);
-                            setUserLoading(false);
-                        } else {
-                            // setUser(null);
-                            // setUserAuth(userAuth);
-                            setUser({
-                                data: null,
-                                auth: userAuth
-                            })
-                            setUserLoading(false);
-                        }
-                    }, (error) => {
-                        //code review: handle
-                        console.error(error);
-                    });
-
-
-                }, (error) => { // end username listener
-                    console.error('error username listener', error);
                 });
-
-
-            } catch (error) {
-                // code review:
-                console.error(error)
             }
+            
+            setUserLoading(false);
 
+        })();
+    }, [session, setUser, setUserLoading]);
 
+    useEffect(() => {
+        setSession(supabase.auth.session())
+        supabase.auth.onAuthStateChange((_event, session) => {
+            console.log('auth state changed', session?.user)
 
-
-            // had to set this after the onSnapshot completes, given as a callback 
-            // setUserLoading(false);
-
-        }, (error) => {
-            // code review: handle
-        });
-
-        // updateData(firebase.auth().currentUser);
-
-        return () => {
-            unsub();
-            unsubUserListener();
-        }
+            setSession(session)
+        })
     }, []);
 
     return (<>
