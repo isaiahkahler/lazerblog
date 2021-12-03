@@ -3,20 +3,17 @@ import Layout from '../components/layout'
 import Container from '../components/container'
 import { useRouter } from 'next/router'
 import { supabase } from '@supabase'
-import { Auth } from '@supabase/ui'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useStore } from '../data/store'
 import { UserBoundary } from '../components/userBoundary'
 import useRedirect from '../hooks/useRedirect'
 import If from '@components/if'
 import { InputInvalidMessage, InputLabel, useCustomInputProps } from '@components/input'
 import { useForm } from 'react-hook-form'
-import Button, { InputButton, useCustomButtonProps } from '@components/button'
-import AppleIcon from '@components/icons/appleIcon'
+import Button, { useCustomButtonProps } from '@components/button'
 import GoogleIcon from '@components/icons/googleIcon'
-import CircleProgress, { SmallCircleProgress } from '@components/circleProgress'
+import { SmallCircleProgress } from '@components/circleProgress'
 import { GoogleReCaptchaProvider, useGoogleReCaptcha } from 'react-google-recaptcha-v3';
-import CheckIcon from '@components/icons/checkIcon'
 
 const RECAPTCHA_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_KEY;
 
@@ -31,16 +28,8 @@ interface ForgotPasswordFormInputs {
 
 let action: 'sign in' | 'sign up' | null = null;
 
-export function onThingy(token: string) {
-    console.log('on thingy!!', token)
-}
 
 function Login() {
-
-    const router = useRouter();
-    const [completed, setCompleted] = useState(false);
-
-    const user = useStore(state => state.user);
 
     const { register, formState: { errors }, handleSubmit } = useForm<SignInUpFormInputs>();
     const forgotPasswordForm = useForm<ForgotPasswordFormInputs>();
@@ -73,8 +62,6 @@ function Login() {
     const signInUpSubmitHandler = (data: SignInUpFormInputs) => {
         (async () => {
             try {
-
-                console.log('form success, data:', data, action, !!executeRecaptcha)
                 if (!action) return;
                 if (!executeRecaptcha) return;
                 const recaptchaResponse = await fetch('/api/verify-recaptcha', {
@@ -152,7 +139,7 @@ function Login() {
                 await supabase.auth.api.resetPasswordForEmail(data.email, {
                     redirectTo: '/login'
                 });
-                
+
                 setPasswordResetState('sent')
 
 
@@ -285,19 +272,6 @@ function Login() {
                                         <span>Continue with Google</span>
 
                                     </Button>
-                                    {/* <Button style={{ display: 'flex', justifyContent: 'center' }} onClick={() => {
-                                        supabase.auth.signIn({
-                                            provider: 'apple'
-                                        });
-                                    }}>
-
-
-                                        <span style={{ marginRight: '1rem', padding: 0 }}>
-                                            <AppleIcon size='20px' />
-                                        </span>
-
-                                        <span>Continue with Apple</span>
-                                    </Button> */}
                                 </div>
                             </If>
                         </div>
@@ -319,7 +293,6 @@ export default function LoginWrapper() {
 
         <UserBoundary
             onUserLoaded={(user) => {
-                // console.log('user loaded in login', user)
                 if (!user.auth) return; // stay to log in
                 if (!user.data) { // needs to register
                     router.push('/create-profile');
@@ -327,11 +300,7 @@ export default function LoginWrapper() {
                 }
 
                 const userData = user.data;
-                // code review: may want to send to /home instead
-                // if (user.blogs && user.blogs.length === 0) { // needs to create first blog
-                //     router.push('/create-blog');
-                //     return;
-                // }
+
                 // redirect will redirect if the URL contains ?redirect=[new-route]
                 // else, has blogs, go to user page
                 redirect(() => {

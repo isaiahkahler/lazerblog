@@ -12,7 +12,7 @@
     font-size: 1rem;
     font-family: inherit;
     min-height: 35px;
-    color: inherit;
+    color: inherit !important;
 }
 
 .button:hover {
