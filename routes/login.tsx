@@ -259,7 +259,7 @@ function Login() {
 
                                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', height: '30px' }}>
                                     <div style={{ borderTop: '1px solid gray', width: '100%' }}></div>
-                                    <p style={{ padding: '10px', backgroundColor: "#fff", position: 'absolute' }}>or</p>
+                                    <p style={{ padding: '10px', backgroundColor: "#fff", position: 'absolute', margin: 0 }}>or</p>
                                 </div>
 
                                 <div style={{ display: 'flex', justifyContent: 'stretch', flexDirection: 'column' }}>
