@@ -54,11 +54,11 @@ export function useCustomInputProps(isValid?: boolean, className?: string) {
 
 export function InputLabel(props: HTMLProps<HTMLHeadingElement>) {
     if (!props.children) return null;
-    return (<h2 className={styles.label}><label htmlFor={props.id}>{props.children}</label></h2>);
+    return (<p {...props} className={`${props.className} ${styles.label}`}><label htmlFor={props.id}>{props.children}</label></p>);
 }
 
 export function InputInvalidMessage(props: HTMLProps<HTMLHeadElement> & {isValid: boolean}) {
-    return !props.isValid ? <h3 style={{ color: "#cc0f35", marginTop: '0' }}>{props.children}</h3> : null;
+    return !props.isValid ? <p style={{ color: "#cc0f35", marginTop: '0' }}>{props.children}</p> : null;
 }
 
 

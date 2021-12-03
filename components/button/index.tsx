@@ -12,6 +12,12 @@ export default function Button(props: ButtonProps) {
     );
 }
 
+export function useCustomButtonProps () {
+    return {
+        className: styles.button, 
+    }
+}
+
 export function LinkButton({ children, ...props }: PropsWithChildren<LinkProps>) {
     return (
         <Link {...props}>
