@@ -73,6 +73,7 @@ function Login() {
                 const recaptchaResponseObj = await recaptchaResponse.json();
                 if (!('score' in recaptchaResponseObj) || recaptchaResponseObj.score < 0.5) {
                     setLoginError('You might be a bot! Reload and try again if you\'re not');
+                    setLoading(false);
                     return;
                 }
 
@@ -88,6 +89,7 @@ function Login() {
                     if (signInResponse.error) {
                         console.error(signInResponse.error)
                         setLoginError(signInResponse.error.message);
+                        setLoading(false);
                         return;
                     };
                 } else {
@@ -101,6 +103,7 @@ function Login() {
                     if (signUpResponse.error) {
                         console.error(signUpResponse.error);
                         setLoginError(signUpResponse.error.message);
+                        setLoading(false);
                         return;
                     };
                     setFormState('confirmation');
@@ -112,6 +115,7 @@ function Login() {
                 // activate the password form 
             } catch (error) {
                 console.error(error)
+                setLoading(false);
             }
 
         })();
