@@ -11,17 +11,22 @@ import useRedirect from '../hooks/useRedirect'
 import If from '@components/if'
 import { InputInvalidMessage, InputLabel, useCustomInputProps } from '@components/input'
 import { useForm } from 'react-hook-form'
-import Button, { useCustomButtonProps } from '@components/button'
+import Button, { InputButton, useCustomButtonProps } from '@components/button'
 import AppleIcon from '@components/icons/appleIcon'
 import GoogleIcon from '@components/icons/googleIcon'
 import CircleProgress, { SmallCircleProgress } from '@components/circleProgress'
 import { GoogleReCaptchaProvider, useGoogleReCaptcha } from 'react-google-recaptcha-v3';
+import CheckIcon from '@components/icons/checkIcon'
 
 const RECAPTCHA_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_KEY;
 
-interface FormInputs {
+interface SignInUpFormInputs {
     usernameOrEmail: string,
     password: string
+}
+
+interface ForgotPasswordFormInputs {
+    email: string
 }
 
 let action: 'sign in' | 'sign up' | null = null;
@@ -37,11 +42,12 @@ function Login() {
 
     const user = useStore(state => state.user);
 
-    const { register, formState: { errors }, handleSubmit } = useForm<FormInputs>();
+    const { register, formState: { errors }, handleSubmit } = useForm<SignInUpFormInputs>();
+    const forgotPasswordForm = useForm<ForgotPasswordFormInputs>();
 
     const { executeRecaptcha } = useGoogleReCaptcha();
 
-    const [formState, setFormState] = useState<'sign in' | 'reset' | 'confirmation' | 'third party'>('sign in');
+    const [formState, setFormState] = useState<'sign in' | 'reset password' | 'confirmation'>('sign in');
 
     const usernameEmailRequiredError = errors.usernameOrEmail?.type === 'required';
     const usernameEmailLengthError = errors.usernameOrEmail?.type === 'minLength';
@@ -53,12 +59,18 @@ function Login() {
     const passwordPatternError = errors.password?.type === 'pattern';
     const passwordError = passwordRequiredError || passwordLengthError || passwordPatternError;
 
+    const resetPasswordEmailRequiredError = forgotPasswordForm.formState.errors.email?.type === 'required';
+    const resetPasswordEmailPatternError = forgotPasswordForm.formState.errors.email?.type === 'pattern';
+    const resetPasswordEmailError = resetPasswordEmailRequiredError || resetPasswordEmailPatternError;
+
     const [loading, setLoading] = useState(false);
 
-    const [loginError, setLoginError] = useState<string | null>(null);
-    const ref = useRef<HTMLFormElement>(null);
+    const [passwordResetState, setPasswordResetState] = useState<'loading' | 'sent' | null>(null);
 
-    const submitHandler = (data: FormInputs) => {
+    const [loginError, setLoginError] = useState<string | null>(null);
+    const formRef = useRef<HTMLFormElement>(null);
+
+    const signInUpSubmitHandler = (data: SignInUpFormInputs) => {
         (async () => {
             try {
 
@@ -116,8 +128,39 @@ function Login() {
             }
 
         })();
+    };
+
+    const passwordResetHandler = (data: ForgotPasswordFormInputs) => {
+        (async () => {
+            try {
+                if (!executeRecaptcha) return;
+                if (passwordResetState === 'sent') return;
+                const recaptchaResponse = await fetch('/api/verify-recaptcha', {
+                    headers: {
+                        token: await executeRecaptcha()
+                    },
+                    method: 'post'
+                });
+                const recaptchaResponseObj = await recaptchaResponse.json();
+                if (!('score' in recaptchaResponseObj) || recaptchaResponseObj.score < 0.5) {
+                    setLoginError('You might be a bot! Reload and try again if you\'re not');
+                    return;
+                }
+
+                setPasswordResetState('loading');
+
+                await supabase.auth.api.resetPasswordForEmail(data.email, {
+                    redirectTo: '/login'
+                });
+                
+                setPasswordResetState('sent')
 
 
+            } catch (error) {
+                console.error(error)
+            }
+
+        })();
     };
 
     return (
@@ -130,17 +173,8 @@ function Login() {
             <Layout style={{ minHeight: "100vh", display: 'flex', backgroundColor: "#e9ecf2" }}>
                 <Container style={{ alignItems: 'center' }}>
 
-                    {/* <If value={completed}>
-                        <h1>Almost there.</h1>
-                        <h2>check your email to complete sign up. </h2>
-                    </If> */}
                     <h1 style={{ textAlign: 'center' }}>Sign in to continue to reauthor.</h1>
 
-
-
-                    {/* <Auth.UserContextProvider supabaseClient={supabase}>
-                            <Auth supabaseClient={supabase} />
-                    </Auth.UserContextProvider> */}
 
                     <div style={{ justifyContent: 'center', display: 'flex' }}>
 
@@ -150,9 +184,40 @@ function Login() {
                                 <h2>Almost there!</h2>
                                 <p>check your email to complete sign up.</p>
                             </If>
+
+                            <If value={formState === 'reset password'}>
+                                <h2 style={{ marginBottom: 0 }}>reset password</h2>
+                                <form onSubmit={forgotPasswordForm.handleSubmit(passwordResetHandler)} ref={formRef}>
+                                    <InputLabel>Email</InputLabel>
+                                    <input type='text' id='email' {...forgotPasswordForm.register('email', {
+                                        required: true,
+                                        pattern: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                                    })} {...useCustomInputProps(!resetPasswordEmailError)} />
+                                    <InputInvalidMessage isValid={!(resetPasswordEmailRequiredError)}>Please enter an email</InputInvalidMessage>
+                                    <InputInvalidMessage isValid={!(resetPasswordEmailPatternError)}>Email is invalid</InputInvalidMessage>
+
+
+                                    <If value={passwordResetState === 'sent'}>
+                                        <p>If that account exists, an email was sent with password reset instructions.</p>
+                                    </If>
+
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span style={{ width: '45%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                            <a {...useCustomButtonProps()} style={{ width: '100%', textAlign: 'center', fontWeight: 'bold' }} onClick={() => setFormState('sign in')}><p>cancel</p></a>
+                                        </span>
+                                        <span style={{ width: '45%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                            <input disabled={passwordResetState === 'sent'} {...useCustomButtonProps()} type='submit' style={{ width: '100%', textAlign: 'center', fontWeight: 'bold', backgroundColor: passwordResetState === 'sent' ? "rgba(0,255,0,0.4)" : "rgba(0,0,255,0.2)", transition: '500ms' }} value={passwordResetState === 'sent' ? 'sent  ✅' : 'send reset link'} />
+                                            <If value={passwordResetState === 'loading'}>
+                                                <span style={{ position: 'absolute' }}><SmallCircleProgress /></span>
+                                            </If>
+                                        </span>
+                                    </div>
+                                </form>
+                            </If>
+
                             <If value={formState === 'sign in'}>
 
-                                <form onSubmit={handleSubmit(submitHandler)} ref={ref}>
+                                <form onSubmit={handleSubmit(signInUpSubmitHandler)} ref={formRef}>
                                     <InputLabel>Email</InputLabel>
                                     <input type='text' id='usernameEmail' {...register('usernameOrEmail', {
                                         required: true,
@@ -173,13 +238,13 @@ function Login() {
                                     <InputInvalidMessage isValid={!(passwordPatternError)}>Password must be 8 characters or more, with at least one uppercase and lowercase letter, and number.</InputInvalidMessage>
                                     <InputInvalidMessage isValid={!(loginError)} style={{ textAlign: 'center' }}>{loginError}</InputInvalidMessage>
 
-                                    <a style={{ display: 'block', textAlign: 'right' }}>Forgot password?</a>
+                                    <a style={{ display: 'block', textAlign: 'right' }} onClick={() => setFormState('reset password')}>Forgot password?</a>
                                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <span style={{ width: '45%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                             <Button disabled={action === 'sign in' && loading} style={{ width: '100%', textAlign: 'center', fontWeight: 'bold' }} onClick={() => {
-                                                if (ref && ref.current) {
+                                                if (formRef && formRef.current) {
                                                     action = 'sign in';
-                                                    ref.current.requestSubmit()
+                                                    formRef.current.requestSubmit()
                                                 }
                                             }}><p>sign in</p></Button>
                                             <If value={action === 'sign in' && loading}>
@@ -189,9 +254,9 @@ function Login() {
                                         </span>
                                         <span style={{ width: '45%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                             <Button disabled={action === 'sign up' && loading} style={{ width: '100%', textAlign: 'center', fontWeight: 'bold', backgroundColor: "rgba(0,0,255,0.2)" }} onClick={() => {
-                                                if (ref && ref.current) {
+                                                if (formRef && formRef.current) {
                                                     action = 'sign up';
-                                                    ref.current.requestSubmit()
+                                                    formRef.current.requestSubmit()
                                                 }
                                             }}><p>sign up</p></Button>
                                             <If value={action === 'sign up' && loading}>

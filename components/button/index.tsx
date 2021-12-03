@@ -6,7 +6,7 @@ type ButtonProps = PropsWithChildren<HTMLProps<HTMLAnchorElement>>;
 
 export default function Button(props: ButtonProps) {
     return (
-        <a {...props} className={styles.button} style={{...props.style, color: 'inherit', ...props.style}}>
+        <a {...props} className={styles.button}>
             {props.children}
         </a>
     );
@@ -21,7 +21,7 @@ export function useCustomButtonProps () {
 export function LinkButton({ children, ...props }: PropsWithChildren<LinkProps>) {
     return (
         <Link {...props}>
-            <a className={styles.button} style={{color: 'inherit'}}>
+            <a className={styles.button}>
                 {children}
             </a>
         </Link>
@@ -30,7 +30,7 @@ export function LinkButton({ children, ...props }: PropsWithChildren<LinkProps>)
 
 export function TransparentButton(props: ButtonProps) {
     return (
-        <a {...props} className={styles.button} style={{...props.style, backgroundColor: 'transparent', border: '2px solid #000', color: 'inherit', ...props.style}}>
+        <a {...props} className={styles.button} style={{...props.style, backgroundColor: 'transparent', border: '2px solid #000', ...props.style}}>
             {props.children}
         </a>
     );
@@ -39,7 +39,7 @@ export function TransparentButton(props: ButtonProps) {
 
 export function IconButton (props: ButtonProps) {
     return (
-        <a {...props} className={`${styles.button} ${styles.iconButton}`} style={{...props.style, color: 'inherit', ...props.style}}>
+        <a {...props} className={`${styles.button} ${styles.iconButton}`}>
             {props.children}
         </a>
     );

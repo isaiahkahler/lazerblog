@@ -9,12 +9,10 @@
     transition: filter 200ms;
     -webkit-appearance: none;
     margin: 0.5rem 0;
-
-
-
     font-size: 1rem;
     font-family: inherit;
     min-height: 35px;
+    color: inherit;
 }
 
 .button:hover {
