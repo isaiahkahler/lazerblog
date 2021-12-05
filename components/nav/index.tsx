@@ -26,6 +26,7 @@ interface NavProps {
 export default function Nav(props: NavProps) {
     // const userAuth = useStore(state => state.userAuth);
     const user = useStore(state => state.user);
+    const blogs = user.blogs ? Object.values(user.blogs) : [];
     const router = useRouter();
     const [openDropdown, setOpenDropdown] = useState(false);
     // const [blogsDropdown, setBlogsDropdown] = useState<Blog[]>([]);
@@ -33,9 +34,9 @@ export default function Nav(props: NavProps) {
 
     // const blogAppear = (first: boolean) => {
     //     setTimeout(() => {
-    //         if(!user.blogs) return;
-    //         if(blogsDropdown.length + 1 !== user.blogs.length) {
-    //             setBlogsDropdown([...blogsDropdown, user.blogs[blogsDropdown.length + 1]]);
+    //         if(!blogs) return;
+    //         if(blogsDropdown.length + 1 !== blogs.length) {
+    //             setBlogsDropdown([...blogsDropdown, blogs[blogsDropdown.length + 1]]);
     //             blogAppear(false);
     //         }
     //     }, first ? 0 : 250)
@@ -43,7 +44,7 @@ export default function Nav(props: NavProps) {
 
     // const blogDisappear = (first: boolean) => {
     //     setTimeout(() => {
-    //         if(!user.blogs) return;
+    //         if(!blogs) return;
     //         if(blogsDropdown.length !== 0) {
     //             console.log('sliced', [...blogsDropdown.slice(0, blogsDropdown.length - 1)])
     //             setBlogsDropdown([...blogsDropdown.slice(0, blogsDropdown.length - 1)]);
@@ -75,10 +76,10 @@ export default function Nav(props: NavProps) {
                                     <div>@{user.data.username}</div>
                                 </div>
                             </DropdownItem>
-                            <If value={user.blogs && user.blogs.length > 1}>
+                            <If value={blogs && blogs.length > 1}>
                                 <DropdownItem leftIcon={<IconButton><BlogIcon size='30px' /></IconButton>} onClick={() => {
                                     // setOpenDropdown(false);
-                                    // console.log('blogs length', user.blogs?.length);
+                                    // console.log('blogs length', blogs?.length);
                                     if (blogsDropdown) {
                                         setBlogsDropdown(false)
                                     } else {
@@ -89,7 +90,7 @@ export default function Nav(props: NavProps) {
                                 </DropdownItem>
                             </If>
                             <If value={blogsDropdown}>
-                                {user.blogs && user.blogs.filter(blog => !blog.blog_slug.includes('users/')).map(blog => <div key={blog.blog_slug} style={{marginLeft: '1rem'}}>
+                                {blogs && blogs.filter(blog => !blog.blog_slug.includes('users/')).map(blog => <div key={blog.blog_slug} style={{marginLeft: '1rem'}}>
                                     <DropdownItem href={`/${blog.blog_slug}`} leftIcon={<IconButton><BlogIcon size='30px' /></IconButton>} onClick={() => {
                                         router.push('/' + blog.blog_slug);
                                         setOpenDropdown(false);

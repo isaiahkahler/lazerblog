@@ -14,7 +14,7 @@ export default function EditBlogWrapper() {
   const setUser = useStore(state => state.setUser);
   const redirect = useRedirect();
   const currentUser = user.data;
-  const blogs = user.blogs;
+  const blogs = user.blogs ? Object.values(user.blogs) : null;
   const blogData = currentUser && blog && blogs && blogs.find(_blog => _blog.blog_slug === blog);
   
   const handleSubmit = ({ name, description, slug }: BlogFormOutputs) => {
@@ -52,11 +52,12 @@ export default function EditBlogWrapper() {
             if (setBlogResponse.error) throw setBlogResponse.error;
 
             // code review: this line
-            const blogsWithoutThisOne = user.blogs ? user.blogs.filter(_blog => _blog.blog_slug !== blog) : [];
+            const blogsWithoutThisOne = user.blogs ? Object.values(user.blogs).filter(_blog => _blog.blog_slug !== blog) : [];
+            const blogsWithoutThisOneObject = blogsWithoutThisOne.reduce((previous, current) => ({...previous, [current.blog_slug]: current}), {});
 
             setUser({
               auth: user.auth,
-              blogs: [...blogsWithoutThisOne, newBlogData],
+              blogs: blogsWithoutThisOneObject,
               data: user.data
             })
 

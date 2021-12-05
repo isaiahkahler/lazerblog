@@ -13,7 +13,7 @@ export default function CreateProfileWrapper() {
   const redirect = useRedirect();
   const user = useStore(state => state.user);
   const setUser = useStore(state => state.setUser);
-  const blogs = user.blogs;
+  const blogs = user.blogs ? Object.values(user.blogs) : null;
   const currentUser = user.data;
   const userBlog = blogs && currentUser ? blogs.find(blog => blog.blog_slug === `users/${currentUser.username}`) : null;
 
@@ -52,10 +52,11 @@ export default function CreateProfileWrapper() {
                   if(insertBlogResponse.error) throw insertBlogResponse.error;
 
                   const blogsWithoutUserBlog = blogs ? blogs.filter(blog => !blog.blog_slug.includes('users/')) : [];
+                  const blogsWithoutUserBlogObject = blogsWithoutUserBlog.reduce((previous, current) => ({...previous, [current.blog_slug]: current}), {});
                   
                   setUser({
                     auth: user.auth,
-                    blogs: [...blogsWithoutUserBlog, newUserBlog],
+                    blogs: {...blogsWithoutUserBlogObject, [newUserBlog.blog_slug]: newUserBlog},
                     data: newUserData
                   })
 

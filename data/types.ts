@@ -18,10 +18,12 @@ export interface PostWithInfo {
     blog?: Blog | null
 }
 
+export type BlogObject = { [blogSlug: string]: Blog };
+
 export interface UserStore {
     data: User | null,
     auth: Session['user'] | null,
-    blogs: Blog[] | null
+    blogs: BlogObject | null
 }
 
 // export interface User extends UserBase {

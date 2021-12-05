@@ -1,15 +1,16 @@
 import create from 'zustand'
 // import firebase from '../firebase'
 import { Session, User as SupabaseUser } from '@supabase/gotrue-js';
-import { Blog, Post, User, UserStore } from './types'
+import { Blog, Post, User, UserStore, BlogObject } from './types'
 import { supabase } from '@supabase';
+
 
 interface Store {
   // userAuth: firebase.User | null,
   user: {
     auth: Session['user'] | null,
     data: User | null,
-    blogs: Blog[] | null,
+    blogs: BlogObject | null,
   },
   userLoading: boolean,
   // setUserAuth: (userAuth: firebase.User | null) => void,
@@ -42,7 +43,7 @@ export const useStore = create<Store>((set, get) => ({
   },
   userLoading: true,
   // setUserAuth: (userAuth: firebase.User | null) => set(state => ({ userAuth: userAuth })),
-  setUser: (_user: UserStore) => set(state => ({ user: {auth: _user.auth, data: _user.data, blogs: _user.blogs} })),
+  setUser: (_user: UserStore) => set(state => ({ user: { auth: _user.auth, data: _user.data, blogs: _user.blogs } })),
   setUserLoading: (userLoading: boolean) => set(state => ({ userLoading: userLoading })),
   cache: {
     blogs: {},
@@ -70,12 +71,12 @@ export const useStore = create<Store>((set, get) => ({
     const state = get();
     if (!state.user.data) return;
 
-    if(isUserFollow){
-      const followResponse = await supabase.from('user_follows').upsert({follower_user_id: state.user.data.user_id, following_user_id: userIDorBlog});
-      if(followResponse.error) throw followResponse.error;
+    if (isUserFollow) {
+      const followResponse = await supabase.from('user_follows').upsert({ follower_user_id: state.user.data.user_id, following_user_id: userIDorBlog });
+      if (followResponse.error) throw followResponse.error;
     } else {
-      const followResponse = await supabase.from('blog_follows').upsert({follower_user_id: state.user.data.user_id, blog_slug: userIDorBlog});
-      if(followResponse.error) throw followResponse.error;
+      const followResponse = await supabase.from('blog_follows').upsert({ follower_user_id: state.user.data.user_id, blog_slug: userIDorBlog });
+      if (followResponse.error) throw followResponse.error;
     }
 
   },
@@ -85,12 +86,12 @@ export const useStore = create<Store>((set, get) => ({
     if (!state.user.data) return;
     // if (!(state.user.data.following.includes(usernameOrBlog))) return;
 
-    if(isUserFollow) {
-      const unfollowResponse = await supabase.from('user_follows').delete().match({follower_user_id: state.user.data.user_id, following_user_id: userIDorBlog});
-      if(unfollowResponse.error) throw unfollowResponse.error;
+    if (isUserFollow) {
+      const unfollowResponse = await supabase.from('user_follows').delete().match({ follower_user_id: state.user.data.user_id, following_user_id: userIDorBlog });
+      if (unfollowResponse.error) throw unfollowResponse.error;
     } else {
-      const unfollowResponse = await supabase.from('blog_follows').delete().match({follower_user_id: state.user.data.user_id, blog_slug: userIDorBlog});
-      if(unfollowResponse.error) throw unfollowResponse.error;
+      const unfollowResponse = await supabase.from('blog_follows').delete().match({ follower_user_id: state.user.data.user_id, blog_slug: userIDorBlog });
+      if (unfollowResponse.error) throw unfollowResponse.error;
     }
   },
   getPost: async (postSlug: string) => {
@@ -98,7 +99,7 @@ export const useStore = create<Store>((set, get) => ({
     if (state.cache.posts[postSlug]) return state.cache.posts[postSlug];
 
     const postResponse = await supabase.from('posts').select('*').eq('post_slug', postSlug);
-    if(postResponse.error) throw postResponse.error;
+    if (postResponse.error) throw postResponse.error;
     const post = postResponse.data[0] as Post | null;
     if (post) {
       state.addPostToCache(post);
@@ -129,7 +130,7 @@ export const useStore = create<Store>((set, get) => ({
     const state = get();
     if (state.cache.users[user_id]) return state.cache.users[user_id];
     const userResponse = await supabase.from('users').select('*').eq('user_id', user_id);
-    if(userResponse.error) throw userResponse.error;
+    if (userResponse.error) throw userResponse.error;
     const userData = userResponse.data[0] as User | null;
     if (userData) {
       const user = userData;
