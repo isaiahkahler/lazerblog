@@ -86,7 +86,7 @@ function Login() {
                         email: data.usernameOrEmail,
                         password: data.password
                     }, {
-                        redirectTo: '/login'
+                        redirectTo: 'https://www.reauthor.xyz/login'
                     });
                     if (signInResponse.error) {
                         console.error(signInResponse.error)
@@ -100,7 +100,7 @@ function Login() {
                         email: data.usernameOrEmail,
                         password: data.password
                     }, {
-                        redirectTo: '/login'
+                        redirectTo: 'https://www.reauthor.xyz/login'
                     });
                     if (signUpResponse.error) {
                         console.error(signUpResponse.error);
