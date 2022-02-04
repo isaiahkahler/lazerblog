@@ -26,7 +26,7 @@ export default function PostPreview({ post, blog, user }: PostPreviewProps) {
                     In <Link href={`/${post.blog}`}><a style={{ color: "#000" }}>{blog && blog.name}</a></Link>
                 </div>
             </If>
-            <If value={!blog && user}>
+            <If value={(!blog && user) || blog?.blog_slug.includes(user?.username ? user.username : '-1')}>
                 <div className={styles.previewSource}>
                     From <Link href={`/users/${user?.username}`}><a style={{ color: "#000" }}> {user && user.name}</a></Link>
                 </div>
