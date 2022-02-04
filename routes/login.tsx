@@ -19,19 +19,18 @@ const RECAPTCHA_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_KEY;
 
 interface SignInUpFormInputs {
     usernameOrEmail: string,
-    password: string
+    password: string,
+    isSignIn: boolean
 }
 
 interface ForgotPasswordFormInputs {
     email: string
 }
 
-let action: 'sign in' | 'sign up' | null = null;
-
 
 function Login() {
 
-    const { register, formState: { errors }, handleSubmit } = useForm<SignInUpFormInputs>();
+    const { register, formState: { errors }, handleSubmit, setValue, getValues } = useForm<SignInUpFormInputs>();
     const forgotPasswordForm = useForm<ForgotPasswordFormInputs>();
 
     const { executeRecaptcha } = useGoogleReCaptcha();
@@ -60,9 +59,12 @@ function Login() {
     const formRef = useRef<HTMLFormElement>(null);
 
     const signInUpSubmitHandler = (data: SignInUpFormInputs) => {
+
+        // console.log('is sign in?', data.isSignIn);
+        // return;
+
         (async () => {
             try {
-                if (!action) return;
                 if (!executeRecaptcha) return;
                 const recaptchaResponse = await fetch('/api/verify-recaptcha', {
                     headers: {
@@ -78,7 +80,7 @@ function Login() {
                 }
 
                 setLoading(true);
-                if (action === 'sign in') {
+                if (data.isSignIn) {
                     // is an email
                     const signInResponse = await supabase.auth.signIn({
                         email: data.usernameOrEmail,
@@ -109,7 +111,6 @@ function Login() {
                     setFormState('confirmation');
                 }
 
-                action = null;
                 // setLoading(false);
 
                 // activate the password form 
@@ -230,27 +231,34 @@ function Login() {
                                     <InputInvalidMessage isValid={!(loginError)} style={{ textAlign: 'center' }}>{loginError}</InputInvalidMessage>
 
                                     <a style={{ display: 'block', textAlign: 'right' }} onClick={() => setFormState('reset password')}>Forgot password?</a>
+                                    
+                                    {/* invisible checkbox for isSignIn value */}
+                                    <input type='checkbox' {...register('isSignIn')} style={{display: 'none'}} />
+                                    
+                                    
                                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <span style={{ width: '45%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                            <Button disabled={action === 'sign in' && loading} style={{ width: '100%', textAlign: 'center', fontWeight: 'bold' }} onClick={() => {
+                                            {/* <Button disabled={action === 'sign in' && loading} style={{ width: '100%', textAlign: 'center', fontWeight: 'bold' }} onClick={() => {
                                                 if (formRef && formRef.current) {
                                                     action = 'sign in';
-                                                    formRef.current.requestSubmit()
+                                                    formRef.current.submit()
                                                 }
-                                            }}><p>sign in</p></Button>
-                                            <If value={action === 'sign in' && loading}>
-                                                <span style={{ position: 'absolute' }}><SmallCircleProgress /></span>
+                                            }}><p>sign in</p></Button> */}
 
+                                            <input type='submit' disabled={getValues('isSignIn') && loading} style={{fontWeight: 'bold', width: '100%'}} value="sign in" {...useCustomButtonProps()} onClick={() => {setValue('isSignIn', true)}} />
+                                            <If value={getValues('isSignIn') && loading}>
+                                                <span style={{ position: 'absolute' }}><SmallCircleProgress /></span>
                                             </If>
                                         </span>
                                         <span style={{ width: '45%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                            <Button disabled={action === 'sign up' && loading} style={{ width: '100%', textAlign: 'center', fontWeight: 'bold', backgroundColor: "rgba(0,0,255,0.2)" }} onClick={() => {
+                                            {/* <Button disabled={action === 'sign up' && loading} style={{ width: '100%', textAlign: 'center', fontWeight: 'bold', backgroundColor: "rgba(0,0,255,0.2)" }} onClick={() => {
                                                 if (formRef && formRef.current) {
                                                     action = 'sign up';
-                                                    formRef.current.requestSubmit()
+                                                    formRef.current.submit()
                                                 }
-                                            }}><p>sign up</p></Button>
-                                            <If value={action === 'sign up' && loading}>
+                                            }}><p>sign up</p></Button> */}
+                                            <input type='submit' value="sign up" disabled={!getValues('isSignIn') && loading} style={{ width: '100%', textAlign: 'center', fontWeight: 'bold', backgroundColor: "rgba(0,0,255,0.2)" }}  {...useCustomButtonProps()} onClick={() => {setValue('isSignIn', false)}} />
+                                            <If value={!getValues('isSignIn') && loading}>
                                                 <span style={{ position: 'absolute' }}><SmallCircleProgress /></span>
                                             </If>
                                         </span>
