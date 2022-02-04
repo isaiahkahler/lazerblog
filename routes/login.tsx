@@ -142,7 +142,7 @@ function Login() {
                 setPasswordResetState('loading');
 
                 await supabase.auth.api.resetPasswordForEmail(data.email, {
-                    redirectTo: '/login'
+                    redirectTo: 'https://www.reauthor.xyz/login'
                 });
 
                 setPasswordResetState('sent')
@@ -275,7 +275,7 @@ function Login() {
                                         supabase.auth.signIn({
                                             provider: 'google'
                                         }, {
-                                            redirectTo: '/login'
+                                            redirectTo: 'https://www.reauthor.xyz/login'
                                         });
                                     }}>
                                         <span style={{ marginRight: '1rem', padding: 0 }}>
