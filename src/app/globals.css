@@ -1,0 +1,102 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+a {
+  color: #0000ee;
+  /* code review: use the right transition property to control hover & active brightness instead of hex values */
+  transition: filter 200ms;
+  text-decoration: none;
+}
+a:visited {
+  color:#0000ee;
+}
+/* a:hover {
+  color:#6969ff;
+}    */
+a:active {
+  /* color:#0000ee; */
+  filter: brightness(1.1);
+}  
+* {
+  box-sizing: border-box;
+}
+
+@media screen and (max-width: 768px) {
+  h1 {
+      font-size: 27px;
+  }
+  h2 {
+    font-size: 20px;
+  }
+}
+
+/* code review: can this be put somewhere else? styles for editor used in /new-post */
+
+
+.ProseMirror {
+  outline: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid #000;
+}
+.ProseMirror > * + * {
+  margin-top: 0.75em;
+  /* height: 200px; */
+}
+.ProseMirror ul, .ProseMirror ol {
+  padding: 0 1rem;
+}
+.ProseMirror h1, .ProseMirror h2, .ProseMirror h3, .ProseMirror h4, .ProseMirror h5, .ProseMirror h6 {
+  /* line-height: 1.1; */
+}
+.ProseMirror code {
+  background-color: #6161611a;
+  color: #616161;
+  padding: .1rem .3rem;
+  border-radius: .4rem;
+  font-size: 1.2rem;
+}
+.ProseMirror pre {
+  background: #0d0d0d;
+  color: #fff;
+  font-family: Consolas, Monaco, 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', monospace;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+}
+.ProseMirror pre code {
+  color: inherit;
+  padding: 0;
+  background: none;
+  font-size: 16px;
+}
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+}
+.ProseMirror blockquote {
+  padding-left: 1rem;
+  border-left: 2px solid rgba(13, 13, 13, 0.1);
+}
+.ProseMirror hr {
+  border: none;
+  border-top: 2px solid rgba(13, 13, 13, 0.1);
+  margin: 2rem 0;
+}
+
+.is-active {
+  background-color: #000 !important;
+  color: #fff
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: 'Start typing...';
+  float: left;
+  color: #ced4da;
+  pointer-events: none;
+  height: 0;
+}
