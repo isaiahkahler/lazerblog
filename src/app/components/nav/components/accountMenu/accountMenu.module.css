@@ -1,0 +1,9 @@
+.horizontalButtonContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+.horizontalButtonContainer > span {
+  flex-grow: 1;
+}
