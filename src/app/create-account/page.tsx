@@ -1,12 +1,15 @@
 "use client";
 
 import { useStore } from "@/data/store";
+import { Database } from "@/types/database";
 import Button, { InputButton } from "@/ui/button";
 import Container from "@/ui/container";
+import { ErrorAlertUI, ErrorMessage } from "@/ui/error";
 import Input, { InputContainer, InputLabel, InputInvalidMessage } from "@/ui/input";
 import Layout from "@/ui/layout";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 type Inputs = {
@@ -14,12 +17,14 @@ type Inputs = {
   username: string,
 };
 
+let typingDelayTimeout: NodeJS.Timeout | null = null;
+
 export default function CreateAccount() {
   const session = useStore(state => state.session);
   const user = useStore(state => state.user);
   const router = useRouter();
-
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
+  const supabase = createClientComponentClient<Database>();
+  const addError = useStore(state => state.addError);
 
   // if user data is present, send back to home (account is created)
   useEffect(() => {
@@ -35,15 +40,73 @@ export default function CreateAccount() {
     }
   }, [router, session]);
 
-  const onSubmit: SubmitHandler<Inputs> = (values) => {
-    console.log('values:', values)
+  // create the new user 
+  const createNewUser = async (values: Inputs) => {
+    if(!session) return;
+    try {
+      const {data, error} = await supabase.from('users').insert({id: session.user.id, name: values.name, username: values.username});
+      if(error) throw error;
+    } catch (e: any) {
+      console.error('couldn\'t insert user ');
+      // setError(e);
+      addError(e)
+      console.error(e);
+    }
   };
 
-  const nameError = !!errors.name;
-  const usernameError = !!errors.username;
-  const hasErrors = nameError || usernameError;
+  return (
+    <Layout>
+      <Container>
+        <CreateAccountUI onSubmit={createNewUser} />
+      </Container>
+    </Layout>
+  );
+}
 
-  // errors
+interface CreateAccountUIProps {
+  onSubmit: (values: Inputs) => void
+}
+
+function CreateAccountUI(props: CreateAccountUIProps) {
+  const { onSubmit } = props;
+  const supabase = createClientComponentClient();
+
+  const { register, handleSubmit, formState: { errors } } = useForm<Inputs>();
+
+  const validateUsernameInput: (value: string) => Promise<string | true> = async (value: string) => {
+    if (typingDelayTimeout) {
+      clearTimeout(typingDelayTimeout);
+    }
+
+    return new Promise((resolve) => {
+      typingDelayTimeout = setTimeout(async () => {
+        try {
+          if (value) {
+            console.log(`checking if username ${value} is taken`);
+            const { data, error } = await supabase.from('users').select('username').eq('username', value);
+            if (error) throw error;
+            if (!data) {
+              resolve('An error occurred checking for that username. Try again in a moment.');
+              return;
+            };
+            // if we have a result, it's taken
+            if (data.length !== 0) {
+              resolve('The username is not available.');
+            } else {
+              resolve(true);
+            }
+          } else {
+            resolve(true);
+          }
+        } catch (error) {
+          console.error('An error occurred checking if username exists:')
+          console.error(error)
+          resolve('An error occurred checking for that username. Try again in a moment.');
+        }
+      }, 500);
+    })
+  }
+
 
   return (
     <Layout>
@@ -66,12 +129,12 @@ export default function CreateAccount() {
 
           <InputContainer >
             <Input id='username' placeholder=" " {...register("username", {
-              // required: {value: true, message: 'Please pick a username'},
-              // minLength: {value: 2, message: 'Username must be at least 2 characters'},
-              // maxLength: {value: 15, message: 'Username must be at most 15 characters'},
-              // pattern: {value: /^(\w){1,15}$/, message: 'Username must only contain letters, numbers, and underscores'},
               validate: {
-                required: v => !!v || 'Please pick a username$$'
+                required: v => !!v || 'Please pick a username',
+                minLength: v => (!!v && v.length >= 2) || 'Username must be at least 2 characters',
+                maxLength: v => (!!v && v.length <= 16) || 'Username must be at most 16 characters',
+                pattern: v => (!!v && /^(\w){1,15}$/.test(v)) || 'Username must consist of only letters, numbers, and underscores',
+                taken: v => validateUsernameInput(v),
               }
             })} />
             <InputLabel htmlFor="username">Username</InputLabel>

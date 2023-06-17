@@ -10,6 +10,7 @@ import If from "@/ui/if";
 import AccountMenu from "./components/accountMenu";
 import ClientBoundary from "@/ui/clientBoundary";
 import { useRouter } from "next/navigation";
+import { ErrorAlertUI } from "@/ui/error";
 
 export default function Nav(props: PropsWithChildren<HTMLProps<HTMLDivElement>>) {
   const { children, ...rest } = props;
@@ -18,6 +19,9 @@ export default function Nav(props: PropsWithChildren<HTMLProps<HTMLDivElement>>)
 
   const user = useStore(state => state.user);
   const session = useStore(state => state.session);
+
+  const errors = useStore(state => state.errors);
+  const removeErrorAtIndex = useStore(state => state.removeErrorAtIndex);
 
   const router = useRouter();
 
@@ -30,14 +34,6 @@ export default function Nav(props: PropsWithChildren<HTMLProps<HTMLDivElement>>)
     setIsSignUp(false);
     setOpenLoginModal(true);
   };
-
-  // redirect to account creation if not yet finished
-  useEffect(() => {
-    if (session && !user) {
-      console.log('REDIRECT!')
-      router.push('/create-account');
-    }
-  }, [router, session, user]);
 
   return (
     <>
@@ -64,6 +60,8 @@ export default function Nav(props: PropsWithChildren<HTMLProps<HTMLDivElement>>)
       <Modal open={openLoginModal && !session} onClose={() => setOpenLoginModal(false)} style={{ maxWidth: 'min(90vw, 400px)', width: '100%' }}>
         <Login signUp={isSignUp} />
       </Modal>
+
+      <ErrorAlertUI errors={errors} removeIndex={(index) => removeErrorAtIndex(index)} />
     </>
   );
 }

@@ -1,0 +1,18 @@
+.error {
+  color: #cc0f35;
+}
+
+.errorAlertUI {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.errorAlertUIClose {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  appearance: none;
+  border: none;
+  background: none;
+}

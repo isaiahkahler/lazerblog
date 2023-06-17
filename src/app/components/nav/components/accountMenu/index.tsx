@@ -2,9 +2,9 @@
 
 import { IconButton } from "@/ui/button";
 import Icon from "@mdi/react";
-import { mdiAccount, mdiAccountPlus, mdiChevronDown, mdiExitToApp, mdiLoginVariant } from "@mdi/js";
+import { mdiAccount, mdiAccountPlus, mdiChevronDown, mdiExitToApp, mdiHome, mdiLoginVariant, mdiPencilPlus, mdiPostOutline } from "@mdi/js";
 import If from "@/ui/if";
-import Dropdown, { DropdownItemSpan } from "@/ui/dropdown";
+import Dropdown, { DropdownItemLink, DropdownItemSpan } from "@/ui/dropdown";
 import { useState } from "react";
 import { useStore } from "@/data/store";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
@@ -19,6 +19,7 @@ export default function AccountMenu(props: AccountMenuProps) {
   const { onLogin, onSignUp } = props;
   const [openDropdown, setOpenDropdown] = useState(false);
   const session = useStore(state => state.session);
+  const user = useStore(state => state.user);
   const supabase = createClientComponentClient();
 
   const closeDropdown = () => setOpenDropdown(false);
@@ -46,6 +47,26 @@ export default function AccountMenu(props: AccountMenuProps) {
       </IconButton>
       <If value={openDropdown}>
         <Dropdown onClickAway={() => setOpenDropdown(false)}>
+
+          {/* if there user data, show a home button */}
+          <If value={user}>
+            <DropdownItemLink href='/feed' leftIcon={<Icon path={mdiHome} size={1} />}>Home</DropdownItemLink>
+          </If>
+
+          {/* if there user data, show a profile button */}
+          <If value={user}>
+            <DropdownItemLink href='/feed' leftIcon={<Icon path={mdiAccount} size={1} />}>Profile</DropdownItemLink>
+          </If>
+
+          {/* if there user data, show a blogs button */}
+          <If value={user}>
+            <DropdownItemSpan href='/feed' leftIcon={<Icon path={mdiPostOutline} size={1} />}>Blogs</DropdownItemSpan>
+          </If>
+
+          {/* if there user data, show a new post button */}
+          <If value={user}>
+            <DropdownItemSpan href='/feed' leftIcon={<Icon path={mdiPencilPlus} size={1} />}>Write something</DropdownItemSpan>
+          </If>
 
           {/* if there is a user session, show a sign out button */}
           <If value={session}>
