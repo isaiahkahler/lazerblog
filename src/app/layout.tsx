@@ -1,5 +1,5 @@
 import Modal from '@/ui/modal'
-import Nav from './components/nav'
+import Nav from './(components)/nav'
 import './globals.css'
 import LayoutClient from './layoutClient'
 

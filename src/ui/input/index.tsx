@@ -1,5 +1,5 @@
 import styles from './input.module.css'
-import { ForwardedRef, forwardRef, HTMLProps, PropsWithChildren, useId } from 'react';
+import { DetailedHTMLProps, ForwardedRef, forwardRef, HTMLAttributes, HTMLProps, PropsWithChildren, useId } from 'react';
 
 
 type CustomInputProps = { invalid?: boolean };
@@ -12,10 +12,10 @@ type CustomInputProps = { invalid?: boolean };
 //   );
 // }
 
-const Input = forwardRef<HTMLInputElement, HTMLProps<HTMLInputElement> & CustomInputProps>((props: HTMLProps<HTMLInputElement> & CustomInputProps, ref) => {
+const Input = forwardRef<HTMLInputElement, DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> & CustomInputProps>((props: DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> & CustomInputProps, ref) => {
   const { invalid, ...rest } = props;
 
-  return (<input ref={ref} type="text" {...rest} className={`${props.className ? props.className : ''} ${styles.input} ${invalid ? styles.invalid : ''}`} />);
+  return (<input ref={ref} type="text" {...rest} className={`${props.className ? props.className : ''} ${styles.input} ${invalid ? styles.invalid : ''}`} placeholder={rest.placeholder ? rest.placeholder : ' '} />);
 });
 Input.displayName = 'Input';
 export default Input;

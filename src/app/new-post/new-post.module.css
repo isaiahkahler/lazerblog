@@ -1,0 +1,30 @@
+.editorContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: 250ms;
+}
+
+.editorContainer > div {
+  flex-grow: 1;
+}
+
+.overlayContainer {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.08);
+  transform: background-color 200ms;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 95%;
+  height: 95%;
+  box-shadow: 0px 0px 10px 15px rgba(0,0,0,.08);
+  border-radius: 10px;
+}
+
+.editor {
+  width: 100%;
+}

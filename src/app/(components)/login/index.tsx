@@ -5,6 +5,7 @@ import { Auth } from '@supabase/auth-ui-react';
 import {
   // Import predefined theme
   ThemeSupa,
+  
 } from '@supabase/auth-ui-shared'
 import buttonStyles from '@/ui/button/button.module.css'
 import inputStyles from '@/ui/input/input.module.css'
@@ -13,22 +14,25 @@ import animations from '@/styles/animations.module.css'
 import Link from "next/link";
 
 interface LoginProps {
-  signUp?: boolean
+  signUp?: boolean,
+  hideTitle?: boolean,
+  extraAuthProps?: any
 }
 
 export default function Login(props: LoginProps) {
-  const {signUp} = props;
+  const { signUp, hideTitle, extraAuthProps } = props;
   const supabase = createClientComponentClient();
 
   return (
     <>
       <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-        {signUp ? <h2>Sign Up</h2> : <h2>Log In</h2>}
+        {!hideTitle && <>{signUp ? <h2>Sign Up</h2> : <h2>Log In</h2>}</>}
         <Auth
+          {...extraAuthProps}
           view={signUp ? "sign_up" : "sign_in"}
           supabaseClient={supabase}
           providers={['google', 'apple']}
-          
+
           appearance={{
             theme: ThemeSupa, extend: false, className: {
               button: `${buttonStyles.button} ${styles.button}`,
@@ -39,7 +43,7 @@ export default function Login(props: LoginProps) {
             }
           }}
         />
-        <footer style={{marginTop: '1rem', fontWeight: 'lighter'}}>By signing up you agree to Reauthor&apos;s <Link href='/tos'>terms of service</Link> and <Link href='privacy-policy'>privacy policy</Link>.</footer>
+        <footer style={{ marginTop: '1rem', fontWeight: 'lighter' }}>By signing up you agree to Reauthor&apos;s <Link href='/tos'>terms of service</Link> and <Link href='privacy-policy'>privacy policy</Link>.</footer>
       </div>
     </>
   );

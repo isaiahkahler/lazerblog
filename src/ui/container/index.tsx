@@ -4,8 +4,8 @@ import styles from './container.module.css'
 export default function Container(props: PropsWithChildren<HTMLProps<HTMLDivElement>>) {
   const { children, ...rest } = props;
   return (
-    <div {...rest} className={`${styles.container} ${rest.className ? rest.className : ''}`}>
-      <div className={styles.inner}>
+    <div className={styles.container}>
+      <div {...rest} className={`${styles.inner} ${rest.className ? rest.className : ''}`}>
         {children}
       </div>
     </div>

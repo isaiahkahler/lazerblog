@@ -1,19 +1,18 @@
 "use client";
 
 import Link, { LinkProps } from "next/link";
-import { HTMLProps, PropsWithChildren, useEffect, useRef } from "react";
+import { HTMLProps, PropsWithChildren, useCallback, useEffect, useRef } from "react";
 import styles from './dropdown.module.css'
 
 interface DropdownProps {
-  children?: React.ReactNode,
   onClickAway?: () => void,
 }
 
-export default function Dropdown({ children, onClickAway }: DropdownProps) {
-
+export default function Dropdown(props: DropdownProps & PropsWithChildren<HTMLProps<HTMLDivElement>>) {
+  const { onClickAway, children, ...rest } = props;
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  const handleClick = (event: MouseEvent) => {
+  const handleClick = useCallback((event: MouseEvent) => {
     if (!dropdownRef.current) return;
     if (dropdownRef.current.contains(event.target as (Node | null))) {
       // inside click
@@ -21,7 +20,7 @@ export default function Dropdown({ children, onClickAway }: DropdownProps) {
     }
     // outside click 
     onClickAway && onClickAway();
-  };
+  }, [onClickAway]);
 
   useEffect(() => {
     // add when mounted
@@ -30,11 +29,14 @@ export default function Dropdown({ children, onClickAway }: DropdownProps) {
     return () => {
       document.removeEventListener("mousedown", handleClick);
     };
-  }, []);
+  }, [handleClick]);
 
   return (
     <div ref={dropdownRef} className={styles.dropdown} id="dropdown">
+      <div  {...rest} className={`${styles.dropdownInner} ${rest.className ? rest.className : ''}`}>
+
       {children}
+      </div>
     </div>
   );
 }

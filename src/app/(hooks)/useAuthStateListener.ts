@@ -8,6 +8,7 @@ export default function useAuthStateListener() {
   const supabase = createClientComponentClient<Database>();
   const setSession = useStore(state => state.setSession);
   const setUser = useStore(state => state.setUser);
+  const setUserLoading = useStore(state => state.setUserLoading);
   const session = useStore(state => state.session);
   const router = useRouter();
 
@@ -15,20 +16,27 @@ export default function useAuthStateListener() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((response, session) => {
       console.log('auth state change', response)
       setSession(session)
+      if (response === 'SIGNED_OUT') {
+        setUser(null);
+      }
+      if(response === 'INITIAL_SESSION' && !session) {
+        setUser(null);
+        setUserLoading(false);
+      }
 
     })
 
     return () => subscription && subscription.unsubscribe();
-  }, [router, setSession, supabase.auth]);
+  }, [router, setSession, setUser, setUserLoading, supabase.auth]);
 
   useEffect(() => {
     if (!session) {
       setUser(null);
-      return () => {};
+      return () => { };
     };
     if (!session.user) {
       setUser(null);
-      return () => {};
+      return () => { };
     };
 
     // get the user data once, initially
@@ -37,11 +45,13 @@ export default function useAuthStateListener() {
       if (error) throw error;
       if (!data) return;
       if (data.length === 1) {
-        console.log('set data to:', data[0])
+        console.log('set data for user')
         setUser(data[0]);
+        setUserLoading(false);
       } else {
         console.log('set data to NULL')
         setUser(null);
+        setUserLoading(false);
       }
 
     })();
@@ -59,14 +69,15 @@ export default function useAuthStateListener() {
           filter: `id=eq.${session.user.id}`,
         },
         (payload) => {
-          console.log(`payload: ${JSON.stringify(payload)}`);
+          console.log('changes to user occurred')
+          // console.log(`payload: ${JSON.stringify(payload)}`);
           setUser(payload.new as any);
         }
       )
       .subscribe();
 
-      return () => channel.unsubscribe();
+    return () => channel.unsubscribe();
 
 
-  }, [session, setUser, supabase]);
+  }, [session, setUser, setUserLoading, supabase]);
 }

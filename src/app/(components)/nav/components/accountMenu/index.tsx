@@ -5,10 +5,11 @@ import Icon from "@mdi/react";
 import { mdiAccount, mdiAccountPlus, mdiChevronDown, mdiExitToApp, mdiHome, mdiLoginVariant, mdiPencilPlus, mdiPostOutline } from "@mdi/js";
 import If from "@/ui/if";
 import Dropdown, { DropdownItemLink, DropdownItemSpan } from "@/ui/dropdown";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useStore } from "@/data/store";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import styles from './accountMenu.module.css'
+import { Animations, useAnimationTransition } from "@/hooks/useAnimationTransition";
 
 interface AccountMenuProps {
   onLogin: () => void,
@@ -21,6 +22,12 @@ export default function AccountMenu(props: AccountMenuProps) {
   const session = useStore(state => state.session);
   const user = useStore(state => state.user);
   const supabase = createClientComponentClient();
+
+  const { showElement: showDropdown, transitionEntrance, transitionExit } = useAnimationTransition(openDropdown, {
+    entrance: { className: '0%', duration: 500 },
+    main: '0%',
+    exit: { className: '-100%', duration: 500 },
+  });
 
   const closeDropdown = () => setOpenDropdown(false);
 
@@ -41,31 +48,37 @@ export default function AccountMenu(props: AccountMenuProps) {
 
   return (
     <>
-      <IconButton onClick={() => setOpenDropdown(!openDropdown)}>
-        <Icon path={mdiAccount} color='rgba(0,0,0,.4)' size={1.2} />
+      <IconButton onClick={() => { setOpenDropdown(!openDropdown) }}>
+        <Icon path={mdiAccount} color='rgba(0,0,0,.4)' size={1} />
         <Icon path={mdiChevronDown} color='rgba(0,0,0,.4)' size={1} />
       </IconButton>
-      <If value={openDropdown}>
-        <Dropdown onClickAway={() => setOpenDropdown(false)}>
+      <If value={showDropdown}>
+        <Dropdown
+          onClickAway={() => setOpenDropdown(false)}
+          style={{
+            marginTop: transitionEntrance ? transitionEntrance : (transitionExit ? transitionExit : '-100%'),
+            transition: '500ms'
+          }}
+        >
 
           {/* if there user data, show a home button */}
           <If value={user}>
-            <DropdownItemLink href='/feed' leftIcon={<Icon path={mdiHome} size={1} />}>Home</DropdownItemLink>
+            <DropdownItemLink href='/' leftIcon={<Icon path={mdiHome} size={1} />}>Home</DropdownItemLink>
           </If>
 
           {/* if there user data, show a profile button */}
           <If value={user}>
-            <DropdownItemLink href='/feed' leftIcon={<Icon path={mdiAccount} size={1} />}>Profile</DropdownItemLink>
+            <DropdownItemLink href='/' leftIcon={<Icon path={mdiAccount} size={1} />}>Profile</DropdownItemLink>
           </If>
 
           {/* if there user data, show a blogs button */}
           <If value={user}>
-            <DropdownItemSpan href='/feed' leftIcon={<Icon path={mdiPostOutline} size={1} />}>Blogs</DropdownItemSpan>
+            <DropdownItemSpan href='/' leftIcon={<Icon path={mdiPostOutline} size={1} />}>Blogs</DropdownItemSpan>
           </If>
 
           {/* if there user data, show a new post button */}
           <If value={user}>
-            <DropdownItemSpan href='/feed' leftIcon={<Icon path={mdiPencilPlus} size={1} />}>Write something</DropdownItemSpan>
+            <DropdownItemLink href='/new-post' leftIcon={<Icon path={mdiPencilPlus} size={1} />}>Write something</DropdownItemLink>
           </If>
 
           {/* if there is a user session, show a sign out button */}
@@ -75,10 +88,10 @@ export default function AccountMenu(props: AccountMenuProps) {
 
           {/* if there is no user session, show log in and sign up buttons */}
           <If value={!session}>
-            <span className={styles.horizontalButtonContainer}>
-              <DropdownItemSpan leftIcon={<Icon path={mdiLoginVariant} size={1} />} onClick={handleLogIn}>Log In</DropdownItemSpan>
-              <DropdownItemSpan leftIcon={<Icon path={mdiAccountPlus} size={1} />} onClick={handleSignUp}>Sign Up</DropdownItemSpan>
-            </span>
+            <DropdownItemSpan leftIcon={<Icon path={mdiLoginVariant} size={1} />} onClick={handleLogIn}>Log In</DropdownItemSpan>
+            <DropdownItemSpan leftIcon={<Icon path={mdiAccountPlus} size={1} />} onClick={handleSignUp}>Sign Up</DropdownItemSpan>
+            {/* <span className={styles.horizontalButtonContainer}>
+            </span> */}
           </If>
         </Dropdown>
       </If>

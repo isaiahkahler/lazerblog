@@ -3,7 +3,16 @@
   position: absolute;
   margin-top: 10px;
   width: min(300px, 85vw);
-  transform: translateX(-90%);
+  /* transform: translateX(-90%); */
+  /* top: 100%; */
+  right: 0;
+  overflow: hidden;
+  z-index: 10;
+  max-height: 80vh;
+
+}
+
+.dropdownInner {
   background-color: #fff;
   border: 1px solid #474a4d;
   border-radius: 8px;
@@ -11,12 +20,11 @@
   overflow: hidden;
   transition: height 200ms ease;
   color: #000;
-  z-index: 10;
-  max-height: 80vh;
   overflow-y: scroll;
   display: flex;
   flex-direction: column;
   gap: .5rem;
+  transition: margin-top 250ms;
 }
 
 .menu {
@@ -31,7 +39,7 @@
   border-radius: .5rem;
   transition: background 200ms;
   padding: 0.5rem;
-  color: inherit;
+  color: #000;
   background-color: rgba(0,0,0,.08);
 }
 
@@ -50,8 +58,8 @@
 }
 
 .menu-item:hover {
-  background-color: #ccc;
-  color: inherit;
+  background-color: rgba(0,0,0,.2);
+  /* color: inherit; */
   /* color: #000 */
 }
 

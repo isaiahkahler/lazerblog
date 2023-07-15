@@ -9,21 +9,17 @@ import Login from "../login";
 import If from "@/ui/if";
 import AccountMenu from "./components/accountMenu";
 import ClientBoundary from "@/ui/clientBoundary";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useParams, useSearchParams } from "next/navigation";
 import { ErrorAlertUI } from "@/ui/error";
 
 export default function Nav(props: PropsWithChildren<HTMLProps<HTMLDivElement>>) {
   const { children, ...rest } = props;
   const [openLoginModal, setOpenLoginModal] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
-
-  const user = useStore(state => state.user);
   const session = useStore(state => state.session);
-
   const errors = useStore(state => state.errors);
   const removeErrorAtIndex = useStore(state => state.removeErrorAtIndex);
-
-  const router = useRouter();
+  const pathname = usePathname();
 
   const handleSignUp = () => {
     setIsSignUp(true);
@@ -45,7 +41,7 @@ export default function Nav(props: PropsWithChildren<HTMLProps<HTMLDivElement>>)
           <span className={styles.navRight}>
 
             {/* if there is no user session, show get started button */}
-            <If value={!session}>
+            <If value={!session && !pathname.includes('/login')}>
               <Button hasColor onClick={handleSignUp}><p>Get Started</p></Button>
             </If>
 

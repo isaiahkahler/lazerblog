@@ -7,3 +7,11 @@
 .horizontalButtonContainer > span {
   flex-grow: 1;
 }
+
+.expandedMenu {
+  margin-top: 0;
+}
+
+.collapsedMenu {
+  margin-top: -100%;
+}

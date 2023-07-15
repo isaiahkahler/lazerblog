@@ -10,6 +10,8 @@ interface GlobalState {
   setSession: (session: Session | null) => void,
   user: UserData | null
   setUser: (user: UserData | null) => void,
+  userLoading: boolean,
+  setUserLoading: (loading: boolean) => void,
   errors: any[],
   setErrors: (errors: any[]) => void,
   addError: (error: any) => void,
@@ -40,13 +42,15 @@ export const useStore = create<GlobalState>()(
     setSession: (_session) => set((state) => ({ session: _session })),
     user: null,
     setUser: (_user) => set((state) => ({ user: _user })),
+    userLoading: true,
+    setUserLoading: (loading) => set((state) => ({ userLoading: loading })),
     errors: [],
     setErrors: (_errors) => set((state) => ({ errors: _errors })),
     addError: (_error) => set((state) => ({ errors: [...state.errors, _error] })),
-    removeErrorAtIndex: (index) => set((state) =>{
+    removeErrorAtIndex: (index) => set((state) => {
       const oldErrors = [...state.errors];
       oldErrors.splice(index, 1)
-      return {errors: oldErrors};
+      return { errors: oldErrors };
     })
   })
 )

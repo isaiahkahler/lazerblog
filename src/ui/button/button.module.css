@@ -12,6 +12,7 @@
   color: inherit;
   font-weight: bold;
   height: max-content;
+  display: inline-block;
 }
 
 .hasColor {
@@ -42,7 +43,7 @@
 
 .button>* {
   margin: 0.5rem 0;
-  user-select: none;
+  user-select: none; 
 }
 
 .iconButton {
