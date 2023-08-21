@@ -14,14 +14,32 @@ export const ACTION_COLOR_DARK = '#a5a5a5';
 
 export const REM = 16;
 
+export const BORDER_RADIUS = (REM / 16) * 10
+
 
 // React Variables
-export const ScreenSizeContext = createContext<[string, number] | undefined>(undefined);
+export const ScreenSizeContext = createContext<{size: ScreenSizeTypes, sizeNumber: ScreenSizeNumbers} | undefined>(undefined);
+export type ScreenSizeTypes = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+export type ScreenSizeNumbers = 1 | 2 | 3 | 4 | 5;
+export const ScreenSizeToNumber: {[screenSize in ScreenSizeTypes]: ScreenSizeNumbers} = {
+  xs: 1,
+  sm: 2,
+  md: 3,
+  lg: 4,
+  xl: 5
+}
+export const ScreenNumberToSize: {[screenSizeNumber in ScreenSizeNumbers]: ScreenSizeTypes} = {
+  1: 'xs',
+  2: 'sm',
+  3: 'md',
+  4: 'lg',
+  5: 'xl'
+}
 
 
 const tintColorDark = '#fff';
 
-export default {
+export const APP_COLORS =  {
   light: {
     text: TEXT_COLOR,
     background: BACKGROUND_COLOR,

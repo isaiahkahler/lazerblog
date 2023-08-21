@@ -1,4 +1,4 @@
-import { createContext, PropsWithChildren, useState } from "react";
+import { createContext, forwardRef, PropsWithChildren, useState } from "react";
 import { Pressable, PressableProps, StyleProp, StyleSheet, Text, ViewStyle } from "react-native";
 import { ACCENT_COLOR, ACCENT_COLOR_LIGHT, ACCENT_TEXT_COLOR, ACTION_COLOR, ACTION_COLOR_LIGHT, BACKGROUND_COLOR, REM, TEXT_COLOR } from "../data/constants";
 import { TextContext } from "../data/contexts";
@@ -7,11 +7,8 @@ import P from "./text";
 
 type ButtonProps = { hasColor?: boolean };
 
+const Button = forwardRef<any, ButtonProps & PropsWithChildren<PressableProps>>((props, ref) => {
 
-
-
-
-export default function Button(props: ButtonProps & PropsWithChildren<PressableProps>) {
   const { hasColor, children, ...rest } = props;
   const [pressState, setPressState] = useState(false);
   // const accentStyles = {backgroundColor: pressState ? ACCENT_COLOR_LIGHT : ACCENT_COLOR };
@@ -24,7 +21,7 @@ export default function Button(props: ButtonProps & PropsWithChildren<PressableP
   return (
     <Pressable
       {...rest}
-      style={[styles.button, hasColor && styles.hasColor, pressState && styles.active]}
+      style={[styles.button, hasColor && styles.hasColor, pressState && styles.active, rest.style]}
       onPressIn={() => setPressState(true)}
       onPressOut={() => setPressState(false)}
     >
@@ -35,7 +32,10 @@ export default function Button(props: ButtonProps & PropsWithChildren<PressableP
       </TextContext.Provider>
     </Pressable>
   );
-}
+
+});
+
+export default Button;
 
 const styles = StyleSheet.create({
   button: {
@@ -52,6 +52,6 @@ const styles = StyleSheet.create({
     color: ACCENT_TEXT_COLOR
   },
   active: {
-    
+
   }
 })
