@@ -114,7 +114,7 @@ function RootLayoutNav() {
       <ScreenSizeContext.Provider value={{size: screenSize, sizeNumber: screenSizeNumber}}>
         <Stack>
           <Stack.Screen name="(pages)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+          {/* <Stack.Screen name="modal" options={{ presentation: 'modal' }} /> */}
           <Stack.Screen name="login" options={{ presentation: 'modal', headerShown: false }} />
         </Stack>
       </ScreenSizeContext.Provider>

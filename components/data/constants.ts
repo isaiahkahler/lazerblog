@@ -17,6 +17,9 @@ export const REM = 16;
 export const BORDER_RADIUS = (REM / 16) * 10
 
 
+export const ScaleContext = createContext<number>(16);
+
+
 // React Variables
 export const ScreenSizeContext = createContext<{size: ScreenSizeTypes, sizeNumber: ScreenSizeNumbers} | undefined>(undefined);
 export type ScreenSizeTypes = 'xs' | 'sm' | 'md' | 'lg' | 'xl';

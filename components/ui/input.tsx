@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: (REM/16)*10,
     paddingVertical: (REM/16)*5,
     fontSize: (REM/16)*18,
-    outlineColor: ACCENT_COLOR_DARK,
+    // outlineColor: ACCENT_COLOR_DARK,
     // outline: '1'
     // outline: `1 solid ${'#FF0000'}`
   },

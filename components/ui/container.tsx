@@ -6,7 +6,7 @@ import {useWindowDimensions} from 'react-native';
 
 export default function Container({ children, ...rest }: ViewProps) {
   const screenSizeContext = useContext(ScreenSizeContext);
-  const screenSizeNumber = screenSizeContext && screenSizeContext[1] || 2; //default to MD
+  const screenSizeNumber = screenSizeContext && screenSizeContext.sizeNumber || 2; //default to MD
   const screenWidth = useWindowDimensions().width;
 
   return (

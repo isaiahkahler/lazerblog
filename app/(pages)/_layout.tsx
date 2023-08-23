@@ -1,16 +1,27 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Link } from 'expo-router';
 import { Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
-import { APP_COLORS, REM, ScreenNumberToSize, ScreenSizeContext, ScreenSizeToNumber } from '../../components/data/constants';
+import { APP_COLORS, REM, ScaleContext, ScreenNumberToSize, ScreenSizeContext, ScreenSizeToNumber } from '../../components/data/constants';
 import { useStore } from '../../components/data/store';
 import Button from '../../components/ui/button';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { useContext } from 'react';
+import { createBottomTabNavigator, BottomTabScreenProps, BottomTabNavigationOptions } from '@react-navigation/bottom-tabs'
+// import { ScreenComponentType } from '@react-navigation/core'
+// import { ScreenComponentType } from '@react-navigation/bottom-tabs'
+// import { ScreenComponentType } from '@react-navigation/elements'
+// import { ScreenComponentType } from '@react-navigation/native'
+// import { ScreenComponentType } from '@react-navigation/native-stack'
+// import { ScreenComponentType } from '@react-navigation/routers'
+import { ReactNode, useContext } from 'react';
 import { H1, H2 } from '../../components/ui/text';
+import Home from './index'
+import Profile from './profile'
+import Search from './search'
 
-
-const Tabs = createBottomTabNavigator();
+import createNavigatorFactory from '../../components/ui/nav'
+// const Tabs = createBottomTabNavigator();
+const Tabs = createNavigatorFactory();
 // import Colors from '../../constants/Colors';
+
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -20,6 +31,15 @@ function TabBarIcon(props: {
   color: string;
 }) {
   return <MaterialCommunityIcons size={28} {...props} />;
+}
+
+
+interface NavMenuItem {
+  name: string,
+  icon: () => ReactNode,
+  component: () => ReactNode,
+  options: BottomTabNavigationOptions
+
 }
 
 export default function TabLayout() {
@@ -34,80 +54,124 @@ export default function TabLayout() {
   </View>);
 
 
-  const isLargeDisplay = screenSizeContext && screenSizeContext.sizeNumber >= ScreenSizeToNumber['lg'];
+
+  // const navMenuItems: NavMenuItem[] = [
+  //   {
+  //     name: "Home",
+  //     icon: () => <MaterialCommunityIcons name='home' size={2 * REM} />,
+  //     component: Home,
+  //     options: {
+  //       tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+  //     }
+  //   },
+  //   {
+  //     name: "Search",
+  //     icon: () => <MaterialCommunityIcons name='magnify' size={2 * REM} />,
+  //     component: Search,
+  //     options: {
+  //       tabBarIcon: ({ color }) => <TabBarIcon name="magnify" color={color} />,
+  //     }
+  //   },
+  //   {
+  //     name: "Profile",
+  //     icon: () => <MaterialCommunityIcons name='account-circle' size={2 * REM} />,
+  //     component: Search,
+  //     options: {
+  //       tabBarButton: profileButton
+  //     }
+  //   },
+  // ]
 
   return (
-    <View style={styles.root}>
-      {isLargeDisplay && <View style={styles.largeNav}>
-        <Button style={styles.navButton}>
-          <View style={styles.navButtonView}>
-            <MaterialCommunityIcons name='home' size={2 * REM} />
-            <H2>Home</H2>
-          </View>
-        </Button>
-        <Button style={styles.navButton}>
-          <View style={styles.navButtonView}>
-            <MaterialCommunityIcons name='magnify' size={2 * REM} />
-            <H2>Search</H2>
-          </View>
-        </Button>
-        <Button style={styles.navButton}>
-          <View style={styles.navButtonView}>
-            <MaterialCommunityIcons name='account-circle' size={2 * REM} />
-            <H2>Profile</H2>
-          </View>
-        </Button>
-        <Button style={styles.navButton}>
-          <View style={styles.navButtonView}>
-            <MaterialCommunityIcons name='cog' size={2 * REM} />
-            <H2>Settings</H2>
-          </View>
-        </Button>
-      </View>}
-      <View style={{maxWidth: isLargeDisplay ? 42.5 * REM + 15.5 * REM : undefined, flex: 1}}>
+    <Tabs.Navigator tabBarStyle={{}} contentStyle={{}} >
+      <Tabs.Screen
+        name='home'
+        component={Home}
+        options={{
+          icon: (props) => <MaterialCommunityIcons name='home' size={28} {...props} />
+        }}
+      />
+      <Tabs.Screen
+        name='search'
+        component={Search}
+        options={{
+          icon: (props) => <MaterialCommunityIcons name='magnify' size={28} {...props} />
+        }}
+      />
+      <Tabs.Screen
+        name={'profile'}
+        component={Profile} options={{
+          icon: (props) => <MaterialCommunityIcons name={user ? 'account-circle' : 'arrow-right-circle'} size={28} {...props} />,
+          children: user ? undefined : (props) => <ScaleContext.Provider value={0.9 * REM}><Button hasColor><Text>Sign Up</Text></Button></ScaleContext.Provider>,
+          link: user ? undefined : '/login',
+          title: user ? undefined : 'sign up' 
+        }}
+      />
+      {user && <>
+        <Tabs.Screen
+          name='settings'
+          component={() => <Text>settings</Text>}
+          options={{
+            icon: (props) => <MaterialCommunityIcons name='cog' size={28} {...props} />
+          }}
+        />
+      </>}
+    </Tabs.Navigator>
 
-      <Tabs.Navigator
-        screenOptions={{
-          // 👉 show vertical navigation if the screen is wide!
-          tabBarStyle: {
-            display: isLargeDisplay ? 'none' : undefined,
-          },
-          tabBarActiveTintColor: APP_COLORS[colorScheme ?? 'light'].tint,
-          tabBarShowLabel: false,
-          headerShown: false,
-        }}>
-        <Tabs.Screen
-          name="index"
-          component={() => <Text>home tab</Text>}
-          options={{
-            // title: 'Tab One',
-            tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
-            headerShown: false,
-          }}
-        />
-        <Tabs.Screen
-          name="search"
-          component={() => <Text>search tab</Text>}
-          options={{
-            // title: 'Tab Two',
-            tabBarIcon: ({ color }) => <TabBarIcon name="magnify" color={color} />,
-          }}
-        />
-        <Tabs.Screen
-          component={() => <Text>profile tab</Text>}
-          name="profile"
-          options={{
-            tabBarButton: profileButton
-            // tabBarIcon: () => <View style={{flex:}}></View>
+    // <View style={styles.root}>
+    // {/* <View style={{ maxWidth: isLargeDisplay ? 42.5 * REM + 15.5 * REM : undefined, flex: 1 }}> */}
 
-          }}
-        />
-        {/* <Tabs.Screen options={{}} /> */}
-      </Tabs.Navigator>
-      </View>
-    </View>
+    // <Tabs.Navigator
+    //   screenOptions={{
+    //     // 👉 show vertical navigation if the screen is wide!
+    //     tabBarStyle: {
+    //       display: isLargeDisplay ? 'none' : undefined,
+    //     },
+    //     tabBarActiveTintColor: APP_COLORS[colorScheme ?? 'light'].tint,
+    //     tabBarShowLabel: false,
+    //     headerShown: false,
+
+    //   }}
+    //   tabBar={isLargeDisplay ? () => <LargeDisplayNav navMenuItems={navMenuItems} /> : undefined}
+
+    // >
+
+    //   {navMenuItems.map((item) => <Tabs.Screen
+    //     name={item.name}
+    //     component={item.component}
+    //     options={{
+    //       ...item.options,
+
+    //     }}
+    //     key={item.name}
+
+    //   />)}
+
+    // </Tabs.Navigator>
+    // </View>
+    // </View>
   );
 }
+
+// function LargeDisplayNav({navMenuItems}: {navMenuItems: NavMenuItem[]}) {
+//   return (
+//     <View style={styles.largeNav}>
+//       {navMenuItems.map((item) => {
+
+//         const Icon = item.options?.tabBarIcon || ((_: any) => <></>);
+
+//         return (
+//           <Button style={styles.navButton} key={item.name}>
+//             <View style={styles.navButtonView}>
+//               {Icon({ color: "#ff0000", focused: false, size: 28 })}
+//               <H2>{item.name}</H2>
+//             </View>
+//           </Button>
+//         )
+//       })}
+//     </View>
+//   );
+// }
 
 
 const styles = StyleSheet.create({
@@ -124,7 +188,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: REM / 2,
     display: 'flex',
     // justifyContent: 'center'
-    paddingTop: 200
+    paddingTop: 200,
+    // alignSelf: 'flex-start',
+
+    // flexBasis: 1
+    order: -1
   },
   navButton: {
     alignSelf: 'flex-start'
