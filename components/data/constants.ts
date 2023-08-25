@@ -14,7 +14,9 @@ export const ACTION_COLOR_DARK = '#a5a5a5';
 
 export const REM = 16;
 
-export const BORDER_RADIUS = (REM / 16) * 10
+export const BORDER_RADIUS = (REM / 16) * 10;
+
+export const OVERLAY_COLOR = 'rgba(0,0,0,0.2)'
 
 
 export const ScaleContext = createContext<number>(16);

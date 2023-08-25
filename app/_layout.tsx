@@ -4,12 +4,15 @@ import 'react-native-url-polyfill/auto';
 import { createClient } from '@supabase/supabase-js';
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
-import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Platform, useColorScheme } from 'react-native';
 import { useStore } from '../components/data/store';
 import { ScreenSizeContext } from '../components/data/constants';
 import '@expo/match-media'
 import { useMediaQuery } from "react-responsive";
+// import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
+
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -48,7 +51,6 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
-
 const reauthorTheme = {
   ...DefaultTheme,
   dark: false,
@@ -60,10 +62,29 @@ const reauthorTheme = {
     border: 'rgb(216, 216, 216)',
     notification: 'rgb(255, 59, 48)',
   },
-}
+};
 
 
-const supabase = createClient(process.env.EXPO_PUBLIC_SUPABASE_URL!, process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!);
+const ExpoSecureStoreAdapter = {
+  getItem: (key: string) => {
+    return SecureStore.getItemAsync(key)
+  },
+  setItem: (key: string, value: string) => {
+    SecureStore.setItemAsync(key, value)
+  },
+  removeItem: (key: string) => {
+    SecureStore.deleteItemAsync(key)
+  },
+};
+
+const supabase = createClient(process.env.EXPO_PUBLIC_SUPABASE_URL!, process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!, {
+  auth: {
+    storage: Platform.OS === 'web' ? undefined : ExpoSecureStoreAdapter,
+    persistSession: true, 
+    autoRefreshToken: true,
+    detectSessionInUrl: false,
+  }
+});
 
 
 
@@ -81,7 +102,6 @@ function RootLayoutNav() {
   const isLG = useMediaQuery({ query: '(max-width: 1199px)' }); // 992 - 1199 lg
   const screenSize = isXS ? 'xs' : (isSM ? 'sm' : (isMD ? 'md' : (isLG ? 'lg' : 'xl'))) // 1200+ xl
   const screenSizeNumber = isXS ? 1 : (isSM ? 2 : (isMD ? 3 : (isLG ? 4 : 5)))
-
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -102,20 +122,19 @@ function RootLayoutNav() {
     return () => subscription.unsubscribe()
   }, []);
 
-  useEffect(() => {
-    console.log('session is', session)
-  }, [session]);
+  // useEffect(() => {
+  //   console.log('session is', session)
+  // }, [session]);
 
 
   setSession(null);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : reauthorTheme}>
-      <ScreenSizeContext.Provider value={{size: screenSize, sizeNumber: screenSizeNumber}}>
+      <ScreenSizeContext.Provider value={{ size: screenSize, sizeNumber: screenSizeNumber }}>
         <Stack>
           <Stack.Screen name="(pages)" options={{ headerShown: false }} />
-          {/* <Stack.Screen name="modal" options={{ presentation: 'modal' }} /> */}
-          <Stack.Screen name="login" options={{ presentation: 'modal', headerShown: false }} />
+          <Stack.Screen name="login" options={{ headerShown: false, presentation: Platform.OS === 'web' ? 'containedTransparentModal' : 'modal' }} />
         </Stack>
       </ScreenSizeContext.Provider>
     </ThemeProvider>

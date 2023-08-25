@@ -43,17 +43,7 @@ interface NavMenuItem {
 }
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
   const user = useStore(state => state.user);
-  const screenSizeContext = useContext(ScreenSizeContext);
-
-  const profileButton = user ? undefined : () => (<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <Link href='/login' asChild>
-      <Button hasColor>Sign Up</Button>
-    </Link>
-  </View>);
-
-
 
   // const navMenuItems: NavMenuItem[] = [
   //   {
