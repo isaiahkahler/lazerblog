@@ -1,0 +1,1084 @@
+{
+  "countryCodeDefs": {
+    "AF": {
+      "name": "Afghanistan",
+      "three_digit_code": "AFG",
+      "calling_code": 93
+    },
+    "AL": {
+      "name": "Albania",
+      "three_digit_code": "ALB",
+      "calling_code": 355
+    },
+    "DZ": {
+      "name": "Algeria",
+      "three_digit_code": "DZA",
+      "calling_code": 213
+    },
+    "AS": {
+      "name": "American Samoa",
+      "three_digit_code": "ASM",
+      "calling_code": 1
+    },
+    "AD": {
+      "name": "Andorra",
+      "three_digit_code": "AND",
+      "calling_code": 376
+    },
+    "AO": {
+      "name": "Angola",
+      "three_digit_code": "AGO",
+      "calling_code": 244
+    },
+    "AI": {
+      "name": "Anguilla",
+      "three_digit_code": "AIA",
+      "calling_code": 1
+    },
+    "AG": {
+      "name": "Antigua and Barbuda",
+      "three_digit_code": "ATG",
+      "calling_code": 1
+    },
+    "AR": {
+      "name": "Argentina",
+      "three_digit_code": "ARG",
+      "calling_code": 54
+    },
+    "AM": {
+      "name": "Armenia",
+      "three_digit_code": "ARM",
+      "calling_code": 374
+    },
+    "AW": {
+      "name": "Aruba",
+      "three_digit_code": "ABW",
+      "calling_code": 297
+    },
+    "AU": {
+      "name": "Australia",
+      "three_digit_code": "AUS",
+      "calling_code": 61
+    },
+    "AT": {
+      "name": "Austria",
+      "three_digit_code": "AUT",
+      "calling_code": 43
+    },
+    "AZ": {
+      "name": "Azerbaijan",
+      "three_digit_code": "AZE",
+      "calling_code": 994
+    },
+    "BS": {
+      "name": "Bahamas",
+      "three_digit_code": "BHS",
+      "calling_code": 1
+    },
+    "BH": {
+      "name": "Bahrain",
+      "three_digit_code": "BHR",
+      "calling_code": 973
+    },
+    "BD": {
+      "name": "Bangladesh",
+      "three_digit_code": "BGD",
+      "calling_code": 880
+    },
+    "BB": {
+      "name": "Barbados",
+      "three_digit_code": "BRB",
+      "calling_code": 1
+    },
+    "BY": {
+      "name": "Belarus",
+      "three_digit_code": "BLR",
+      "calling_code": 375
+    },
+    "BE": {
+      "name": "Belgium",
+      "three_digit_code": "BEL",
+      "calling_code": 32
+    },
+    "BZ": {
+      "name": "Belize",
+      "three_digit_code": "BLZ",
+      "calling_code": 501
+    },
+    "BJ": {
+      "name": "Benin",
+      "three_digit_code": "BEN",
+      "calling_code": 229
+    },
+    "BM": {
+      "name": "Bermuda",
+      "three_digit_code": "BMU",
+      "calling_code": 1
+    },
+    "BT": {
+      "name": "Bhutan",
+      "three_digit_code": "BTN",
+      "calling_code": 975
+    },
+    "BO": {
+      "name": "Bolivia",
+      "three_digit_code": "BOL",
+      "calling_code": 591
+    },
+    "BA": {
+      "name": "Bosnia and Herzegovina",
+      "three_digit_code": "BIH",
+      "calling_code": 387
+    },
+    "BW": {
+      "name": "Botswana",
+      "three_digit_code": "BWA",
+      "calling_code": 267
+    },
+    "BR": {
+      "name": "Brazil",
+      "three_digit_code": "BRA",
+      "calling_code": 55
+    },
+    "BN": {
+      "name": "Brunei Darussalam",
+      "three_digit_code": "BRN",
+      "calling_code": 673
+    },
+    "BG": {
+      "name": "Bulgaria",
+      "three_digit_code": "BGR",
+      "calling_code": 359
+    },
+    "BF": {
+      "name": "Burkina Faso",
+      "three_digit_code": "BFA",
+      "calling_code": 226
+    },
+    "BI": {
+      "name": "Burundi",
+      "three_digit_code": "BDI",
+      "calling_code": 257
+    },
+    "KH": {
+      "name": "Cambodia",
+      "three_digit_code": "KHM",
+      "calling_code": 855
+    },
+    "CM": {
+      "name": "Cameroon",
+      "three_digit_code": "CMR",
+      "calling_code": 237
+    },
+    "CA": {
+      "name": "Canada",
+      "three_digit_code": "CAN",
+      "calling_code": 1
+    },
+    "CV": {
+      "name": "Cape Verde",
+      "three_digit_code": "CPV",
+      "calling_code": 238
+    },
+    "KY": {
+      "name": "Cayman Islands",
+      "three_digit_code": "CYM",
+      "calling_code": 1
+    },
+    "CF": {
+      "name": "Central African Republic",
+      "three_digit_code": "CAF",
+      "calling_code": 236
+    },
+    "TD": {
+      "name": "Chad",
+      "three_digit_code": "TCD",
+      "calling_code": 235
+    },
+    "CL": {
+      "name": "Chile",
+      "three_digit_code": "CHL",
+      "calling_code": 56
+    },
+    "CN": {
+      "name": "China",
+      "three_digit_code": "CHN",
+      "calling_code": 86
+    },
+    "CX": {
+      "name": "Christmas Island",
+      "three_digit_code": "CXR",
+      "calling_code": 61
+    },
+    "CC": {
+      "name": "Cocos (Keeling) Islands",
+      "three_digit_code": "CCK",
+      "calling_code": 61
+    },
+    "CO": {
+      "name": "Colombia",
+      "three_digit_code": "COL",
+      "calling_code": 57
+    },
+    "KM": {
+      "name": "Comoros",
+      "three_digit_code": "COM",
+      "calling_code": 269
+    },
+    "CG": {
+      "name": "Congo (Brazzaville)",
+      "three_digit_code": "COG",
+      "calling_code": 242
+    },
+    "CK": {
+      "name": "Cook Islands",
+      "three_digit_code": "COK",
+      "calling_code": 682
+    },
+    "CR": {
+      "name": "Costa Rica",
+      "three_digit_code": "CRI",
+      "calling_code": 506
+    },
+    "CU": {
+      "name": "Cuba",
+      "three_digit_code": "CUB",
+      "calling_code": 53
+    },
+    "CY": {
+      "name": "Cyprus",
+      "three_digit_code": "CYP",
+      "calling_code": 357
+    },
+    "CZ": {
+      "name": "Czech Republic",
+      "three_digit_code": "CZE",
+      "calling_code": 420
+    },
+    "DK": {
+      "name": "Denmark",
+      "three_digit_code": "DNK",
+      "calling_code": 45
+    },
+    "DJ": {
+      "name": "Djibouti",
+      "three_digit_code": "DJI",
+      "calling_code": 253
+    },
+    "DM": {
+      "name": "Dominica",
+      "three_digit_code": "DMA",
+      "calling_code": 1
+    },
+    "DO": {
+      "name": "Dominican Republic",
+      "three_digit_code": "DOM",
+      "calling_code": 1
+    },
+    "EC": {
+      "name": "Ecuador",
+      "three_digit_code": "ECU",
+      "calling_code": 593
+    },
+    "EG": {
+      "name": "Egypt",
+      "three_digit_code": "EGY",
+      "calling_code": 20
+    },
+    "SV": {
+      "name": "El Salvador",
+      "three_digit_code": "SLV",
+      "calling_code": 503
+    },
+    "GQ": {
+      "name": "Equatorial Guinea",
+      "three_digit_code": "GNQ",
+      "calling_code": 240
+    },
+    "ER": {
+      "name": "Eritrea",
+      "three_digit_code": "ERI",
+      "calling_code": 291
+    },
+    "EE": {
+      "name": "Estonia",
+      "three_digit_code": "EST",
+      "calling_code": 372
+    },
+    "ET": {
+      "name": "Ethiopia",
+      "three_digit_code": "ETH",
+      "calling_code": 251
+    },
+    "FK": {
+      "name": "Falkland Islands (Malvinas)",
+      "three_digit_code": "FLK",
+      "calling_code": 500
+    },
+    "FO": {
+      "name": "Faroe Islands",
+      "three_digit_code": "FRO",
+      "calling_code": 298
+    },
+    "FJ": {
+      "name": "Fiji",
+      "three_digit_code": "FJI",
+      "calling_code": 679
+    },
+    "FI": {
+      "name": "Finland",
+      "three_digit_code": "FIN",
+      "calling_code": 358
+    },
+    "FR": {
+      "name": "France",
+      "three_digit_code": "FRA",
+      "calling_code": 33
+    },
+    "GF": {
+      "name": "French Guiana",
+      "three_digit_code": "GUF",
+      "calling_code": 594
+    },
+    "PF": {
+      "name": "French Polynesia",
+      "three_digit_code": "PYF",
+      "calling_code": 689
+    },
+    "GA": {
+      "name": "Gabon",
+      "three_digit_code": "GAB",
+      "calling_code": 241
+    },
+    "GM": {
+      "name": "Gambia",
+      "three_digit_code": "GMB",
+      "calling_code": 220
+    },
+    "GE": {
+      "name": "Georgia",
+      "three_digit_code": "GEO",
+      "calling_code": 995
+    },
+    "DE": {
+      "name": "Germany",
+      "three_digit_code": "DEU",
+      "calling_code": 49
+    },
+    "GH": {
+      "name": "Ghana",
+      "three_digit_code": "GHA",
+      "calling_code": 233
+    },
+    "GI": {
+      "name": "Gibraltar",
+      "three_digit_code": "GIB",
+      "calling_code": 350
+    },
+    "GR": {
+      "name": "Greece",
+      "three_digit_code": "GRC",
+      "calling_code": 30
+    },
+    "GL": {
+      "name": "Greenland",
+      "three_digit_code": "GRL",
+      "calling_code": 299
+    },
+    "GD": {
+      "name": "Grenada",
+      "three_digit_code": "GRD",
+      "calling_code": 1
+    },
+    "GP": {
+      "name": "Guadeloupe",
+      "three_digit_code": "GLP",
+      "calling_code": 590
+    },
+    "GU": {
+      "name": "Guam",
+      "three_digit_code": "GUM",
+      "calling_code": 1
+    },
+    "GT": {
+      "name": "Guatemala",
+      "three_digit_code": "GTM",
+      "calling_code": 502
+    },
+    "GN": {
+      "name": "Guinea",
+      "three_digit_code": "GIN",
+      "calling_code": 224
+    },
+    "GW": {
+      "name": "Guinea-Bissau",
+      "three_digit_code": "GNB",
+      "calling_code": 245
+    },
+    "GY": {
+      "name": "Guyana",
+      "three_digit_code": "GUY",
+      "calling_code": 592
+    },
+    "HT": {
+      "name": "Haiti",
+      "three_digit_code": "HTI",
+      "calling_code": 509
+    },
+    "VA": {
+      "name": "Holy See (Vatican City State)",
+      "three_digit_code": "VAT",
+      "calling_code": 379
+    },
+    "HN": {
+      "name": "Honduras",
+      "three_digit_code": "HND",
+      "calling_code": 504
+    },
+    "HU": {
+      "name": "Hungary",
+      "three_digit_code": "HUN",
+      "calling_code": 36
+    },
+    "IS": {
+      "name": "Iceland",
+      "three_digit_code": "ISL",
+      "calling_code": 354
+    },
+    "IN": {
+      "name": "India",
+      "three_digit_code": "IND",
+      "calling_code": 91
+    },
+    "ID": {
+      "name": "Indonesia",
+      "three_digit_code": "IDN",
+      "calling_code": 62
+    },
+    "IR": {
+      "name": "Iran, Islamic Republic of",
+      "three_digit_code": "IRN",
+      "calling_code": 98
+    },
+    "IQ": {
+      "name": "Iraq",
+      "three_digit_code": "IRQ",
+      "calling_code": 964
+    },
+    "IE": {
+      "name": "Ireland",
+      "three_digit_code": "IRL",
+      "calling_code": 353
+    },
+    "IL": {
+      "name": "Israel",
+      "three_digit_code": "ISR",
+      "calling_code": 972
+    },
+    "IT": {
+      "name": "Italy",
+      "three_digit_code": "ITA",
+      "calling_code": 39
+    },
+    "JM": {
+      "name": "Jamaica",
+      "three_digit_code": "JAM",
+      "calling_code": 1
+    },
+    "JP": {
+      "name": "Japan",
+      "three_digit_code": "JPN",
+      "calling_code": 81
+    },
+    "JO": {
+      "name": "Jordan",
+      "three_digit_code": "JOR",
+      "calling_code": 962
+    },
+    "KZ": {
+      "name": "Kazakhstan",
+      "three_digit_code": "KAZ",
+      "calling_code": 7
+    },
+    "KE": {
+      "name": "Kenya",
+      "three_digit_code": "KEN",
+      "calling_code": 254
+    },
+    "KI": {
+      "name": "Kiribati",
+      "three_digit_code": "KIR",
+      "calling_code": 686
+    },
+    "KW": {
+      "name": "Kuwait",
+      "three_digit_code": "KWT",
+      "calling_code": 965
+    },
+    "KG": {
+      "name": "Kyrgyzstan",
+      "three_digit_code": "KGZ",
+      "calling_code": 996
+    },
+    "LV": {
+      "name": "Latvia",
+      "three_digit_code": "LVA",
+      "calling_code": 371
+    },
+    "LB": {
+      "name": "Lebanon",
+      "three_digit_code": "LBN",
+      "calling_code": 961
+    },
+    "LS": {
+      "name": "Lesotho",
+      "three_digit_code": "LSO",
+      "calling_code": 266
+    },
+    "LR": {
+      "name": "Liberia",
+      "three_digit_code": "LBR",
+      "calling_code": 231
+    },
+    "LY": {
+      "name": "Libya",
+      "three_digit_code": "LBY",
+      "calling_code": 218
+    },
+    "LI": {
+      "name": "Liechtenstein",
+      "three_digit_code": "LIE",
+      "calling_code": 423
+    },
+    "LT": {
+      "name": "Lithuania",
+      "three_digit_code": "LTU",
+      "calling_code": 370
+    },
+    "LU": {
+      "name": "Luxembourg",
+      "three_digit_code": "LUX",
+      "calling_code": 352
+    },
+    "MK": {
+      "name": "Macedonia, Republic of",
+      "three_digit_code": "MKD",
+      "calling_code": 389
+    },
+    "MG": {
+      "name": "Madagascar",
+      "three_digit_code": "MDG",
+      "calling_code": 261
+    },
+    "MW": {
+      "name": "Malawi",
+      "three_digit_code": "MWI",
+      "calling_code": 265
+    },
+    "MY": {
+      "name": "Malaysia",
+      "three_digit_code": "MYS",
+      "calling_code": 60
+    },
+    "MV": {
+      "name": "Maldives",
+      "three_digit_code": "MDV",
+      "calling_code": 960
+    },
+    "ML": {
+      "name": "Mali",
+      "three_digit_code": "MLI",
+      "calling_code": 223
+    },
+    "MT": {
+      "name": "Malta",
+      "three_digit_code": "MLT",
+      "calling_code": 356
+    },
+    "MH": {
+      "name": "Marshall Islands",
+      "three_digit_code": "MHL",
+      "calling_code": 692
+    },
+    "MQ": {
+      "name": "Martinique",
+      "three_digit_code": "MTQ",
+      "calling_code": 596
+    },
+    "MR": {
+      "name": "Mauritania",
+      "three_digit_code": "MRT",
+      "calling_code": 222
+    },
+    "MU": {
+      "name": "Mauritius",
+      "three_digit_code": "MUS",
+      "calling_code": 230
+    },
+    "YT": {
+      "name": "Mayotte",
+      "three_digit_code": "MYT",
+      "calling_code": 262
+    },
+    "MX": {
+      "name": "Mexico",
+      "three_digit_code": "MEX",
+      "calling_code": 52
+    },
+    "FM": {
+      "name": "Micronesia, Federated States of",
+      "three_digit_code": "FSM",
+      "calling_code": 691
+    },
+    "MD": {
+      "name": "Moldova",
+      "three_digit_code": "MDA",
+      "calling_code": 373
+    },
+    "MC": {
+      "name": "Monaco",
+      "three_digit_code": "MCO",
+      "calling_code": 377
+    },
+    "MN": {
+      "name": "Mongolia",
+      "three_digit_code": "MNG",
+      "calling_code": 976
+    },
+    "ME": {
+      "name": "Montenegro",
+      "three_digit_code": "MNE",
+      "calling_code": 382
+    },
+    "MS": {
+      "name": "Montserrat",
+      "three_digit_code": "MSR",
+      "calling_code": 1
+    },
+    "MZ": {
+      "name": "Mozambique",
+      "three_digit_code": "MOZ",
+      "calling_code": 258
+    },
+    "MM": {
+      "name": "Myanmar",
+      "three_digit_code": "MMR",
+      "calling_code": 95
+    },
+    "NA": {
+      "name": "Namibia",
+      "three_digit_code": "NAM",
+      "calling_code": 264
+    },
+    "NR": {
+      "name": "Nauru",
+      "three_digit_code": "NRU",
+      "calling_code": 674
+    },
+    "NP": {
+      "name": "Nepal",
+      "three_digit_code": "NPL",
+      "calling_code": 977
+    },
+    "NL": {
+      "name": "Netherlands",
+      "three_digit_code": "NLD",
+      "calling_code": 31
+    },
+    "AN": {
+      "name": "Netherlands Antilles",
+      "three_digit_code": "ANT",
+      "calling_code": 599
+    },
+    "NC": {
+      "name": "New Caledonia",
+      "three_digit_code": "NCL",
+      "calling_code": 687
+    },
+    "NZ": {
+      "name": "New Zealand",
+      "three_digit_code": "NZL",
+      "calling_code": 64
+    },
+    "NI": {
+      "name": "Nicaragua",
+      "three_digit_code": "NIC",
+      "calling_code": 505
+    },
+    "NE": {
+      "name": "Niger",
+      "three_digit_code": "NER",
+      "calling_code": 227
+    },
+    "NG": {
+      "name": "Nigeria",
+      "three_digit_code": "NGA",
+      "calling_code": 234
+    },
+    "NU": {
+      "name": "Niue",
+      "three_digit_code": "NIU",
+      "calling_code": 683
+    },
+    "NF": {
+      "name": "Norfolk Island",
+      "three_digit_code": "NFK",
+      "calling_code": 672
+    },
+    "MP": {
+      "name": "Northern Mariana Islands",
+      "three_digit_code": "MNP",
+      "calling_code": 1
+    },
+    "NO": {
+      "name": "Norway",
+      "three_digit_code": "NOR",
+      "calling_code": 47
+    },
+    "OM": {
+      "name": "Oman",
+      "three_digit_code": "OMN",
+      "calling_code": 968
+    },
+    "PK": {
+      "name": "Pakistan",
+      "three_digit_code": "PAK",
+      "calling_code": 92
+    },
+    "PW": {
+      "name": "Palau",
+      "three_digit_code": "PLW",
+      "calling_code": 680
+    },
+    "PA": {
+      "name": "Panama",
+      "three_digit_code": "PAN",
+      "calling_code": 507
+    },
+    "PG": {
+      "name": "Papua New Guinea",
+      "three_digit_code": "PNG",
+      "calling_code": 675
+    },
+    "PY": {
+      "name": "Paraguay",
+      "three_digit_code": "PRY",
+      "calling_code": 595
+    },
+    "PE": {
+      "name": "Peru",
+      "three_digit_code": "PER",
+      "calling_code": 51
+    },
+    "PH": {
+      "name": "Philippines",
+      "three_digit_code": "PHL",
+      "calling_code": 63
+    },
+    "PN": {
+      "name": "Pitcairn",
+      "three_digit_code": "PCN",
+      "calling_code": 870
+    },
+    "PL": {
+      "name": "Poland",
+      "three_digit_code": "POL",
+      "calling_code": 48
+    },
+    "PT": {
+      "name": "Portugal",
+      "three_digit_code": "PRT",
+      "calling_code": 351
+    },
+    "PR": {
+      "name": "Puerto Rico",
+      "three_digit_code": "PRI",
+      "calling_code": 1
+    },
+    "QA": {
+      "name": "Qatar",
+      "three_digit_code": "QAT",
+      "calling_code": 974
+    },
+    "RO": {
+      "name": "Romania",
+      "three_digit_code": "ROU",
+      "calling_code": 40
+    },
+    "RU": {
+      "name": "Russian Federation",
+      "three_digit_code": "RUS",
+      "calling_code": 7
+    },
+    "RW": {
+      "name": "Rwanda",
+      "three_digit_code": "RWA",
+      "calling_code": 250
+    },
+    "KN": {
+      "name": "Saint Kitts and Nevis",
+      "three_digit_code": "KNA",
+      "calling_code": 1
+    },
+    "LC": {
+      "name": "Saint Lucia",
+      "three_digit_code": "LCA",
+      "calling_code": 1
+    },
+    "PM": {
+      "name": "Saint Pierre and Miquelon",
+      "three_digit_code": "SPM",
+      "calling_code": 508
+    },
+    "WS": {
+      "name": "Samoa",
+      "three_digit_code": "WSM",
+      "calling_code": 685
+    },
+    "SM": {
+      "name": "San Marino",
+      "three_digit_code": "SMR",
+      "calling_code": 378
+    },
+    "SA": {
+      "name": "Saudi Arabia",
+      "three_digit_code": "SAU",
+      "calling_code": 966
+    },
+    "SN": {
+      "name": "Senegal",
+      "three_digit_code": "SEN",
+      "calling_code": 221
+    },
+    "RS": {
+      "name": "Serbia",
+      "three_digit_code": "SRB",
+      "calling_code": 381
+    },
+    "SC": {
+      "name": "Seychelles",
+      "three_digit_code": "SYC",
+      "calling_code": 248
+    },
+    "SL": {
+      "name": "Sierra Leone",
+      "three_digit_code": "SLE",
+      "calling_code": 232
+    },
+    "SG": {
+      "name": "Singapore",
+      "three_digit_code": "SGP",
+      "calling_code": 65
+    },
+    "SK": {
+      "name": "Slovakia",
+      "three_digit_code": "SVK",
+      "calling_code": 421
+    },
+    "SI": {
+      "name": "Slovenia",
+      "three_digit_code": "SVN",
+      "calling_code": 386
+    },
+    "SB": {
+      "name": "Solomon Islands",
+      "three_digit_code": "SLB",
+      "calling_code": 677
+    },
+    "SO": {
+      "name": "Somalia",
+      "three_digit_code": "SOM",
+      "calling_code": 252
+    },
+    "ZA": {
+      "name": "South Africa",
+      "three_digit_code": "ZAF",
+      "calling_code": 27
+    },
+    "ES": {
+      "name": "Spain",
+      "three_digit_code": "ESP",
+      "calling_code": 34
+    },
+    "LK": {
+      "name": "Sri Lanka",
+      "three_digit_code": "LKA",
+      "calling_code": 94
+    },
+    "SD": {
+      "name": "Sudan",
+      "three_digit_code": "SDN",
+      "calling_code": 249
+    },
+    "SR": {
+      "name": "Suriname",
+      "three_digit_code": "SUR",
+      "calling_code": 597
+    },
+    "SJ": {
+      "name": "Svalbard and Jan Mayen Islands",
+      "three_digit_code": "SJM",
+      "calling_code": 47
+    },
+    "SZ": {
+      "name": "Swaziland",
+      "three_digit_code": "SWZ",
+      "calling_code": 268
+    },
+    "SE": {
+      "name": "Sweden",
+      "three_digit_code": "SWE",
+      "calling_code": 46
+    },
+    "CH": {
+      "name": "Switzerland",
+      "three_digit_code": "CHE",
+      "calling_code": 41
+    },
+    "SY": {
+      "name": "Syrian Arab Republic (Syria)",
+      "three_digit_code": "SYR",
+      "calling_code": 963
+    },
+    "TW": {
+      "name": "Taiwan, Republic of China",
+      "three_digit_code": "TWN",
+      "calling_code": 886
+    },
+    "TJ": {
+      "name": "Tajikistan",
+      "three_digit_code": "TJK",
+      "calling_code": 992
+    },
+    "TZ": {
+      "name": "Tanzania, United Republic of",
+      "three_digit_code": "TZA",
+      "calling_code": 255
+    },
+    "TH": {
+      "name": "Thailand",
+      "three_digit_code": "THA",
+      "calling_code": 66
+    },
+    "TL": {
+      "name": "Timor-Leste",
+      "three_digit_code": "TLS",
+      "calling_code": 670
+    },
+    "TG": {
+      "name": "Togo",
+      "three_digit_code": "TGO",
+      "calling_code": 228
+    },
+    "TK": {
+      "name": "Tokelau",
+      "three_digit_code": "TKL",
+      "calling_code": 690
+    },
+    "TO": {
+      "name": "Tonga",
+      "three_digit_code": "TON",
+      "calling_code": 676
+    },
+    "TT": {
+      "name": "Trinidad and Tobago",
+      "three_digit_code": "TTO",
+      "calling_code": 1
+    },
+    "TN": {
+      "name": "Tunisia",
+      "three_digit_code": "TUN",
+      "calling_code": 216
+    },
+    "TR": {
+      "name": "Turkey",
+      "three_digit_code": "TUR",
+      "calling_code": 90
+    },
+    "TM": {
+      "name": "Turkmenistan",
+      "three_digit_code": "TKM",
+      "calling_code": 993
+    },
+    "TC": {
+      "name": "Turks and Caicos Islands",
+      "three_digit_code": "TCA",
+      "calling_code": 1
+    },
+    "TV": {
+      "name": "Tuvalu",
+      "three_digit_code": "TUV",
+      "calling_code": 688
+    },
+    "UG": {
+      "name": "Uganda",
+      "three_digit_code": "UGA",
+      "calling_code": 256
+    },
+    "UA": {
+      "name": "Ukraine",
+      "three_digit_code": "UKR",
+      "calling_code": 380
+    },
+    "AE": {
+      "name": "United Arab Emirates",
+      "three_digit_code": "ARE",
+      "calling_code": 971
+    },
+    "GB": {
+      "name": "United Kingdom",
+      "three_digit_code": "GBR",
+      "calling_code": 44
+    },
+    "US": {
+      "name": "United States of America",
+      "three_digit_code": "USA",
+      "calling_code": 1
+    },
+    "UY": {
+      "name": "Uruguay",
+      "three_digit_code": "URY",
+      "calling_code": 598
+    },
+    "UZ": {
+      "name": "Uzbekistan",
+      "three_digit_code": "UZB",
+      "calling_code": 998
+    },
+    "VU": {
+      "name": "Vanuatu",
+      "three_digit_code": "VUT",
+      "calling_code": 678
+    },
+    "VN": {
+      "name": "Viet Nam",
+      "three_digit_code": "VNM",
+      "calling_code": 84
+    },
+    "VI": {
+      "name": "Virgin Islands, US",
+      "three_digit_code": "VIR",
+      "calling_code": 1
+    },
+    "WF": {
+      "name": "Wallis and Futuna Islands",
+      "three_digit_code": "WLF",
+      "calling_code": 681
+    },
+    "YE": {
+      "name": "Yemen",
+      "three_digit_code": "YEM",
+      "calling_code": 967
+    },
+    "ZM": {
+      "name": "Zambia",
+      "three_digit_code": "ZMB",
+      "calling_code": 260
+    },
+    "ZW": {
+      "name": "Zimbabwe",
+      "three_digit_code": "ZWE",
+      "calling_code": 263
+    }
+  }
+}

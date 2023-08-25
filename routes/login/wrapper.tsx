@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import { REM } from "../../components/data/constants";
 import Container from "../../components/ui/container";
 import Input from "../../components/ui/input";
@@ -18,7 +19,9 @@ export default function LoginWrapper() {
         </Pressable>
       </View>
       {/* 👇 the login UI */}
-      <Login />
+      <ScrollView>
+        <Login />
+      </ScrollView>
     </Layout>
   );
 }

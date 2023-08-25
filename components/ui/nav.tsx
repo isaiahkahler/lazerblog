@@ -6,6 +6,7 @@ import {
   ViewStyle,
   StyleSheet,
   ScrollView,
+  SafeAreaView,
 } from 'react-native';
 import {
   createNavigatorFactory,
@@ -122,7 +123,7 @@ function TabNavigator({
 
   return (
     <NavigationContent>
-      <View style={[styles.navRoot, { flexDirection: verticalNavbar ? 'row' : 'column' }]}>
+      <SafeAreaView style={[styles.navRoot, { flexDirection: verticalNavbar ? 'row' : 'column' }]}>
         {/* 👉 render the contents of the tab */}
         <View style={[
           verticalNavbar ? styles.tabContainerVertical : styles.tabContainerHorizontal,
@@ -187,7 +188,7 @@ function TabNavigator({
             );
           })}
         </View>
-      </View>
+      </SafeAreaView>
     </NavigationContent>
   );
 }

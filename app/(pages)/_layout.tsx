@@ -1,6 +1,6 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { Link } from 'expo-router';
-import { Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { Pressable, SafeAreaView, StyleSheet, Text, useColorScheme, View } from 'react-native';
 import { APP_COLORS, REM, ScaleContext, ScreenNumberToSize, ScreenSizeContext, ScreenSizeToNumber } from '../../components/data/constants';
 import { useStore } from '../../components/data/store';
 import Button from '../../components/ui/button';
@@ -73,6 +73,8 @@ export default function TabLayout() {
   // ]
 
   return (
+    // <SafeAreaView style={styles.root}>
+
     <Tabs.Navigator tabBarStyle={{}} contentStyle={{}} >
       <Tabs.Screen
         name='home'
@@ -107,6 +109,7 @@ export default function TabLayout() {
         />
       </>}
     </Tabs.Navigator>
+    // </SafeAreaView>
 
     // <View style={styles.root}>
     // {/* <View style={{ maxWidth: isLargeDisplay ? 42.5 * REM + 15.5 * REM : undefined, flex: 1 }}> */}
@@ -166,11 +169,7 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   root: {
-    backgroundColor: 'rgba(255,0,0,0.2)',
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: REM
   },
   largeNav: {
     width: 15.5 * REM,

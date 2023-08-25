@@ -6,7 +6,11 @@ import { TextContext } from "../data/contexts";
 import P from "./text";
 
 
-type ButtonProps = { hasColor?: boolean, textStyle?: TextStyle };
+type ButtonProps = {
+  hasColor?: boolean,
+  textStyle?: TextStyle,
+  // disabled?: boolean
+};
 
 const Button = forwardRef<any, ButtonProps & PropsWithChildren<PressableProps>>((props, ref) => {
 
@@ -20,13 +24,18 @@ const Button = forwardRef<any, ButtonProps & PropsWithChildren<PressableProps>>(
   // const hoverProps = {}
   return (
     <Pressable
+      ref={ref}
       {...rest}
-      style={[styles.button, {
-        paddingHorizontal: REM,
-        paddingVertical: REM / 2,
-        marginVertical: REM / 2,
-        minHeight: REM / 2
-      }, hasColor && styles.hasColor, pressState && styles.active, rest.style]}
+      style={[
+        styles.button,
+        {
+          paddingHorizontal: REM,
+          paddingVertical: REM / 2,
+          marginVertical: REM / 2,
+          minHeight: REM / 2
+        },
+        hasColor && styles.hasColor, pressState && styles.active,
+        rest.style]}
       onPressIn={() => setPressState(true)}
       onPressOut={() => setPressState(false)}
     >
@@ -90,7 +99,7 @@ const styles = StyleSheet.create({
     color: ACCENT_TEXT_COLOR
   },
   active: {
-
+    opacity: 0.7
   },
   buttonText: {
     // pointerEvents: 'none',

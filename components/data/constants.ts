@@ -1,4 +1,6 @@
+import { getLocales } from "expo-localization";
 import { createContext } from "react";
+import {countryCodeDefs} from './json/country_code_definitions.json'
 
 export const BACKGROUND_COLOR = '#fafafa';
 export const TEXT_COLOR = '#0a0a0a';
@@ -11,13 +13,18 @@ export const ACCENT_TEXT_COLOR = '#fafafa';
 export const ACTION_COLOR = '#ebebeb';
 export const ACTION_COLOR_LIGHT = '#ffffff';
 export const ACTION_COLOR_DARK = '#a5a5a5';
+export const ACTION_COLOR_MEDIUM = '#d4d4d4';
 
 export const REM = 16;
 
 export const BORDER_RADIUS = (REM / 16) * 10;
+export const ERROR_COLOR = '#cc0f35';
 
 export const OVERLAY_COLOR = 'rgba(0,0,0,0.2)'
 
+export const DEVICE_LOCALES = getLocales();//.map(locale => locale.regionCode);
+export const DEVICE_NON_US_LOCALES = DEVICE_LOCALES.filter(locale => (locale.regionCode && (locale.regionCode || '').toLowerCase() !== 'us') || (locale.measurementSystem && (locale.measurementSystem || '').toLowerCase() !== 'us'));
+export const DEVICE_HAS_NON_US_LOCALE = DEVICE_NON_US_LOCALES.length > 0;
 
 export const ScaleContext = createContext<number>(16);
 
@@ -40,6 +47,8 @@ export const ScreenNumberToSize: {[screenSizeNumber in ScreenSizeNumbers]: Scree
   4: 'lg',
   5: 'xl'
 }
+
+export const COUNTRY_CODE_DEFINITIONS = countryCodeDefs;
 
 
 const tintColorDark = '#fff';
