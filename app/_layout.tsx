@@ -1,7 +1,6 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import 'react-native-url-polyfill/auto';
-import { createClient } from '@supabase/supabase-js';
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -12,6 +11,7 @@ import '@expo/match-media'
 import { useMediaQuery } from "react-responsive";
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
+import { supabase } from '../components/data/supabase';
 
 
 export {
@@ -63,28 +63,6 @@ const reauthorTheme = {
     notification: 'rgb(255, 59, 48)',
   },
 };
-
-
-const ExpoSecureStoreAdapter = {
-  getItem: (key: string) => {
-    return SecureStore.getItemAsync(key)
-  },
-  setItem: (key: string, value: string) => {
-    SecureStore.setItemAsync(key, value)
-  },
-  removeItem: (key: string) => {
-    SecureStore.deleteItemAsync(key)
-  },
-};
-
-const supabase = createClient(process.env.EXPO_PUBLIC_SUPABASE_URL!, process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!, {
-  auth: {
-    storage: Platform.OS === 'web' ? undefined : ExpoSecureStoreAdapter,
-    persistSession: true, 
-    autoRefreshToken: true,
-    detectSessionInUrl: false,
-  }
-});
 
 
 

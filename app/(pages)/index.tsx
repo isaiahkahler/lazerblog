@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { REM } from '../../components/data/constants';
-import { useIsExtraLargeScreenSize } from '../../components/hooks/screensize';
+import { useIsExtraLargeScreenSize } from '../../components/hooks/useScreenSize';
 import Container from '../../components/ui/container';
 import If from '../../components/ui/if';
 import Layout from '../../components/ui/layout';

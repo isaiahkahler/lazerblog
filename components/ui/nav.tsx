@@ -29,7 +29,7 @@ import Button from './button';
 import Container from './container';
 import Layout from './layout';
 import { router } from 'expo-router';
-import { useIsExtraLargeScreenSize } from '../hooks/screensize';
+import { useIsExtraLargeScreenSize } from '../hooks/useScreenSize';
 
 
 // Props accepted by the view
