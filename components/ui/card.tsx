@@ -17,5 +17,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: BORDER_RADIUS,
+    minWidth: 400,
+    minHeight: 300
   }
 })

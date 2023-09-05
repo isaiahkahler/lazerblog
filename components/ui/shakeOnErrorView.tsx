@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { Animated, ViewProps } from "react-native";
 
 interface ShakeOnErrorViewProps {
-  error?: boolean
+  error?: boolean,
+  changingError?: any
 }
 
-export default function ShakeOnErrorView({ children, error, ...rest }: ShakeOnErrorViewProps & ViewProps) {
+export default function ShakeOnErrorView({ children, error, changingError, ...rest }: ShakeOnErrorViewProps & ViewProps) {
   const [width, setWidth] = useState(0);
   const shakeAmount = width * 0.025;
   const shakeAnim = useRef(new Animated.Value(0)).current;
@@ -45,6 +46,14 @@ export default function ShakeOnErrorView({ children, error, ...rest }: ShakeOnEr
       shakeTiming.reset();
     }
   }, [error]);
+
+  useEffect(() => {
+    if (changingError) {
+      shakeTiming.start();
+    } else {
+      shakeTiming.reset();
+    }
+  }, [changingError]);
 
   return (
     <Animated.View
